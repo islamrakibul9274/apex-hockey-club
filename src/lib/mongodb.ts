@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI =
-  process.env.MONGODB_URI ||
-  "mongodb+srv://rumel9274_db_user:CgIlVFkGNN2zY1tG@cluster0.obdwazm.mongodb.net/hockey_elite_db?appName=Cluster0";
+const MONGODB_URI = process.env.MONGODB_URI || "";
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -21,6 +19,10 @@ if (!cached) {
 }
 
 export async function connectToDatabase(): Promise<typeof mongoose | null> {
+  if (!MONGODB_URI) {
+    return null;
+  }
+
   if (cached?.conn) {
     return cached.conn;
   }
