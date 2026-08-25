@@ -1,57 +1,41 @@
-# Hockey With DaisyUI (Next.js Edition)
+# Apex Hockey Club 🏒 (Next.js 14 Full-Stack)
 
-A modernized version of the Hockey Club and Sports Equipment landing page, rebuilt with **Next.js 14 (App Router)**, **TypeScript**, **Tailwind CSS**, and **DaisyUI**.
+A modern full-stack Ice Hockey Club, Training Academy, and Sports Equipment platform built with **Next.js 14 (App Router)**, **TypeScript**, **Tailwind CSS**, **DaisyUI**, **MongoDB**, **Stripe Checkout**, and **Groq AI Assistant**.
 
-## 🚀 Features
+## 🚀 Key Features
 
-- **Next.js 14+ App Router** with React Server Components and TypeScript
-- **Tailwind CSS & DaisyUI** for customizable UI components
-- **Optimized Assets** using `next/image` and Google Fonts (`Manrope` and `Poppins`)
-- **React Icons** for clean vector icons
-- **Fully Responsive** for mobile, tablet, and desktop viewports
+- **Full-Stack Next.js 14 App Router**: Server and Client Components with TypeScript
+- **Clean White UI Design**: Tailwind CSS + DaisyUI with smooth animations and red `#FF4240` accents
+- **MongoDB Database**: Models for Products, Programs, Bookings, Inquiries, Blog Posts, and Users with dynamic querying
+- **Member Authentication & Portal**: User account registration, login, 1-Click Demo VIP Athlete access, and match ticket history
+- **Interactive Ticket Booking (`/get-ticket`)**: Match fixture selection, tiered seating, seat counter, and instant barcode pass generation
+- **Equipment Shop & Bag (`/products` & `/cart`)**: Live search, category filtering, product quick-view modal, coupon codes, and Stripe checkout
+- **AI Hockey Coach (Coach Wayne)**: Groq AI SDK real-time tactical and gear coaching widget
+- **Membership Pricing (`/pricing`)**: Monthly/Annual tiered subscriptions with direct Stripe checkout
 
 ## 🛠️ Getting Started
 
-### 1. Install Dependencies
+### 1. Clone & Install
 ```bash
+git clone https://github.com/islamrakibul9274/apex-hockey-club.git
+cd apex-hockey-club
 npm install
 ```
 
-### 2. Run the Development Server
+### 2. Environment Configuration
+Create a `.env.local` file based on `.env.example`:
+```bash
+cp .env.example .env.local
+```
+
+### 3. Run the Development Server
 ```bash
 npm run dev
 ```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-### 3. Build for Production
+### 4. Build for Production
 ```bash
 npm run build
 npm run start
-```
-
-## 📁 Project Structure
-
-```
-├── public/
-│   └── images/              # Static image assets
-├── src/
-│   ├── app/
-│   │   ├── globals.css      # Tailwind & typography styles
-│   │   ├── layout.tsx       # Root layout & font configuration
-│   │   └── page.tsx         # Main landing page
-│   └── components/
-│       ├── Navbar.tsx
-│       ├── HeroBanner.tsx
-│       ├── ProgressStats.tsx
-│       ├── ProgramSection.tsx
-│       ├── ProductsSection.tsx
-│       ├── FaqSection.tsx
-│       ├── ContactSection.tsx
-│       ├── SocialSection.tsx
-│       └── Footer.tsx
-├── tailwind.config.ts
-├── postcss.config.mjs
-├── tsconfig.json
-└── package.json
 ```
