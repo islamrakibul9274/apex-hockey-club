@@ -88,7 +88,7 @@ function ContactContent() {
             <div className="bg-accent-lime/60 border border-accent-lime rounded-3xl p-6 space-y-3 shadow-sm">
               <div className="flex items-center gap-3">
                 <Image
-                  src="/images/Group 1171275317.png"
+                  src="/images/hero-puck-thumb.webp"
                   alt="Phone icon"
                   width={40}
                   height={40}
@@ -105,7 +105,7 @@ function ContactContent() {
             <div className="bg-accent-sand/60 border border-accent-sand rounded-3xl p-6 space-y-3 shadow-sm">
               <div className="flex items-center gap-3">
                 <Image
-                  src="/images/Group 1171275318.png"
+                  src="/images/hero-puck-thumb.webp"
                   alt="Email icon"
                   width={40}
                   height={40}
@@ -122,7 +122,7 @@ function ContactContent() {
             <div className="bg-accent-sky/60 border border-accent-sky rounded-3xl p-6 space-y-3 shadow-sm">
               <div className="flex items-center gap-3">
                 <Image
-                  src="/images/Group 1171275321.png"
+                  src="/images/hero-puck-thumb.webp"
                   alt="Location icon"
                   width={40}
                   height={40}
@@ -152,7 +152,7 @@ function ContactContent() {
           {/* Form */}
           <div className="lg:col-span-7 bg-surface-0 border border-line-200 rounded-3xl p-8 shadow-sm">
             {success ? (
-              <div className="py-16 text-center space-y-4 animate-in fade-in">
+              <div className="py-16 text-center space-y-4">
                 <div className="w-16 h-16 rounded-full bg-success-50 text-success-700 flex items-center justify-center text-3xl mx-auto shadow-inner">
                   <FaCheck />
                 </div>

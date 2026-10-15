@@ -197,7 +197,7 @@ function AccountContent() {
     <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-8">
       {/* Payment Confirmation Banner */}
       {paymentSuccess && (
-        <div className="apex-alert apex-alert-success text-white font-bold rounded-2xl shadow-xl flex items-center justify-between animate-in slide-in-from-top-2">
+        <div className="apex-alert apex-alert-success text-white font-bold rounded-2xl shadow-xl flex items-center justify-between animate-scale-in">
           <div className="flex items-center gap-3">
             <FaCheck className="text-xl" />
             <div>
@@ -244,7 +244,7 @@ function AccountContent() {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex border-b border-line-200 gap-4 overflow-x-auto no-scrollbar">
+      <div className="flex border-b border-line-200 gap-4 overflow-x-auto">
         <button
           onClick={() => setActiveTab("overview")}
           className={`pb-4 px-3 text-sm font-extrabold flex items-center gap-2 border-b-2 transition-all ${

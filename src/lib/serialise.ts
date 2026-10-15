@@ -14,10 +14,11 @@
  * which source it came from.
  */
 
-interface MaybeDocument {
-  _id?: unknown;
-  id?: unknown;
-}
+/**
+ * Anything document-shaped. Deliberately not an index signature, so Mongoose
+ * documents (which have no index signature) remain assignable.
+ */
+type MaybeDocument = object;
 
 function toIdString(value: unknown): string | undefined {
   if (typeof value === "string" && value.length > 0) return value;
@@ -47,23 +48,21 @@ function toPlain<T>(doc: T): T {
  * Falls back to `_id`, then to the title, then to a positional key, so an item
  * can never reach the client without a usable identity.
  */
-export function withId<T extends MaybeDocument>(doc: T, fallback?: string): T & { id: string } {
-  const plain = toPlain(doc);
+export function withId<T extends MaybeDocument>(
+  doc: T,
+  fallback?: string
+): T & { id: string } {
+  // Spread the PLAIN form. Spreading a Mongoose document would serialise its
+  // internal $__ state into the API response.
+  const plain = toPlain(doc) as { id?: unknown; _id?: unknown; title?: unknown };
 
-  const existing = toIdString(plain.id);
-  if (existing) return { ...plain, id: existing };
+  const existing = toIdString(plain.id) ?? toIdString(plain._id) ?? fallback;
 
-  const fromMongo = toIdString(plain._id);
-  if (fromMongo) return { ...plain, id: fromMongo };
+  // Last resort: a title is stable enough to keep the cart consistent.
+  const hashed =
+    existing ?? toIdString(plain.title) ?? `item-${Math.abs(hashString(String(plain.title ?? "")))}`;
 
-  if (fallback) return { ...plain, id: fallback };
-
-  // Last resort: a title is unique enough to keep the cart consistent.
-  const title = (plain as { title?: unknown }).title;
-  return {
-    ...plain,
-    id: toIdString(title) ?? `item-${Math.abs(hashString(String(title ?? "")))}`,
-  };
+  return { ...(plain as object), id: hashed } as T & { id: string };
 }
 
 export function withIdAll<T extends MaybeDocument>(docs: T[]): (T & { id: string })[] {

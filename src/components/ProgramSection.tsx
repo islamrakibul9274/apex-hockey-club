@@ -108,7 +108,7 @@ export default function ProgramSection() {
               className={`hero rounded-3xl min-h-[380px] overflow-hidden bg-cover bg-center relative shadow-lg hover:shadow-2xl transition-all duration-300 ${
                 isFullSpan ? "lg:col-span-2" : ""
               }`}
-              style={{ backgroundImage: `url(${program.image || "/images/2.png"})` }}
+              style={{ backgroundImage: `url(${program.image || "/images/team-action-card.webp"})` }}
             >
               <div className="apex-hero-overlay bg-gradient-to-t from-black via-black/75 to-black/30"></div>
               <div
@@ -169,8 +169,8 @@ export default function ProgramSection() {
 
       {/* Registration Modal */}
       {selectedProgram && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-surface-0 w-full max-w-lg rounded-3xl p-8 shadow-2xl space-y-6 relative animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-surface-0 w-full max-w-lg rounded-3xl p-8 shadow-2xl space-y-6 relative animate-scale-in">
             <button
               onClick={() => setSelectedProgram(null)}
               className="apex-btn apex-btn-icon apex-btn-ghost apex-btn-sm absolute top-4 right-4 text-ink-500 hover:text-ink-700"

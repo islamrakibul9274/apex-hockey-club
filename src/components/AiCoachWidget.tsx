@@ -93,7 +93,7 @@ export default function AiCoachWidget() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-4 sm:right-6 z-50 w-[92vw] sm:w-[420px] max-h-[600px] h-[75vh] bg-surface-0 rounded-3xl shadow-2xl border border-line-200 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div className="fixed bottom-24 right-4 sm:right-6 z-50 w-[92vw] sm:w-[420px] max-h-[600px] h-[75vh] bg-surface-0 rounded-3xl shadow-2xl border border-line-200 flex flex-col overflow-hidden animate-scale-in duration-200">
           {/* Header */}
           <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -150,7 +150,7 @@ export default function AiCoachWidget() {
           </div>
 
           {/* Prompt Suggestions */}
-          <div className="p-2 bg-surface-0 border-t border-line-200 overflow-x-auto flex gap-1.5 no-scrollbar">
+          <div className="p-2 bg-surface-0 border-t border-line-200 overflow-x-auto flex gap-1.5">
             {SUGGESTIONS.map((s, idx) => (
               <button
                 key={idx}

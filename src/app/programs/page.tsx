@@ -249,8 +249,8 @@ export default function ProgramsPage() {
 
         {/* Modal */}
         {selectedProgram && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-surface-0 w-full max-w-md rounded-3xl p-8 shadow-2xl space-y-6 relative animate-in zoom-in-95">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="bg-surface-0 w-full max-w-md rounded-3xl p-8 shadow-2xl space-y-6 relative animate-scale-in">
               <button
                 onClick={() => setSelectedProgram(null)}
                 className="apex-btn apex-btn-icon apex-btn-ghost apex-btn-sm absolute top-4 right-4 text-ink-500"

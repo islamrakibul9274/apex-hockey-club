@@ -147,7 +147,7 @@ export default function GetTicketPage() {
         </div>
 
         {confirmed ? (
-          <div className="bg-surface-50 border border-line-200 rounded-3xl p-10 max-w-2xl mx-auto text-center space-y-6 animate-in fade-in">
+          <div className="bg-surface-50 border border-line-200 rounded-3xl p-10 max-w-2xl mx-auto text-center space-y-6">
             <div className="w-20 h-20 rounded-full bg-success-50 text-success-700 flex items-center justify-center text-3xl mx-auto shadow-inner">
               <FaCheck />
             </div>

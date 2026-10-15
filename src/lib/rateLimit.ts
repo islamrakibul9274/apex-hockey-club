@@ -33,11 +33,30 @@ export interface RateLimitResult {
   retryAfter: number;
 }
 
+/**
+ * Explicit opt-out for automated test runs.
+ *
+ * The limiter is deliberately strict (a handful of sign-ups per hour per IP),
+ * which means the integration suite cannot run twice against one server
+ * without exhausting its own budget. Setting RATE_LIMIT_DISABLED=true relaxes
+ * it.
+ *
+ * The limiter's own behaviour is NOT covered by that flag — it is asserted
+ * end-to-end by scripts/verify-auth.sh, which runs without the flag set.
+ */
+function isDisabled(): boolean {
+  return process.env.RATE_LIMIT_DISABLED === "true";
+}
+
 export function rateLimit(
   key: string,
   limit: number,
   windowMs: number
 ): RateLimitResult {
+  if (isDisabled()) {
+    return { ok: true, remaining: limit, retryAfter: 0 };
+  }
+
   const now = Date.now();
   sweep(now);
 

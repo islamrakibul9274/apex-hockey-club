@@ -59,7 +59,7 @@ export default function ProductsSection() {
     <section id="products" className="px-4 sm:px-6 lg:px-8 py-8 relative">
       {/* Toast Feedback */}
       {addedToast && (
-        <div className="toast toast-top toast-center z-50 animate-in slide-in-from-top-4">
+        <div className="z-50">
           <div className="apex-alert apex-alert-success text-white font-bold rounded-2xl shadow-xl flex items-center gap-2">
             <FaCheck />
             <span>Added &quot;{addedToast}&quot; to Equipment Bag!</span>
@@ -128,7 +128,7 @@ export default function ProductsSection() {
                       e.stopPropagation();
                       handleLike(product.id);
                     }}
-                    className={`btn btn-circle btn-xs absolute top-3 right-3 shadow-md border-none ${
+                    className={`apex-btn apex-btn-icon apex-btn-sm absolute top-3 right-3 shadow-md border-none ${
                       isLiked ? "bg-brand-500 text-white" : "bg-surface-0 text-ink-500 hover:text-danger-600"
                     }`}
                     aria-label="Like product"
@@ -208,8 +208,8 @@ export default function ProductsSection() {
 
       {/* Product Quick-View Modal */}
       {selectedProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-surface-0 w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative animate-in zoom-in-95 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-surface-0 w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative animate-scale-in max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setSelectedProduct(null)}
               className="apex-btn apex-btn-icon apex-btn-ghost apex-btn-sm absolute top-4 right-4 text-ink-500 hover:text-ink-700"

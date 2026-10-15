@@ -19,21 +19,21 @@ const COACHES = [
     name: "Dave Miller",
     role: "Head Coach & Skills Director",
     bio: "Former Olympic team captain with over 15 years coaching professional European and North American youth league champions.",
-    image: "/images/2.png",
+    image: "/images/player-gear-thumb.webp",
     specialty: "Power Skating & Breakout Tactics",
   },
   {
     name: "Sarah Jenkins",
     role: "Director of Youth & Teen Development",
     bio: "National MVP and certified biomechanics specialist focused on edge agility, explosive speed, and tactical decision making.",
-    image: "/images/3.png",
+    image: "/images/goalie-watch-thumb.webp",
     specialty: "Agility & Shooting Precision",
   },
   {
     name: "Alexander Petrov",
     role: "Pro Masterclass & Goaltender Coach",
     bio: "NHL veteran goaltender bringing elite mental conditioning, butterfly save mechanics, and power play defensive strategy.",
-    image: "/images/4.png",
+    image: "/images/goalie-kneel-thumb.webp",
     specialty: "Goaltending & Defensive Schemes",
   },
 ];
@@ -42,17 +42,17 @@ const FACILITIES = [
   {
     title: "Olympic Ice Arena Rink 1",
     desc: "200ft x 85ft NHL-spec ice sheet equipped with high-efficiency rapid chilling and acoustic arena sound.",
-    image: "/images/1.png",
+    image: "/images/arena-empty-card.webp",
   },
   {
     title: "Off-Ice Athletic Performance Lab",
     desc: "Specialized synthetic ice shooting bays, plyometric turf, and heavy resistance training rigs.",
-    image: "/images/11.png",
+    image: "/images/hero-puck-card.webp",
   },
   {
     title: "Biomechanics & Video Analysis Suite",
     desc: "High-speed 240fps multi-angle cameras tracking skating stride efficiency and puck release speed.",
-    image: "/images/4.png",
+    image: "/images/team-action-card.webp",
   },
 ];
 
@@ -102,7 +102,7 @@ export default function AboutPage() {
 
           <div className="relative rounded-3xl overflow-hidden shadow-2xl h-[380px] bg-surface-100">
             <Image
-              src="/images/1.png"
+              src="/images/hero-action-wide.webp"
               alt="Apex Hockey Arena and Athletes"
               fill
               className="object-cover"

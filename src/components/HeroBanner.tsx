@@ -88,7 +88,7 @@ export default function HeroBanner() {
 
         {/* Main Content & CTA */}
         <div className="relative z-10 container mx-auto px-6 sm:px-12 lg:px-16 py-12 max-w-3xl space-y-6 text-white">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-500/90 backdrop-blur-md text-white text-xs font-extrabold uppercase tracking-wider shadow-md animate-in fade-in slide-in-from-bottom-2">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-500/90 backdrop-blur-md text-white text-xs font-extrabold uppercase tracking-wider shadow-md animate-scale-in">
             <FaFire className="text-amber-300" />
             {slide.badge}
           </div>
