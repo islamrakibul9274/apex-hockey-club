@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Image from "next/image";
 import Link from "next/link";
 import { INITIAL_MATCH_TICKETS, MatchTicketData } from "@/lib/mockData";
 import { useAuth } from "@/context/AuthContext";
@@ -12,7 +11,6 @@ import {
   FaCalendarDays,
   FaLocationDot,
   FaCheck,
-  FaShieldHalved,
   FaPlus,
   FaMinus,
   FaCreditCard,
@@ -28,6 +26,8 @@ export default function GetTicketPage() {
   const [customerEmail, setCustomerEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
+  const [pendingBookingWarning, setPendingBookingWarning] = useState("");
 
   const { user } = useAuth();
 
@@ -37,55 +37,98 @@ export default function GetTicketPage() {
 
   const totalAmount = currentTierObj.price * quantity;
 
+  /**
+   * Checkout order matters: open the Stripe session FIRST, and only record the
+   * booking once Stripe has accepted it.
+   *
+   * The previous version wrote the booking, then called checkout, then showed
+   * "Tickets Confirmed!" whenever no URL came back — including when Stripe had
+   * rejected the payment outright. A failure now shows the actual error.
+   */
   const handleBookTicket = async (e: React.FormEvent) => {
     e.preventDefault();
+    setCheckoutError("");
+
+    if (!user) {
+      setCheckoutError("Sign in to book tickets so we can attach them to your account.");
+      return;
+    }
+
+    if (selectedTier !== currentTierObj.name) {
+      // The tier from the previous match can linger after switching matches.
+      setCheckoutError("That seat tier is not available for this match.");
+      return;
+    }
+
+    if (quantity > currentTierObj.availableSeats) {
+      setCheckoutError(
+        `Only ${currentTierObj.availableSeats} seats remain in ${currentTierObj.name}.`
+      );
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // 1. Record booking in DB
-      await fetch("/api/bookings", {
+      const checkoutRes = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customerName: customerName || user?.name || "Match Attendee",
-          customerEmail: customerEmail || user?.email || "fan@example.com",
+          type: "ticket",
+          matchId: selectedMatch.id,
+          tier: currentTierObj.name,
+          seats: quantity,
+        }),
+      });
+
+      const checkoutData = await checkoutRes.json().catch(() => ({}));
+
+      if (!checkoutRes.ok || !checkoutData?.url) {
+        setCheckoutError(
+          checkoutData?.error ?? "We could not start the payment. Your card has not been charged."
+        );
+        return;
+      }
+
+      // The booking is only recorded after payment is under way. It stays
+      // "pending" until a Stripe webhook marks it paid.
+      const bookingRes = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customerName: customerName || user.name,
+          customerEmail: customerEmail || user.email,
+          customerPhone: user.phone ?? "",
           bookingType: "ticket",
           itemId: selectedMatch.id,
-          itemTitle: `${selectedMatch.matchTitle} - ${selectedTier}`,
-          tierOrPlan: selectedTier,
+          itemTitle: `${selectedMatch.matchTitle} - ${currentTierObj.name}`,
+          tierOrPlan: currentTierObj.name,
           seatsCount: quantity,
-          totalAmount,
           date: selectedMatch.date,
           time: selectedMatch.time,
         }),
       });
 
-      // 2. Stripe Checkout trigger
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          planName: `${selectedMatch.matchTitle} (${selectedTier} x${quantity})`,
-          price: totalAmount,
-          type: "ticket",
-          customerEmail: customerEmail || user?.email,
-        }),
-      });
-      const data = await res.json();
-
-      if (data.url && !data.url.includes("simulation=true")) {
-        window.location.href = data.url;
-      } else {
-        setConfirmed(true);
+      if (!bookingRes.ok) {
+        const bookingData = await bookingRes.json().catch(() => ({}));
+        console.error("[get-ticket] booking not recorded:", bookingData);
+        // Payment is already in flight, so the customer must still complete
+        // it — but they are told the record is missing rather than being shown
+        // a false confirmation.
+        setPendingBookingWarning(
+          "Your payment is ready but we could not attach this booking to your account yet. Contact us with your receipt and we will add it."
+        );
       }
+
+      window.location.href = checkoutData.url;
     } catch {
-      setConfirmed(true);
+      setCheckoutError(
+        "We could not reach the payment service. Check your connection and try again — you have not been charged."
+      );
     } finally {
       setLoading(false);
     }
-  };
-
-  return (
+  };  return (
     <div className="min-h-screen flex flex-col bg-white text-gray-900">
       <Navbar />
 
@@ -292,23 +335,47 @@ export default function GetTicketPage() {
                     />
                   </div>
 
+                  {checkoutError && (
+                    <div role="alert" className="apex-alert apex-alert-error">
+                      {checkoutError}
+                    </div>
+                  )}
+
+                  {pendingBookingWarning && (
+                    <div role="alert" className="apex-alert apex-alert-info">
+                      {pendingBookingWarning}
+                    </div>
+                  )}
+
+                  {!user && (
+                    <div role="status" className="apex-alert apex-alert-info">
+                      <Link
+                        href={`/auth/signin?next=${encodeURIComponent("/get-ticket")}`}
+                        className="font-semibold underline"
+                      >
+                        Sign in
+                      </Link>{" "}
+                      to book tickets for this account.
+                    </div>
+                  )}
+
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || !user}
                     className="btn btn-block bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-2xl font-bold py-3 text-base shadow-lg shadow-red-500/20 flex items-center justify-center gap-2"
                   >
                     {loading ? (
                       <span className="loading loading-spinner loading-sm"></span>
                     ) : (
                       <>
-                        <FaCreditCard /> Pay & Confirm Pass (${totalAmount})
+                        <FaCreditCard /> Pay &amp; Confirm Pass (${totalAmount})
                       </>
                     )}
                   </button>
                 </form>
 
                 <p className="text-[11px] text-gray-400 text-center leading-relaxed">
-                  🔒 Guaranteed authentic passes. Instant mobile barcode delivered to your account.
+                  Payment is taken by Stripe. Passes are issued to your account once payment clears.
                 </p>
               </div>
             </div>

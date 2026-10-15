@@ -3,6 +3,14 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
 import { hashPassword, sessionMaxAge, setSessionCookie, signJwt } from "@/lib/auth";
 import { registerSchema, fieldErrors } from "@/lib/validation";
+
+/**
+ * Reads request headers, cookies or body, so it can never be statically
+ * rendered. Declared explicitly because withErrorHandling catches thrown
+ * errors, and swallowing Next's DynamicServerError would otherwise let
+ * the route be cached as a static shell.
+ */
+export const dynamic = "force-dynamic";
 import {
   withErrorHandling,
   badRequest,

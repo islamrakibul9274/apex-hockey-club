@@ -4,8 +4,8 @@ import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { FaArrowLeft, FaShieldHalved } from "react-icons/fa6";
+import { useParams, notFound } from "next/navigation";
+import { FaArrowLeft } from "react-icons/fa6";
 
 const LEGAL_DOCS: Record<string, { title: string; effectiveDate: string; content: string }> = {
   terms: {
@@ -59,7 +59,9 @@ By enrolling in Apex Hockey camps, clinic masterclasses, or open ice sessions, p
 export default function LegalPage() {
   const params = useParams();
   const rawSlug = (params?.slug as string) || "terms";
-  const doc = LEGAL_DOCS[rawSlug] || LEGAL_DOCS.terms;
+  // An unknown slug previously rendered Terms of Service with HTTP 200.
+  const doc = LEGAL_DOCS[rawSlug];
+  if (!doc) notFound();
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-900">

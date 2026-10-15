@@ -21,6 +21,7 @@ export interface SessionUser {
   phone?: string;
   membershipPlan?: string;
   address?: IUser["address"];
+  preferences?: IUser["preferences"];
 }
 
 export async function getSession(req: NextRequest): Promise<SessionUser | null> {
@@ -64,6 +65,9 @@ export function toSessionUser(user: IUser): SessionUser {
     phone: user.phone,
     membershipPlan: user.membershipPlan,
     address: user.address,
+    // Notification preferences are part of the signed-in state the UI reads
+    // back, so they must be present here as well as in toPublicUser.
+    preferences: user.preferences,
   };
 }
 
@@ -79,6 +83,7 @@ export function toPublicUser(user: IUser) {
     membershipPlan: user.membershipPlan,
     address: user.address,
     notificationsEnabled: user.notificationsEnabled,
+    preferences: user.preferences,
     createdAt: user.createdAt,
   };
 }

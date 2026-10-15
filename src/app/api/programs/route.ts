@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Program from "@/models/Program";
 import { INITIAL_PROGRAMS } from "@/lib/mockData";
+import { normaliseCatalogue } from "@/lib/serialise";
 
 export async function GET() {
   try {
@@ -9,7 +10,11 @@ export async function GET() {
     if (conn) {
       const programs = await Program.find().sort({ createdAt: 1 });
       if (programs && programs.length > 0) {
-        return NextResponse.json({ success: true, programs, source: "database" });
+        return NextResponse.json({
+          success: true,
+          programs: normaliseCatalogue(programs, INITIAL_PROGRAMS),
+          source: "database",
+        });
       }
     }
     return NextResponse.json({ success: true, programs: INITIAL_PROGRAMS, source: "initial" });

@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
 import { updateProfileSchema, fieldErrors } from "@/lib/validation";
+
+/**
+ * Reads request headers, cookies or body, so it can never be statically
+ * rendered. Declared explicitly because withErrorHandling catches thrown
+ * errors, and swallowing Next's DynamicServerError would otherwise let
+ * the route be cached as a static shell.
+ */
+export const dynamic = "force-dynamic";
 import {
   withErrorHandling,
   badRequest,
@@ -28,7 +36,7 @@ export async function PUT(req: NextRequest) {
       return badRequest(fields.form ?? "Check the highlighted fields", fields);
     }
 
-    const { name, phone, avatar, address } = parsed.data;
+    const { name, phone, avatar, address, preferences } = parsed.data;
 
     const conn = await connectToDatabase();
     if (!conn) {
@@ -39,7 +47,15 @@ export async function PUT(req: NextRequest) {
     // through this endpoint, so the request cannot escalate itself.
     const updated = await User.findByIdAndUpdate(
       session.id,
-      { $set: { name, phone, ...(avatar !== undefined ? { avatar } : {}), ...(address ? { address } : {}) } },
+      {
+        $set: {
+          name,
+          phone,
+          ...(avatar !== undefined ? { avatar } : {}),
+          ...(address ? { address } : {}),
+          ...(preferences ? { preferences } : {}),
+        },
+      },
       { new: true, runValidators: true }
     );
 

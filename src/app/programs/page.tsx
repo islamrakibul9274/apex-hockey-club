@@ -8,7 +8,9 @@ import Link from "next/link";
 import { INITIAL_PROGRAMS, ProgramData } from "@/lib/mockData";
 import { FaCalendarDays, FaCheck, FaUserCheck, FaXmark, FaClock, FaLocationDot } from "react-icons/fa6";
 
-const FILTER_TABS = ["All", "Junior", "Teen", "Professional"];
+// "Private" was a valid category in the data but had no tab, making
+// those programmes unreachable through filtering.
+const FILTER_TABS = ["All", "Junior", "Teen", "Professional", "Private"];
 
 export default function ProgramsPage() {
   const [programs, setPrograms] = useState<ProgramData[]>(INITIAL_PROGRAMS);
@@ -20,6 +22,15 @@ export default function ProgramsPage() {
   const [athleteAge, setAthleteAge] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const successTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  React.useEffect(
+    () => () => {
+      if (successTimer.current) clearTimeout(successTimer.current);
+    },
+    []
+  );
 
   useEffect(() => {
     async function load() {
@@ -45,7 +56,7 @@ export default function ProgramsPage() {
     setSubmitting(true);
 
     try {
-      await fetch("/api/bookings", {
+      const bookingRes = await fetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -54,19 +65,30 @@ export default function ProgramsPage() {
           bookingType: "program",
           itemId: selectedProgram.id,
           itemTitle: `${selectedProgram.title} (${athleteAge ? `Age ${athleteAge}` : selectedProgram.ageGroup})`,
-          totalAmount: selectedProgram.price,
           seatsCount: 1,
         }),
       });
+      if (!bookingRes.ok) {
+        const errData = await bookingRes.json().catch(() => ({}));
+        setErrorMsg(
+          errData?.error ?? "We could not complete your registration. Please try again."
+        );
+        return;
+      }
+
       setSuccess(true);
-      setTimeout(() => {
+      setErrorMsg("");
+      const t = setTimeout(() => {
         setSuccess(false);
         setSelectedProgram(null);
         setAthleteName("");
         setAthleteEmail("");
       }, 3000);
+      successTimer.current = t;
     } catch {
-      setSuccess(true);
+      // A dropped connection is not a completed registration.
+      setSuccess(false);
+      setErrorMsg("We could not reach the server. Your registration was not submitted.");
     } finally {
       setSubmitting(false);
     }
@@ -109,7 +131,34 @@ export default function ProgramsPage() {
 
         {/* Programs Catalog */}
         <div className="space-y-8">
-          {filtered.map((prog) => (
+          {/* Selecting a tab with no matches previously rendered a blank area
+              with no explanation and no way back. */}
+          {filtered.length === 0 ? (
+            <div className="py-16 text-center space-y-4">
+              <h3 className="text-xl font-bold text-gray-800">
+                No programmes in this age group
+              </h3>
+              <p className="text-gray-500 text-sm max-w-md mx-auto">
+                We are not running a {activeFilter.toLowerCase()} programme this season. Try another
+                age group or talk to us about a private session.
+              </p>
+              <div className="flex flex-wrap gap-3 justify-center">
+                <button
+                  onClick={() => setActiveFilter("All")}
+                  className="apex-btn apex-btn-primary"
+                >
+                  View all programmes
+                </button>
+                <Link
+                  href="/contact?subject=Private%20Coaching%20Enquiry"
+                  className="apex-btn apex-btn-secondary"
+                >
+                  Ask about private sessions
+                </Link>
+              </div>
+            </div>
+          ) : (
+          filtered.map((prog) => (
             <div
               key={prog.id}
               id={prog.id}
@@ -194,7 +243,8 @@ export default function ProgramsPage() {
                 </div>
               </div>
             </div>
-          ))}
+          ))
+          )}
         </div>
 
         {/* Modal */}
@@ -208,8 +258,14 @@ export default function ProgramsPage() {
                 <FaXmark className="text-lg" />
               </button>
 
+              {errorMsg && (
+                <div role="alert" className="apex-alert apex-alert-error">
+                  {errorMsg}
+                </div>
+              )}
+
               {success ? (
-                <div className="text-center py-8 space-y-4">
+                <div role="status" className="text-center py-8 space-y-4">
                   <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mx-auto">
                     <FaCheck />
                   </div>

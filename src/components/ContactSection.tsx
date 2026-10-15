@@ -39,7 +39,9 @@ export default function ContactSection() {
         setErrorMsg(data.error || "Failed to send message.");
       }
     } catch {
-      setSuccess(true);
+      // A dropped connection is not a delivered message.
+      setSuccess(false);
+      setErrorMsg("We could not reach the server. Your message was not sent — please try again.");
     } finally {
       setLoading(false);
     }

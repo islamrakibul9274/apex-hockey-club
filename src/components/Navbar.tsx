@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import {
@@ -19,6 +19,7 @@ import {
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, logout } = useAuth();
   const { totalCount, openCart } = useCart();
 
@@ -242,20 +243,26 @@ export default function Navbar() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                if (searchQuery.trim()) {
-                  window.location.href = `/products?search=${encodeURIComponent(searchQuery)}`;
-                  setSearchOpen(false);
-                }
+                const term = searchQuery.trim();
+                if (!term) return;
+                // Client-side navigation rather than a full page reload.
+                router.push(`/products?search=${encodeURIComponent(term)}`);
+                setSearchOpen(false);
+                setSearchQuery("");
               }}
               className="flex gap-2"
+              role="search"
             >
+              <label htmlFor="global-search" className="sr-only">
+                Search the store
+              </label>
               <input
-                type="text"
+                id="global-search"
+                type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search sticks, skates, protective gear, programs..."
                 className="input w-full bg-gray-100 border-none rounded-2xl focus:ring-2 focus:ring-[#FF4240]"
-                autoFocus
               />
               <button
                 type="submit"
@@ -273,7 +280,7 @@ export default function Navbar() {
                     <button
                       key={term}
                       onClick={() => {
-                        window.location.href = `/products?search=${encodeURIComponent(term)}`;
+                        router.push(`/products?search=${encodeURIComponent(term)}`);
                         setSearchOpen(false);
                       }}
                       className="badge badge-lg bg-gray-100 hover:bg-red-50 hover:text-[#FF4240] border-none text-gray-600 text-xs py-3 px-3 cursor-pointer transition-colors"

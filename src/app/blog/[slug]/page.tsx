@@ -7,14 +7,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { INITIAL_BLOG_POSTS } from "@/lib/mockData";
+import { notFound } from "next/navigation";
 import { FaClock, FaCalendarDays, FaArrowLeft, FaShareNodes, FaTag } from "react-icons/fa6";
 
 export default function BlogPostDetail() {
   const params = useParams();
   const slug = params?.slug as string;
 
-  const post =
-    INITIAL_BLOG_POSTS.find((p) => p.slug === slug) || INITIAL_BLOG_POSTS[0];
+  const post = INITIAL_BLOG_POSTS.find((p) => p.slug === slug);
+
+  // Previously an unknown slug fell back to INITIAL_BLOG_POSTS[0], so
+  // /blog/anything-wrong served the first article with HTTP 200.
+  if (!post) notFound();
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-900">

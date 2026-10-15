@@ -12,6 +12,11 @@ export interface UserProfile {
   phone?: string;
   membershipPlan?: string;
   notificationsEnabled?: boolean;
+  preferences?: {
+    matchAlerts: boolean;
+    trainingReminders: boolean;
+    gearDrops: boolean;
+  };
   address?: {
     street?: string;
     city?: string;

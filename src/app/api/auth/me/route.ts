@@ -4,6 +4,14 @@ import { getSession } from "@/lib/session";
 import { clearSessionCookie, SESSION_COOKIE_NAME } from "@/lib/auth";
 
 /**
+ * Reads request headers, cookies or body, so it can never be statically
+ * rendered. Declared explicitly because withErrorHandling catches thrown
+ * errors, and swallowing Next's DynamicServerError would otherwise let
+ * the route be cached as a static shell.
+ */
+export const dynamic = "force-dynamic";
+
+/**
  * GET /api/auth/me
  *
  * Returns 401 when there is no usable session, so callers can distinguish

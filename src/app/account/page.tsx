@@ -54,6 +54,13 @@ function AccountContent() {
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [saveError, setSaveError] = useState("");
+  const [preferences, setPreferences] = useState({
+    matchAlerts: user?.preferences?.matchAlerts ?? true,
+    trainingReminders: user?.preferences?.trainingReminders ?? true,
+    gearDrops: user?.preferences?.gearDrops ?? false,
+  });
+  const [savingPrefs, setSavingPrefs] = useState(false);
+  const [prefsError, setPrefsError] = useState("");
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => () => {
@@ -66,6 +73,7 @@ function AccountContent() {
       setPhone(user.phone || "");
       setStreet(user.address?.street || "");
       setCity(user.address?.city || "");
+      if (user.preferences) setPreferences(user.preferences);
     }
   }, [user]);
 
@@ -122,6 +130,42 @@ function AccountContent() {
       // Previously a failed save was silent: updateProfile returned false and
       // nothing was shown, so users believed their details had changed.
       setSaveError(result.message);
+    }
+  };
+
+  /**
+   * Notification preferences are saved immediately.
+   * These three toggles previously used `defaultChecked` with no onChange and
+   * no API call: they looked functional and persisted nothing.
+   */
+  const togglePreference = async (
+    key: "matchAlerts" | "trainingReminders" | "gearDrops",
+    value: boolean
+  ) => {
+    if (!user) return;
+
+    const previous = preferences;
+    const next = { ...preferences, [key]: value };
+    setPreferences(next);
+    setSavingPrefs(true);
+    setPrefsError("");
+
+    const result = await updateProfile({
+      name: user.name,
+      phone: user.phone ?? "",
+      address: {
+        street: user.address?.street ?? "",
+        city: user.address?.city ?? "",
+      },
+      preferences: next,
+    });
+
+    setSavingPrefs(false);
+
+    if (!result.ok) {
+      // Roll the toggle back so the UI matches what is actually stored.
+      setPreferences(previous);
+      setPrefsError(result.message);
     }
   };
 
@@ -441,8 +485,8 @@ function AccountContent() {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2 text-2xl text-gray-700">
-                      <FaBarcode />
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <FaTicket aria-hidden="true" /> Reference only
                     </div>
                   </div>
                 </div>
@@ -457,32 +501,56 @@ function AccountContent() {
         <div className="max-w-2xl bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 space-y-6">
           <h2 className="text-2xl font-extrabold text-gray-900">Account Preferences</h2>
 
+          {prefsError && (
+            <div role="alert" className="apex-alert apex-alert-error">
+              {prefsError}
+            </div>
+          )}
+
           <div className="space-y-4 divide-y divide-gray-100">
-            <div className="flex items-center justify-between pt-4">
-              <div className="space-y-0.5">
-                <h4 className="font-bold text-sm text-gray-900 flex items-center gap-2">
-                  <FaBell className="text-[#FF4240]" /> Match & Ticket Alerts
-                </h4>
-                <p className="text-xs text-gray-500">Receive notifications when tournament tickets go live</p>
+            {(
+              [
+                {
+                  key: "matchAlerts" as const,
+                  title: "Match & Ticket Alerts",
+                  body: "Receive notifications when tournament tickets go live",
+                  icon: <FaBell className="text-[#FF4240]" aria-hidden="true" />,
+                },
+                {
+                  key: "trainingReminders" as const,
+                  title: "Training & Clinic Reminders",
+                  body: "A reminder two hours before scheduled ice time",
+                  icon: <FaCalendarDays className="text-[#FF4240]" aria-hidden="true" />,
+                },
+                {
+                  key: "gearDrops" as const,
+                  title: "Pro Shop Gear Drops",
+                  body: "Member discount codes on newly released equipment",
+                  icon: <FaGear className="text-[#FF4240]" aria-hidden="true" />,
+                },
+              ] as const
+            ).map((pref) => (
+              <div key={pref.key} className="flex items-center justify-between gap-4 pt-4">
+                <div className="space-y-0.5">
+                  <label
+                    htmlFor={`pref-${pref.key}`}
+                    className="font-bold text-sm text-gray-900 flex items-center gap-2 cursor-pointer"
+                  >
+                    {pref.icon}
+                    {pref.title}
+                  </label>
+                  <p className="text-xs text-gray-500">{pref.body}</p>
+                </div>
+                <input
+                  id={`pref-${pref.key}`}
+                  type="checkbox"
+                  checked={preferences[pref.key]}
+                  disabled={savingPrefs}
+                  onChange={(e) => togglePreference(pref.key, e.target.checked)}
+                  className="toggle toggle-error shrink-0"
+                />
               </div>
-              <input type="checkbox" defaultChecked className="toggle toggle-error" />
-            </div>
-
-            <div className="flex items-center justify-between pt-4">
-              <div className="space-y-0.5">
-                <h4 className="font-bold text-sm text-gray-900">Training & Clinic Reminders</h4>
-                <p className="text-xs text-gray-500">SMS / Email reminder 2 hours before scheduled ice time</p>
-              </div>
-              <input type="checkbox" defaultChecked className="toggle toggle-error" />
-            </div>
-
-            <div className="flex items-center justify-between pt-4">
-              <div className="space-y-0.5">
-                <h4 className="font-bold text-sm text-gray-900">Pro Shop Gear Drops</h4>
-                <p className="text-xs text-gray-500">Get 15% VIP member discount codes on newly released equipment</p>
-              </div>
-              <input type="checkbox" defaultChecked className="toggle toggle-error" />
-            </div>
+            ))}
           </div>
 
           <div className="pt-6 border-t border-gray-200">
@@ -490,7 +558,7 @@ function AccountContent() {
               onClick={logout}
               className="btn bg-red-50 text-[#FF4240] hover:bg-red-100 border-none rounded-2xl font-bold"
             >
-              <FaRightFromBracket /> Sign Out of All Devices
+              <FaRightFromBracket /> Sign Out
             </button>
           </div>
         </div>

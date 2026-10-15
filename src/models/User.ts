@@ -16,6 +16,16 @@ export interface IUser extends Document {
     country?: string;
   };
   notificationsEnabled: boolean;
+  /**
+   * Per-channel notification preferences.
+   * Added by migration 002 so the three account toggles persist instead of
+   * resetting to their defaults on every page load.
+   */
+  preferences?: {
+    matchAlerts: boolean;
+    trainingReminders: boolean;
+    gearDrops: boolean;
+  };
   /** SHA-256 hash of a password-reset token. Never the raw token. */
   passwordResetHash?: string;
   passwordResetExpires?: Date;
@@ -41,6 +51,11 @@ const UserSchema = new Schema<IUser>(
       country: { type: String, default: "" },
     },
     notificationsEnabled: { type: Boolean, default: true },
+    preferences: {
+      matchAlerts: { type: Boolean, default: true },
+      trainingReminders: { type: Boolean, default: true },
+      gearDrops: { type: Boolean, default: false },
+    },
     passwordResetHash: { type: String, default: undefined, select: false },
     passwordResetExpires: { type: Date, default: undefined, select: false },
     passwordChangedAt: { type: Date, default: undefined },

@@ -49,6 +49,22 @@ export const serverError = (message = "Something went wrong on our end. Please t
   apiError(message, 500);
 
 /**
+ * True for errors Next.js throws to signal control flow rather than failure —
+ * most importantly DynamicServerError, which tells the framework that a route
+ * must be rendered per-request.
+ *
+ * Swallowing one of these would let a dynamic route be cached as a static
+ * shell, so they are re-thrown rather than converted into a 500.
+ */
+function isFrameworkControlFlow(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false;
+  const code = (error as { code?: unknown }).code;
+  if (code === "DYNAMIC_SERVER_USAGE" || code === "NEXT_REDIRECT") return true;
+  const message = (error as { message?: unknown }).message;
+  return typeof message === "string" && message.includes("Dynamic server usage");
+}
+
+/**
  * Wraps a route handler so an unexpected throw becomes a clean 500 instead of a
  * stack trace or an unhandled rejection.
  *
@@ -62,6 +78,8 @@ export async function withErrorHandling(
   try {
     return await handler();
   } catch (error) {
+    if (isFrameworkControlFlow(error)) throw error;
+
     const detail = error instanceof Error ? error.message : String(error);
     // Server-side only. Never returned to the client.
     console.error(`[api] ${context} failed:`, detail);

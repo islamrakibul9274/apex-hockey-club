@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import CarouselSlide from "@/models/CarouselSlide";
 import { INITIAL_CAROUSEL_SLIDES } from "@/lib/mockData";
+import { normaliseCatalogue } from "@/lib/serialise";
 
 export async function GET() {
   try {
@@ -9,7 +10,11 @@ export async function GET() {
     if (conn) {
       const slides = await CarouselSlide.find().sort({ order: 1 });
       if (slides && slides.length > 0) {
-        return NextResponse.json({ success: true, slides, source: "database" });
+        return NextResponse.json({
+          success: true,
+          slides: normaliseCatalogue(slides, INITIAL_CAROUSEL_SLIDES),
+          source: "database",
+        });
       }
     }
     return NextResponse.json({ success: true, slides: INITIAL_CAROUSEL_SLIDES, source: "initial" });

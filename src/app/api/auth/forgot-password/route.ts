@@ -7,6 +7,14 @@ import { withErrorHandling, badRequest, tooManyRequests, serverError } from "@/l
 import { enforceLimit } from "@/lib/rateLimit";
 import { optionalEnv, authUrl } from "@/lib/env";
 
+/**
+ * Reads request headers, cookies or body, so it can never be statically
+ * rendered. Declared explicitly because withErrorHandling catches thrown
+ * errors, and swallowing Next's DynamicServerError would otherwise let
+ * the route be cached as a static shell.
+ */
+export const dynamic = "force-dynamic";
+
 const LIMIT = { max: 5, windowMs: 15 * 60 * 1000 };
 const TOKEN_TTL_MS = 30 * 60 * 1000;
 

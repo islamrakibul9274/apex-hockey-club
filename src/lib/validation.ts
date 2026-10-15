@@ -135,6 +135,14 @@ export const updateProfileSchema = z
       .optional()
       .default(""),
     address: addressSchema.optional(),
+    preferences: z
+      .object({
+        matchAlerts: z.boolean(),
+        trainingReminders: z.boolean(),
+        gearDrops: z.boolean(),
+      })
+      .strict()
+      .optional(),
   })
   .strict();
 

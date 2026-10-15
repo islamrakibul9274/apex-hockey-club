@@ -4,8 +4,8 @@ import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { FaShieldHalved, FaCheck, FaArrowLeft, FaPhone } from "react-icons/fa6";
+import { useParams, notFound } from "next/navigation";
+import { FaCheck, FaArrowLeft } from "react-icons/fa6";
 
 const SERVICES_DATA: Record<
   string,
@@ -120,7 +120,9 @@ const SERVICES_DATA: Record<
 export default function ServiceDetailPage() {
   const params = useParams();
   const rawSlug = (params?.service as string) || "branding";
-  const service = SERVICES_DATA[rawSlug] || SERVICES_DATA.branding;
+  // An unknown slug previously rendered the branding page with HTTP 200.
+  const service = SERVICES_DATA[rawSlug];
+  if (!service) notFound();
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-900">

@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import { INITIAL_PRODUCTS, ProductData } from "@/lib/mockData";
 import { useCart } from "@/context/CartContext";
+import { useSearchParams } from "next/navigation";
+import { Spinner } from "@/components/ui";
 import {
   FaStar,
   FaEye,
@@ -19,10 +21,28 @@ import {
 
 const CATEGORIES = ["All", "Sticks & Pucks", "Helmets & Pads", "Skates", "Accessories"];
 
-export default function ProductsPage() {
+function PageSpinner() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <Spinner className="h-6 w-6" />
+      <span className="sr-only">Loading products</span>
+    </div>
+  );
+}
+
+function ProductsContent() {
+  const searchParams = useSearchParams();
+
+  // The Navbar search navigates to /products?search=… . This page never read
+  // the parameter, so the global search and every "Popular Searches" chip were
+  // dead — the term was discarded on arrival.
+  const initialSearch = searchParams.get("search") ?? "";
+
   const [products, setProducts] = useState<ProductData[]>(INITIAL_PRODUCTS);
   const [activeCategory, setActiveCategory] = useState("All");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState("");
   const [sortBy, setSortBy] = useState("recommended");
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
   const [likedIds, setLikedIds] = useState<Record<string, boolean>>({});
@@ -30,25 +50,55 @@ export default function ProductsPage() {
 
   const { addItem } = useCart();
 
+  // Debounced so typing does not fire a request per keystroke.
+  const [debouncedSearch, setDebouncedSearch] = useState(initialSearch);
   useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery), 300);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
+  // Keep the visible field in step when the Navbar navigates here.
+  useEffect(() => {
+    setSearchQuery(initialSearch);
+  }, [initialSearch]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
     async function loadProducts() {
+      setLoading(true);
+      setLoadError("");
+
       try {
-        let url = "/api/products?";
-        if (activeCategory !== "All") {
-          url += `category=${encodeURIComponent(activeCategory)}&`;
+        const params = new URLSearchParams();
+        if (activeCategory !== "All") params.set("category", activeCategory);
+        if (debouncedSearch) params.set("search", debouncedSearch);
+
+        const res = await fetch(`/api/products?${params.toString()}`, {
+          signal: controller.signal,
+        });
+
+        if (!res.ok) {
+          setLoadError("We could not load the store. Please try again.");
+          return;
         }
-        if (searchQuery) {
-          url += `search=${encodeURIComponent(searchQuery)}&`;
-        }
-        const res = await fetch(url);
+
         const data = await res.json();
-        if (data.products) setProducts(data.products);
-      } catch {
-        // fallback
+
+        // A filter matching nothing must produce an empty result, not silently
+        // keep whatever was on screen.
+        setProducts(Array.isArray(data.products) ? data.products : []);
+      } catch (err) {
+        if ((err as Error)?.name === "AbortError") return;
+        setLoadError("We could not reach the store. Check your connection.");
+      } finally {
+        setLoading(false);
       }
     }
-    loadProducts();
-  }, [activeCategory, searchQuery]);
+
+    void loadProducts();
+    return () => controller.abort();
+  }, [activeCategory, debouncedSearch]);
 
   // Client-side sorting
   const sortedProducts = [...products].sort((a, b) => {
@@ -148,7 +198,16 @@ export default function ProductsPage() {
         </div>
 
         {/* Products Grid */}
-        {sortedProducts.length === 0 ? (
+        {loadError ? (
+          <div role="alert" className="apex-alert apex-alert-error">
+            {loadError}
+          </div>
+        ) : loading && sortedProducts.length === 0 ? (
+          <div className="py-16 flex justify-center">
+            <Spinner className="h-6 w-6" />
+            <span className="sr-only">Loading products</span>
+          </div>
+        ) : sortedProducts.length === 0 ? (
           <div className="py-16 text-center space-y-4">
             <h3 className="text-xl font-bold text-gray-800">No equipment found matching criteria</h3>
             <p className="text-gray-500 text-sm">Try clearing your search query or selecting another category.</p>
@@ -247,9 +306,10 @@ export default function ProductsPage() {
                       </button>
                       <button
                         onClick={() => handleAddToCart(product)}
+                        aria-label={`Add ${product.title} to cart`}
                         className="btn btn-sm bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-xl font-bold shadow-md shadow-red-500/20 flex items-center gap-1.5"
                       >
-                        <FaCartPlus /> Add
+                        <FaCartPlus aria-hidden="true" /> Add
                       </button>
                     </div>
                   </div>
@@ -316,6 +376,7 @@ export default function ProductsPage() {
                         handleAddToCart(selectedProduct);
                         setSelectedProduct(null);
                       }}
+                      aria-label={`Add ${selectedProduct.title} to cart`}
                       className="btn flex-1 bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-2xl font-bold shadow-lg"
                     >
                       <FaCartPlus /> Add to Equipment Bag
@@ -330,5 +391,17 @@ export default function ProductsPage() {
 
       <Footer />
     </div>
+  );
+}
+
+/**
+ * useSearchParams requires a Suspense boundary for static rendering, so the
+ * page is exported through one.
+ */
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<PageSpinner />}>
+      <ProductsContent />
+    </Suspense>
   );
 }

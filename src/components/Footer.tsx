@@ -16,27 +16,57 @@ import {
 
 export default function Footer() {
   const [newsletterEmail, setNewsletterEmail] = useState("");
+  const subscribedTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  React.useEffect(
+    () => () => {
+      if (subscribedTimer.current) clearTimeout(subscribedTimer.current);
+    },
+    []
+  );
   const [subscribed, setSubscribed] = useState(false);
+  const [newsletterError, setNewsletterError] = useState("");
+  const [subscribing, setSubscribing] = useState(false);
 
   const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newsletterEmail) return;
+
+    setSubscribing(true);
+    setNewsletterError("");
+
     try {
-      await fetch("/api/contact", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: "Newsletter Subscriber",
           email: newsletterEmail,
           subject: "Newsletter Subscription",
-          message: "User subscribed to Apex Hockey weekly news & gear drops.",
+          message: "Requested weekly league and gear updates.",
         }),
       });
+
+      const data = await res.json().catch(() => ({}));
+
+      // res.ok was previously ignored, so a 429 or a 500 still produced the
+      // "you're subscribed" confirmation.
+      if (!res.ok) {
+        setSubscribed(false);
+        setNewsletterError(data?.error ?? "We could not subscribe you just now. Please try again.");
+        return;
+      }
+
       setSubscribed(true);
       setNewsletterEmail("");
-      setTimeout(() => setSubscribed(false), 5000);
+      const t = setTimeout(() => setSubscribed(false), 5000);
+      subscribedTimer.current = t;
     } catch {
-      setSubscribed(true);
+      // A network failure is not a subscription.
+      setSubscribed(false);
+      setNewsletterError("We could not reach the server. Please try again.");
+    } finally {
+      setSubscribing(false);
     }
   };
 
@@ -64,26 +94,43 @@ export default function Footer() {
               <h4 className="font-bold text-white text-base">Subscribe to League & Gear Updates</h4>
               <p className="text-xs text-slate-400">Receive priority match ticket drops, training camp dates, and 15% off official gear.</p>
               {subscribed ? (
-                <div className="p-3 bg-emerald-500/20 text-emerald-300 rounded-xl text-xs font-semibold">
-                  ✓ You&apos;re subscribed! Welcome to the Apex Hockey roster.
+                <div
+                  role="status"
+                  className="p-3 bg-emerald-500/20 text-emerald-300 rounded-xl text-xs font-semibold"
+                >
+                  You&apos;re subscribed. Watch your inbox for ticket drops and gear sales.
                 </div>
               ) : (
                 <form onSubmit={handleNewsletter} className="flex gap-2">
+                  <label htmlFor="newsletter-email" className="sr-only">
+                    Email address
+                  </label>
                   <input
+                    id="newsletter-email"
                     type="email"
                     value={newsletterEmail}
                     onChange={(e) => setNewsletterEmail(e.target.value)}
                     placeholder="Enter your email"
+                    autoComplete="email"
+                    disabled={subscribing}
                     className="input input-sm flex-1 bg-slate-900 border border-slate-700 text-white rounded-xl text-xs focus:ring-2 focus:ring-[#FF4240]"
                     required
                   />
                   <button
                     type="submit"
+                    disabled={subscribing}
                     className="btn btn-sm bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-xl px-4 font-bold"
                   >
-                    <FaPaperPlane className="text-xs mr-1" /> Join
+                    <FaPaperPlane className="text-xs mr-1" />
+                    {subscribing ? "Sending…" : "Join"}
                   </button>
                 </form>
+              )}
+
+              {newsletterError && (
+                <div role="alert" className="p-3 bg-red-500/20 text-red-300 rounded-xl text-xs">
+                  {newsletterError}
+                </div>
               )}
             </div>
           </div>

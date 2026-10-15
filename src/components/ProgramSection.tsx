@@ -10,6 +10,15 @@ export default function ProgramSection() {
   const [selectedProgram, setSelectedProgram] = useState<ProgramData | null>(null);
   const [registering, setRegistering] = useState(false);
   const [registeredSuccess, setRegisteredSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const successTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  React.useEffect(
+    () => () => {
+      if (successTimer.current) clearTimeout(successTimer.current);
+    },
+    []
+  );
 
   const [athleteName, setAthleteName] = useState("");
   const [athleteEmail, setAthleteEmail] = useState("");
@@ -36,7 +45,7 @@ export default function ProgramSection() {
     setRegistering(true);
 
     try {
-      await fetch("/api/bookings", {
+      const bookingRes = await fetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -45,19 +54,30 @@ export default function ProgramSection() {
           bookingType: "program",
           itemId: selectedProgram.id,
           itemTitle: `${selectedProgram.title} (${athleteAge ? `Age ${athleteAge}` : selectedProgram.ageGroup})`,
-          totalAmount: selectedProgram.price,
           seatsCount: 1,
         }),
       });
+      if (!bookingRes.ok) {
+        const errData = await bookingRes.json().catch(() => ({}));
+        setErrorMsg(
+          errData?.error ?? "We could not complete your registration. Please try again."
+        );
+        return;
+      }
+
       setRegisteredSuccess(true);
-      setTimeout(() => {
+      setErrorMsg("");
+      const t = setTimeout(() => {
         setRegisteredSuccess(false);
         setSelectedProgram(null);
         setAthleteName("");
         setAthleteEmail("");
       }, 3000);
+      successTimer.current = t;
     } catch {
-      setRegisteredSuccess(true);
+      // A dropped connection is not a completed registration.
+      setRegisteredSuccess(false);
+      setErrorMsg("We could not reach the server. Your registration was not submitted.");
     } finally {
       setRegistering(false);
     }
@@ -158,8 +178,14 @@ export default function ProgramSection() {
               <FaXmark className="text-lg" />
             </button>
 
+            {errorMsg && (
+              <div role="alert" className="apex-alert apex-alert-error">
+                {errorMsg}
+              </div>
+            )}
+
             {registeredSuccess ? (
-              <div className="text-center py-8 space-y-4">
+              <div role="status" className="text-center py-8 space-y-4">
                 <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mx-auto">
                   <FaCheck />
                 </div>

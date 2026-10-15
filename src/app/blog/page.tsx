@@ -1,22 +1,70 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import { INITIAL_BLOG_POSTS } from "@/lib/mockData";
+
+interface BlogPost {
+  _id?: string;
+  id?: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  author: { name: string; role: string; avatar: string };
+  image: string;
+  readTime: string;
+  publishedAt: string;
+  tags: string[];
+}
 import { FaClock, FaArrowRight, FaTag } from "react-icons/fa6";
 
 export default function BlogPage() {
   const [selectedTag, setSelectedTag] = useState("All");
 
-  const allTags = ["All", "Shooting", "Drills", "Skates", "Maintenance", "Nutrition", "Recovery"];
+  // The page previously filtered INITIAL_BLOG_POSTS in memory and never read
+  // the database, so any post added through the CMS was invisible. It now
+  // fetches, falling back to the seed catalogue only when the request fails.
+  const [posts, setPosts] = useState<BlogPost[]>(INITIAL_BLOG_POSTS);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadPosts() {
+      try {
+        const res = await fetch("/api/blog");
+        if (!res.ok) throw new Error(`status ${res.status}`);
+        const data = await res.json();
+        if (!cancelled && Array.isArray(data.posts)) {
+          setPosts(data.posts as BlogPost[]);
+        }
+      } catch {
+        if (!cancelled) {
+          setLoadError("We could not load the latest posts. Showing our saved articles instead.");
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    void loadPosts();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Derived from the data rather than hard-coded, so a tag that exists on a
+  // post can always be filtered. "Training" was previously missing and so its
+  // badge on a post led nowhere.
+  const allTags = ["All", ...Array.from(new Set(posts.flatMap((p) => p.tags)))];
 
   const filtered =
-    selectedTag === "All"
-      ? INITIAL_BLOG_POSTS
-      : INITIAL_BLOG_POSTS.filter((b) => b.tags.includes(selectedTag));
+    selectedTag === "All" ? posts : posts.filter((b) => b.tags.includes(selectedTag));
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-900">

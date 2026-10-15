@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
@@ -13,11 +13,17 @@ import {
   FaCheck,
   FaHeadset,
 } from "react-icons/fa6";
+import { useSearchParams } from "next/navigation";
+import { Spinner } from "@/components/ui";
 
-export default function ContactPage() {
+function ContactContent() {
+  const searchParams = useSearchParams();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [subject, setSubject] = useState("");
+  // Four call sites link here with ?subject=… (about → careers/press,
+  // programmes, every service CTA). The parameter was never read, so the
+  // subject was silently discarded and visitors landed on a blank form.
+  const [subject, setSubject] = useState(() => searchParams.get("subject") ?? "");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
 
@@ -49,7 +55,9 @@ export default function ContactPage() {
         setErrorMsg(data.error || "Failed to send message.");
       }
     } catch {
-      setSuccess(true);
+      // A dropped connection is not a delivered message.
+      setSuccess(false);
+      setErrorMsg("We could not reach the server. Your message was not sent — please try again.");
     } finally {
       setLoading(false);
     }
@@ -238,5 +246,20 @@ export default function ContactPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function ContactPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <Spinner className="h-6 w-6" />
+          <span className="sr-only">Loading contact form</span>
+        </div>
+      }
+    >
+      <ContactContent />
+    </Suspense>
   );
 }
