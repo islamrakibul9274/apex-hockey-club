@@ -16,7 +16,6 @@ import {
   FaShieldHalved,
   FaRightFromBracket,
   FaCheck,
-  FaBarcode,
   FaCalendarDays,
   FaBell,
 } from "react-icons/fa6";

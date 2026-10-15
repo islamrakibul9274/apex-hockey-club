@@ -2,7 +2,6 @@
 
 import React from "react";
 import { FaMedal, FaUsers, FaPersonSkating, FaSnowflake } from "react-icons/fa6";
-import { SIZES } from "@/lib/images";
 
 /**
  * Club standards strip.

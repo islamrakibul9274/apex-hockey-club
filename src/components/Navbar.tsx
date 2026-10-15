@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   FaBagShopping,
-  FaUser,
   FaMagnifyingGlass,
   FaBars,
   FaXmark,
@@ -13,7 +12,6 @@ import {
   FaRightFromBracket,
   FaTicket,
   FaChevronDown,
-  FaPhone,
   FaEnvelope,
 } from "react-icons/fa6";
 import { useAuth } from "@/context/AuthContext";

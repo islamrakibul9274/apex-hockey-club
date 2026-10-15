@@ -5,13 +5,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import {
-  FaPhone,
-  FaEnvelope,
-  FaLocationDot,
   FaClock,
   FaPaperPlane,
   FaCheck,
-  FaHeadset,
 } from "react-icons/fa6";
 import { useSearchParams } from "next/navigation";
 import { Spinner } from "@/components/ui";

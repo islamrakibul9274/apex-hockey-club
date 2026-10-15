@@ -41,6 +41,9 @@ const checkoutSchema = z
     matchId: z.string().trim().max(60).optional(),
     tier: z.string().trim().max(60).optional(),
     seats: z.coerce.number().int().min(1).max(20).optional(),
+    // Identifies the pending booking this session settles. The webhook uses it
+    // to mark the booking paid. It never influences the amount charged.
+    bookingId: z.string().trim().regex(/^[a-f0-9]{24}$/i, "Invalid booking id").optional(),
   })
   .strict();
 
@@ -78,7 +81,7 @@ export async function POST(req: NextRequest) {
       return badRequest("That checkout request is not valid");
     }
 
-    const { type, items, planName, matchId, tier, seats } = parsed.data;
+    const { type, items, planName, matchId, tier, seats, bookingId } = parsed.data;
     const session = await getSession(req);
 
     // Redirects always stay on this site's configured origin. The previous
@@ -168,12 +171,25 @@ export async function POST(req: NextRequest) {
         line_items: lineItems,
         mode: "payment",
         customer_email: session?.email,
+        // Lets the webhook link this payment back to the booking it settles.
+        client_reference_id: bookingId,
         success_url: `${origin}/account?payment=success&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${origin}/pricing?payment=cancelled`,
       });
 
       if (!stripeSession.url) {
         return serverError("We could not start the payment. Please try again.");
+      }
+
+      if (bookingId) {
+        const { default: Booking } = await import("@/models/Booking");
+        await Booking.updateOne(
+          { _id: bookingId, userId: session?.id ?? { $exists: false } },
+          { $set: { stripeSessionId: stripeSession.id } }
+        ).catch((err: unknown) => {
+          // Non-fatal: the webhook can still match on client_reference_id.
+          console.error("[checkout] could not record stripeSessionId:", err);
+        });
       }
 
       return NextResponse.json({ success: true, url: stripeSession.url });

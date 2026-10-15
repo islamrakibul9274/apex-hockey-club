@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { withErrorHandling } from "@/lib/api";
 import { clearSessionCookie } from "@/lib/auth";
 

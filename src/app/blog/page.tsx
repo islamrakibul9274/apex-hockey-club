@@ -21,7 +21,8 @@ interface BlogPost {
   publishedAt: string;
   tags: string[];
 }
-import { FaClock, FaArrowRight, FaTag } from "react-icons/fa6";
+import { FaClock, FaArrowRight } from "react-icons/fa6";
+import { Spinner } from "@/components/ui";
 
 export default function BlogPage() {
   const [selectedTag, setSelectedTag] = useState("All");
@@ -102,7 +103,34 @@ export default function BlogPage() {
           </div>
         </div>
 
-        {/* Blog Posts Grid */}
+        {/* Loading and failure states were computed but never rendered, so a
+            slow or failed fetch looked identical to an empty blog. */}
+        {loadError && (
+          <div role="status" className="apex-alert apex-alert-info">
+            {loadError}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="col-span-full py-12 flex justify-center">
+            <Spinner className="h-6 w-6" />
+            <span className="sr-only">Loading guides</span>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="col-span-full py-16 text-center">
+            <h2 className="text-xl font-bold text-ink-900">No guides for that topic yet</h2>
+            <p className="mt-2 text-sm text-ink-600">
+              Try another topic, or browse everything we have written.
+            </p>
+            <button
+              type="button"
+              onClick={() => setSelectedTag("All")}
+              className="apex-btn apex-btn-primary apex-btn-sm mt-5"
+            >
+              Show all guides
+            </button>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filtered.map((post) => (
             <article
@@ -170,6 +198,7 @@ export default function BlogPage() {
             </article>
           ))}
         </div>
+        )}
       </main>
 
       <Footer />

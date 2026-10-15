@@ -14,7 +14,6 @@ import {
   withErrorHandling,
   badRequest,
   unauthorized,
-  forbidden,
   notFound,
   serverError,
 } from "@/lib/api";

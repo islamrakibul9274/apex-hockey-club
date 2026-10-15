@@ -15,6 +15,13 @@ if (fs.existsSync(".env.local")) {
   process.loadEnvFile(".env.local");
 }
 
+/**
+ * These tests need a real MongoDB. In CI there is none, so the file skips
+ * rather than failing the build — the unit suite still gates.
+ */
+const hasDatabase = Boolean(process.env.MONGODB_URI);
+const suite = hasDatabase ? describe : describe.skip;
+
 // A distinct secret so a run can never mint tokens for the real deployment.
 process.env.AUTH_SECRET =
   process.env.TEST_AUTH_SECRET ?? "test-secret-do-not-use-anywhere-0123456789";
@@ -106,7 +113,7 @@ afterAll(async () => {
   }
 });
 
-describe("POST /api/auth/register", () => {
+suite("POST /api/auth/register", () => {
   it("creates an account and returns the public user", async () => {
     const unique = `reg.${Date.now()}@example.com`;
     const res = await post("/api/auth/register", {
@@ -153,7 +160,7 @@ describe("POST /api/auth/register", () => {
   });
 });
 
-describe("POST /api/auth/login", () => {
+suite("POST /api/auth/login", () => {
   it("signs in with correct credentials", async () => {
     const res = await post("/api/auth/login", { email, password: "StrongPass1" });
     expect(res.status).toBe(200);
@@ -198,7 +205,7 @@ describe("POST /api/auth/login", () => {
   });
 });
 
-describe("session endpoints", () => {
+suite("session endpoints", () => {
   it("GET /api/auth/me returns the session user", async () => {
     const res = await api("/api/auth/me", { auth: token });
     expect(res.status).toBe(200);
@@ -250,7 +257,7 @@ describe("session endpoints", () => {
   });
 });
 
-describe("bookings", () => {
+suite("bookings", () => {
   // Regression: the endpoint used to return every booking in the database.
   it("refuses an anonymous read", async () => {
     const res = await api("/api/bookings");
@@ -326,7 +333,7 @@ describe("bookings", () => {
   });
 });
 
-describe("checkout", () => {
+suite("checkout", () => {
   // Regression: price came straight off the request body.
   it("rejects a client-supplied price", async () => {
     const res = await post("/api/checkout", {
@@ -368,7 +375,7 @@ describe("checkout", () => {
   });
 });
 
-describe("catalogue endpoints", () => {
+suite("catalogue endpoints", () => {
   it("products carry a stable id", async () => {
     const res = await api("/api/products");
     expect(res.status).toBe(200);
@@ -403,7 +410,7 @@ describe("catalogue endpoints", () => {
   });
 });
 
-describe("seed endpoint", () => {
+suite("seed endpoint", () => {
   // Regression: a public GET that wrote to the database.
   it("does not allow GET", async () => {
     const res = await api("/api/seed");
@@ -427,7 +434,7 @@ describe("seed endpoint", () => {
   });
 });
 
-describe("contact endpoint", () => {
+suite("contact endpoint", () => {
   it("rejects a missing message", async () => {
     const res = await post("/api/contact", { name: "Test User", email: "a@b.com" });
     expect(res.status).toBe(400);

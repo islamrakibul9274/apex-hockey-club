@@ -28,7 +28,6 @@ export default function GetTicketPage() {
   const [loading, setLoading] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
-  const [pendingBookingWarning, setPendingBookingWarning] = useState("");
 
   const { user } = useAuth();
 
@@ -71,28 +70,7 @@ export default function GetTicketPage() {
     setLoading(true);
 
     try {
-      const checkoutRes = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "ticket",
-          matchId: selectedMatch.id,
-          tier: currentTierObj.name,
-          seats: quantity,
-        }),
-      });
-
-      const checkoutData = await checkoutRes.json().catch(() => ({}));
-
-      if (!checkoutRes.ok || !checkoutData?.url) {
-        setCheckoutError(
-          checkoutData?.error ?? "We could not start the payment. Your card has not been charged."
-        );
-        return;
-      }
-
-      // The booking is only recorded after payment is under way. It stays
-      // "pending" until a Stripe webhook marks it paid.
+      // 1. Record the booking first, as pending. The webhook confirms payment.
       const bookingRes = await fetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -110,15 +88,37 @@ export default function GetTicketPage() {
         }),
       });
 
-      if (!bookingRes.ok) {
-        const bookingData = await bookingRes.json().catch(() => ({}));
-        console.error("[get-ticket] booking not recorded:", bookingData);
-        // Payment is already in flight, so the customer must still complete
-        // it — but they are told the record is missing rather than being shown
-        // a false confirmation.
-        setPendingBookingWarning(
-          "Your payment is ready but we could not attach this booking to your account yet. Contact us with your receipt and we will add it."
+      const bookingData = await bookingRes.json().catch(() => ({}));
+
+      if (!bookingRes.ok || !bookingData?.booking?._id) {
+        setCheckoutError(
+          bookingData?.error ?? "We could not reserve your seats. You have not been charged."
         );
+        return;
+      }
+
+      // 2. Open the payment session, tagged with the booking it settles.
+      const checkoutRes = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "ticket",
+          matchId: selectedMatch.id,
+          tier: currentTierObj.name,
+          seats: quantity,
+          bookingId: String(bookingData.booking._id),
+        }),
+      });
+
+      const checkoutData = await checkoutRes.json().catch(() => ({}));
+
+      if (!checkoutRes.ok || !checkoutData?.url) {
+        // The seats stay reserved as pending; the webhook will never fire.
+        setCheckoutError(
+          checkoutData?.error ??
+            "We could not start the payment. Your seats are held but unpaid — please try again."
+        );
+        return;
       }
 
       window.location.href = checkoutData.url;
@@ -339,12 +339,6 @@ export default function GetTicketPage() {
                   {checkoutError && (
                     <div role="alert" className="apex-alert apex-alert-error">
                       {checkoutError}
-                    </div>
-                  )}
-
-                  {pendingBookingWarning && (
-                    <div role="alert" className="apex-alert apex-alert-info">
-                      {pendingBookingWarning}
                     </div>
                   )}
 

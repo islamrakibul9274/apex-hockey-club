@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FaShieldHalved } from "react-icons/fa6";
 import { useAuth } from "@/context/AuthContext";
-import { emailSchema, fieldErrors, registerSchema } from "@/lib/validation";
+import { fieldErrors, registerSchema } from "@/lib/validation";
 import { Alert, Button, Field, PasswordInput } from "@/components/ui";
 
 export default function SignUpPage() {

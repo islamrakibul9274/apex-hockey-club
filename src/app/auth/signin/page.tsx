@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FaShieldHalved } from "react-icons/fa6";
 import { useAuth } from "@/context/AuthContext";
-import { emailSchema, fieldErrors, loginSchema } from "@/lib/validation";
+import { fieldErrors, loginSchema } from "@/lib/validation";
 import { Alert, Button, Field, PasswordInput, Spinner } from "@/components/ui";
 
 /** Only allow same-origin relative paths, so ?next= cannot be used as an open redirect. */

@@ -6,13 +6,6 @@ import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  FaTrophy,
-  FaShieldHalved,
-  FaPersonSkating,
-  FaUsers,
-  FaHeartPulse,
-  FaMedal,
-  FaEnvelope,
 } from "react-icons/fa6";
 
 const COACHES = [
