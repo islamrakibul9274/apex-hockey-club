@@ -20,6 +20,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useEscapeKey } from "@/lib/useDialog";
 import LogoMark from "@/components/Logo";
+import { NAV, POPULAR_SEARCHES } from "@/lib/navigation";
 
 /**
  * Primary navigation.
@@ -31,59 +32,6 @@ import LogoMark from "@/components/Logo";
  * Not built on any component framework — the button, badge, input and menu
  * primitives this needs are defined locally in globals.css under `apex-`.
  */
-
-interface NavItem {
-  label: string;
-  href: string;
-  children?: { label: string; href: string; description: string }[];
-}
-
-const NAV: NavItem[] = [
-  {
-    label: "Programs",
-    href: "/programs",
-    children: [
-      {
-        label: "Junior Development",
-        href: "/programs#prog-junior",
-        description: "Ages 6–12. Fundamentals, confidence and fun on the ice.",
-      },
-      {
-        label: "Teen Academy",
-        href: "/programs#prog-teen",
-        description: "Ages 13–17. Competitive structure and position play.",
-      },
-      {
-        label: "Professional Masterclass",
-        href: "/programs#prog-pro",
-        description: "Senior squads. Tactics, video work and powerplay systems.",
-      },
-    ],
-  },
-  {
-    label: "Shop",
-    href: "/products",
-    children: [
-      {
-        label: "All equipment",
-        href: "/products",
-        description: "Sticks, skates, helmets and protective gear.",
-      },
-      {
-        label: "Memberships",
-        href: "/pricing",
-        description: "Season-long access to programmes and member pricing.",
-      },
-    ],
-  },
-  { label: "Tickets", href: "/get-ticket" },
-  { label: "Pricing", href: "/pricing" },
-  { label: "Blog", href: "/blog" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-];
-
-const POPULAR_SEARCHES = ["CarbonFlex", "Vapor Skates", "Helmet", "Goalie gloves", "Chest protector"];
 
 export default function Navbar() {
   const pathname = usePathname();
