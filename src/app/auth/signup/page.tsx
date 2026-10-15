@@ -1,130 +1,187 @@
 "use client";
 
 import React, { useState } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FaShieldHalved } from "react-icons/fa6";
+import { useAuth } from "@/context/AuthContext";
+import { emailSchema, fieldErrors, registerSchema } from "@/lib/validation";
+import { Alert, Button, Field, PasswordInput } from "@/components/ui";
 
 export default function SignUpPage() {
   const router = useRouter();
+  const { register } = useAuth();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [formError, setFormError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleRegister = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    setError("");
+    setFormError("");
+    setErrors({});
 
-    try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, phone, password }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        window.location.href = "/account";
-      } else {
-        setError(data.error || "Registration failed. Please try again.");
-      }
-    } catch {
-      setError("Registration encountered an issue.");
-    } finally {
-      setLoading(false);
+    // Mismatch is caught client-side for a fast response, and the server
+    // independently enforces the full policy.
+    if (password !== confirmPassword) {
+      setErrors({ confirmPassword: "Passwords do not match" });
+      return;
     }
-  };
+
+    const parsed = registerSchema.safeParse({ name, email, password, phone });
+    if (!parsed.success) {
+      setErrors(fieldErrors(parsed.error));
+      return;
+    }
+
+    setLoading(true);
+    const result = await register(parsed.data);
+    setLoading(false);
+
+    if (result.ok) {
+      router.push("/account");
+      router.refresh();
+      return;
+    }
+
+    if (result.fields) setErrors(result.fields);
+    setFormError(result.message);
+  }
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900">
-      <Navbar />
-
-      <main className="container mx-auto px-4 py-16 flex-1 max-w-md space-y-6">
-        <div className="text-center space-y-2">
-          <div className="w-16 h-16 rounded-3xl bg-red-50 text-[#FF4240] flex items-center justify-center text-3xl mx-auto shadow-inner">
-            <FaShieldHalved />
-          </div>
-          <h1 className="text-3xl font-black text-gray-900">Join Apex Hockey</h1>
-          <p className="text-gray-500 text-sm">Create your athlete profile for camps, tickets, and store discounts</p>
-        </div>
-
-        {error && (
-          <div className="alert alert-error text-xs text-white rounded-xl">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleRegister} className="space-y-4 bg-white border border-gray-200 p-8 rounded-3xl shadow-sm">
-          <div className="form-control">
-            <label className="label text-xs font-bold text-gray-700">Full Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Jordan Matthews"
-              className="input bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF4240]"
-              required
-            />
+    <div className="min-h-screen flex flex-col bg-white">
+      <main id="main" className="flex-1 flex items-center justify-center px-4 py-12 sm:py-16">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <div
+              className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"
+              style={{ backgroundColor: "var(--brand-50)", color: "var(--brand-600)" }}
+              aria-hidden="true"
+            >
+              <FaShieldHalved />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold">Join Apex Hockey</h1>
+            <p className="text-sm mt-1.5" style={{ color: "var(--ink-500)" }}>
+              Create your athlete profile for camps, tickets and store discounts
+            </p>
           </div>
 
-          <div className="form-control">
-            <label className="label text-xs font-bold text-gray-700">Email Address</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="jordan@example.com"
-              className="input bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF4240]"
-              required
-            />
-          </div>
+          {formError && (
+            <Alert tone="error" className="mb-5">
+              {formError}
+            </Alert>
+          )}
 
-          <div className="form-control">
-            <label className="label text-xs font-bold text-gray-700">Phone Number (Optional)</label>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="(+1) 555-0182"
-              className="input bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF4240]"
-            />
-          </div>
+          <form onSubmit={handleSubmit} noValidate className="apex-card p-6 sm:p-8 space-y-5">
+            <Field label="Full name" error={errors.name} required>
+              {({ id, "aria-invalid": invalid, "aria-describedby": describedBy }) => (
+                <input
+                  id={id}
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Jordan Matthews"
+                  autoComplete="name"
+                  autoFocus
+                  disabled={loading}
+                  aria-invalid={invalid}
+                  aria-describedby={describedBy}
+                  className="apex-input"
+                />
+              )}
+            </Field>
 
-          <div className="form-control">
-            <label className="label text-xs font-bold text-gray-700">Create Password</label>
-            <input
-              type="password"
+            <Field label="Email address" error={errors.email} required>
+              {({ id, "aria-invalid": invalid, "aria-describedby": describedBy }) => (
+                <input
+                  id={id}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  disabled={loading}
+                  aria-invalid={invalid}
+                  aria-describedby={describedBy}
+                  className="apex-input"
+                />
+              )}
+            </Field>
+
+            <Field
+              label="Phone number"
+              error={errors.phone}
+              hint="Optional — used only for match and camp updates"
+            >
+              {({ id, "aria-invalid": invalid, "aria-describedby": describedBy }) => (
+                <input
+                  id={id}
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+1 555 0182"
+                  autoComplete="tel"
+                  disabled={loading}
+                  aria-invalid={invalid}
+                  aria-describedby={describedBy}
+                  className="apex-input"
+                />
+              )}
+            </Field>
+
+            <PasswordInput
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="input bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF4240]"
-              required
+              onChange={setPassword}
+              label="Password"
+              autoComplete="new-password"
+              error={errors.password}
+              disabled={loading}
+              showMeter
             />
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-block bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-2xl font-bold py-3 text-base shadow-lg shadow-red-500/20"
-          >
-            {loading ? "Creating Account..." : "Complete Registration"}
-          </button>
-        </form>
+            <PasswordInput
+              value={confirmPassword}
+              onChange={setConfirmPassword}
+              label="Confirm password"
+              autoComplete="new-password"
+              error={errors.confirmPassword}
+              disabled={loading}
+            />
 
-        <p className="text-center text-xs text-gray-500">
-          Already registered?{" "}
-          <Link href="/auth/signin" className="text-[#FF4240] font-bold hover:underline">
-            Sign In Here
-          </Link>
-        </p>
+            <Button type="submit" block size="lg" loading={loading} loadingText="Creating account…">
+              Create account
+            </Button>
+
+            <p className="text-xs text-center" style={{ color: "var(--ink-500)" }}>
+              By creating an account you agree to our{" "}
+              <Link href="/legal/terms" className="underline hover:no-underline">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link href="/legal/privacy" className="underline hover:no-underline">
+                Privacy Policy
+              </Link>
+              .
+            </p>
+          </form>
+
+          <p className="text-center text-sm mt-6" style={{ color: "var(--ink-500)" }}>
+            Already registered?{" "}
+            <Link
+              href="/auth/signin"
+              className="font-semibold hover:underline"
+              style={{ color: "var(--brand-600)" }}
+            >
+              Sign in
+            </Link>
+          </p>
+        </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

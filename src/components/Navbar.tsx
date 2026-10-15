@@ -19,15 +19,12 @@ import {
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { user, login, logout } = useAuth();
+  const { user, logout } = useAuth();
   const { totalCount, openCart } = useCart();
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [authError, setAuthError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,30 +38,6 @@ export default function Navbar() {
     { name: "Blog", href: "/blog" },
     { name: "Contact", href: "/contact" },
   ];
-
-  const handleLoginSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setAuthError("");
-    const success = await login(email, password);
-    setLoading(false);
-    if (success) {
-      setAuthModalOpen(false);
-      setEmail("");
-      setPassword("");
-    } else {
-      setAuthError("Invalid credentials. Try the 1-Click Demo!");
-    }
-  };
-
-  const handleDemoLogin = async () => {
-    setLoading(true);
-    const success = await login("demo@apex-hockey.com", "hockey2026", true);
-    setLoading(false);
-    if (success) {
-      setAuthModalOpen(false);
-    }
-  };
 
   return (
     <>
@@ -187,12 +160,12 @@ export default function Navbar() {
                   </ul>
                 </div>
               ) : (
-                <button
-                  onClick={() => setAuthModalOpen(true)}
-                  className="btn btn-ghost btn-sm text-gray-700 hover:text-[#FF4240] font-bold rounded-xl hidden sm:flex items-center gap-1.5"
+                <Link
+                  href={`/auth/signin?next=${encodeURIComponent(pathname)}`}
+                  className="apex-btn apex-btn-ghost apex-btn-sm hidden sm:inline-flex"
                 >
-                  <FaRightToBracket /> Sign In
-                </button>
+                  <FaRightToBracket aria-hidden="true" /> Sign In
+                </Link>
               )}
 
               {/* Get Ticket Primary Button */}
@@ -229,15 +202,13 @@ export default function Navbar() {
 
             <div className="pt-4 border-t border-gray-100 flex flex-col gap-2">
               {!user ? (
-                <button
-                  onClick={() => {
-                    setMobileOpen(false);
-                    setAuthModalOpen(true);
-                  }}
-                  className="btn btn-outline border-gray-200 text-gray-800 btn-block rounded-xl font-bold"
+                <Link
+                  href={`/auth/signin?next=${encodeURIComponent(pathname)}`}
+                  onClick={() => setMobileOpen(false)}
+                  className="apex-btn apex-btn-secondary apex-btn-block"
                 >
-                  <FaRightToBracket /> Sign In / Demo Login
-                </button>
+                  <FaRightToBracket aria-hidden="true" /> Sign in
+                </Link>
               ) : (
                 <Link
                   href="/account"
@@ -317,92 +288,6 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Auth Modal (Sign In / 1-Click Demo) */}
-      {authModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-md rounded-3xl p-8 shadow-2xl space-y-6 animate-in zoom-in-95 relative">
-            <button
-              onClick={() => setAuthModalOpen(false)}
-              className="btn btn-circle btn-ghost btn-sm absolute top-4 right-4 text-gray-400 hover:text-gray-700"
-            >
-              <FaXmark className="text-lg" />
-            </button>
-
-            <div className="text-center space-y-2">
-              <div className="w-12 h-12 rounded-2xl bg-red-50 text-[#FF4240] flex items-center justify-center text-2xl mx-auto shadow-inner">
-                <FaShieldHalved />
-              </div>
-              <h3 className="text-2xl font-extrabold text-gray-900">Member Sign In</h3>
-              <p className="text-gray-500 text-sm">Access your match tickets, camps, and exclusive gear perks</p>
-            </div>
-
-            {/* 1-Click Demo Button */}
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-center space-y-2">
-              <p className="text-xs font-bold text-amber-800">⚡ Instant Quick Test</p>
-              <button
-                onClick={handleDemoLogin}
-                disabled={loading}
-                className="btn btn-sm btn-block bg-amber-500 hover:bg-amber-600 text-white border-none rounded-xl font-bold"
-              >
-                {loading ? "Signing in..." : "1-Click Demo Login (VIP Athlete)"}
-              </button>
-            </div>
-
-            <div className="divider text-xs text-gray-400">OR SIGN IN WITH EMAIL</div>
-
-            {authError && (
-              <div className="alert alert-error text-xs py-2 rounded-xl text-white font-medium">
-                {authError}
-              </div>
-            )}
-
-            <form onSubmit={handleLoginSubmit} className="space-y-4">
-              <div className="form-control">
-                <label className="label text-xs font-bold text-gray-700">Email Address</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="alex@example.com"
-                  className="input bg-gray-100 border-none rounded-xl focus:ring-2 focus:ring-[#FF4240]"
-                  required
-                />
-              </div>
-
-              <div className="form-control">
-                <label className="label text-xs font-bold text-gray-700">Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="input bg-gray-100 border-none rounded-xl focus:ring-2 focus:ring-[#FF4240]"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn btn-block bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-xl font-bold py-3"
-              >
-                {loading ? "Authenticating..." : "Sign In to Account"}
-              </button>
-            </form>
-
-            <div className="text-center text-xs text-gray-500">
-              Need an account?{" "}
-              <Link
-                href="/auth/signup"
-                onClick={() => setAuthModalOpen(false)}
-                className="text-[#FF4240] font-bold hover:underline"
-              >
-                Create Account
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

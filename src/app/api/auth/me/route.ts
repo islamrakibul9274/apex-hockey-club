@@ -1,56 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyJwt } from "@/lib/auth";
-import { connectToDatabase } from "@/lib/mongodb";
-import User from "@/models/User";
+import { withErrorHandling, unauthorized } from "@/lib/api";
+import { getSession } from "@/lib/session";
+import { clearSessionCookie, SESSION_COOKIE_NAME } from "@/lib/auth";
 
+/**
+ * GET /api/auth/me
+ *
+ * Returns 401 when there is no usable session, so callers can distinguish
+ * "signed out" from "signed in". A malformed or expired cookie is cleared on
+ * the way out so the browser stops sending it.
+ *
+ * It does NOT fall back to the JWT claims when the database lookup fails. The
+ * previous version did, which meant a database outage fabricated a signed-in
+ * user with an "Elite Champion" plan.
+ */
 export async function GET(req: NextRequest) {
-  const token = req.cookies.get("auth_token")?.value;
+  return withErrorHandling("auth/me", async () => {
+    const user = await getSession(req);
 
-  if (!token) {
-    return NextResponse.json({ user: null });
-  }
-
-  const payload = verifyJwt(token);
-  if (!payload) {
-    return NextResponse.json({ user: null });
-  }
-
-  try {
-    await connectToDatabase();
-    const user = await User.findById(payload.userId).catch(() => null);
-
-    if (user) {
-      return NextResponse.json({
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          avatar: user.avatar,
-          phone: user.phone,
-          membershipPlan: user.membershipPlan,
-          address: user.address,
-        },
-      });
+    if (!user) {
+      const response = unauthorized();
+      if (req.cookies.get(SESSION_COOKIE_NAME)) {
+        // Expired or revoked — stop resending it.
+        clearSessionCookie(response);
+      }
+      return response;
     }
 
-    return NextResponse.json({
-      user: {
-        id: payload.userId,
-        name: payload.name,
-        email: payload.email,
-        role: payload.role,
-        membershipPlan: "Elite Champion",
-      },
-    });
-  } catch {
-    return NextResponse.json({
-      user: {
-        id: payload.userId,
-        name: payload.name,
-        email: payload.email,
-        role: payload.role,
-      },
-    });
-  }
+    return NextResponse.json({ success: true, user });
+  });
 }

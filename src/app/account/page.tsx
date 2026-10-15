@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { Spinner } from "@/components/ui";
 import { useSearchParams } from "next/navigation";
 import {
   FaUser,
@@ -31,7 +33,7 @@ interface BookingItem {
 }
 
 function AccountContent() {
-  const { user, logout, updateProfile, login } = useAuth();
+  const { user, logout, updateProfile } = useAuth();
   const searchParams = useSearchParams();
   const initialTab = searchParams.get("tab") || "overview";
   const paymentSuccess = searchParams.get("payment") === "success";
@@ -39,87 +41,110 @@ function AccountContent() {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [bookings, setBookings] = useState<BookingItem[]>([]);
   const [loadingBookings, setLoadingBookings] = useState(false);
+  const [bookingsError, setBookingsError] = useState(false);
 
-  // Profile Edit State
-  const [name, setName] = useState(user?.name || "Alex Mercer");
-  const [phone, setPhone] = useState(user?.phone || "(+1) 555-0199");
-  const [street, setStreet] = useState(user?.address?.street || "152/1 Wireless Gate");
-  const [city, setCity] = useState(user?.address?.city || "Mohakhali");
+  // Profile Edit State.
+  // Defaulted to empty rather than the demo account's details. These values
+  // were previously hard-coded fallbacks, so any member without an address
+  // was shown another person's and could save it over their own record.
+  const [name, setName] = useState(user?.name || "");
+  const [phone, setPhone] = useState(user?.phone || "");
+  const [street, setStreet] = useState(user?.address?.street || "");
+  const [city, setCity] = useState(user?.address?.city || "");
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (savedTimer.current) clearTimeout(savedTimer.current);
+  }, []);
 
   useEffect(() => {
     if (user) {
       setName(user.name);
       setPhone(user.phone || "");
-      if (user.address) {
-        setStreet(user.address.street || "");
-        setCity(user.address.city || "");
-      }
+      setStreet(user.address?.street || "");
+      setCity(user.address?.city || "");
     }
   }, [user]);
+
+  // The tab used to be read once on mount, so navigating from
+  // /account to /account?tab=bookings did nothing. This keeps it in sync.
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
 
   useEffect(() => {
     async function loadBookings() {
       setLoadingBookings(true);
+      setBookingsError(false);
       try {
         const res = await fetch("/api/bookings");
-        const data = await res.json();
-        if (data.bookings) {
-          setBookings(data.bookings);
+        if (!res.ok) {
+          // Previously a failed request fell through to the empty state, so a
+          // server error was displayed to the user as "no bookings".
+          setBookingsError(true);
+          return;
         }
+        const data = await res.json();
+        setBookings(Array.isArray(data.bookings) ? data.bookings : []);
       } catch (err) {
         console.error(err);
+        setBookingsError(true);
       } finally {
         setLoadingBookings(false);
       }
     }
-    loadBookings();
+    void loadBookings();
   }, []);
 
   const handleProfileSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    const success = await updateProfile({
+    setSavedSuccess(false);
+    setSaveError("");
+
+    const result = await updateProfile({
       name,
       phone,
       address: { street, city },
     });
-    setSaving(false);
-    if (success) {
-      setSavedSuccess(true);
-      setTimeout(() => setSavedSuccess(false), 3000);
-    }
-  };
 
-  const handleDemoSignIn = async () => {
-    await login("demo@apex-hockey.com", "hockey2026", true);
+    setSaving(false);
+
+    if (result.ok) {
+      setSavedSuccess(true);
+      // Cleared on unmount so the timer cannot fire against a dead component.
+      const t = setTimeout(() => setSavedSuccess(false), 3000);
+      savedTimer.current = t;
+    } else {
+      // Previously a failed save was silent: updateProfile returned false and
+      // nothing was shown, so users believed their details had changed.
+      setSaveError(result.message);
+    }
   };
 
   if (!user) {
     return (
-      <main className="container mx-auto px-4 py-16 flex-1 max-w-lg text-center space-y-6">
-        <div className="w-20 h-20 rounded-full bg-red-50 text-[#FF4240] flex items-center justify-center text-3xl mx-auto shadow-inner">
+      <main id="main" className="container mx-auto px-4 py-16 flex-1 max-w-lg text-center space-y-6">
+        <div
+          className="w-20 h-20 rounded-full flex items-center justify-center text-3xl mx-auto"
+          style={{ backgroundColor: "var(--brand-50)", color: "var(--brand-600)" }}
+          aria-hidden="true"
+        >
           <FaShieldHalved />
         </div>
-        <h1 className="text-3xl font-black text-gray-900">Member Portal Sign In Required</h1>
-        <p className="text-gray-600 text-sm">
-          Please sign in to view your profile, manage active match passes, check camp enrollments, and customize settings.
+        <h1 className="text-2xl sm:text-3xl font-extrabold">Sign in to view your portal</h1>
+        <p className="text-sm" style={{ color: "var(--ink-600)" }}>
+          Your profile, match passes and camp enrollments live behind your account.
         </p>
-        <div className="space-y-3">
-          <button
-            onClick={handleDemoSignIn}
-            className="btn btn-block bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-2xl font-bold py-3 text-base shadow-lg shadow-red-500/20"
-          >
-            ⚡ 1-Click Demo Login (Alex Mercer - VIP)
-          </button>
-          <Link
-            href="/auth/signin"
-            className="btn btn-block btn-outline border-gray-300 text-gray-800 rounded-2xl font-bold"
-          >
-            Sign In with Existing Credentials
-          </Link>
-        </div>
+        <Link
+          href={`/auth/signin?next=${encodeURIComponent("/account")}`}
+          className="apex-btn apex-btn-primary apex-btn-lg apex-btn-block"
+        >
+          Sign in
+        </Link>
       </main>
     );
   }
@@ -253,8 +278,13 @@ function AccountContent() {
           <div className="lg:col-span-8 bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 space-y-6">
             <h2 className="text-2xl font-extrabold text-gray-900">Personal Athlete Profile</h2>
             {savedSuccess && (
-              <div className="alert alert-success text-xs text-white rounded-xl">
-                ✓ Profile settings saved successfully!
+              <div role="status" className="apex-alert apex-alert-success">
+                Profile settings saved successfully.
+              </div>
+            )}
+            {saveError && (
+              <div role="alert" className="apex-alert apex-alert-error">
+                {saveError}
               </div>
             )}
 
@@ -343,18 +373,33 @@ function AccountContent() {
           </div>
 
           {loadingBookings ? (
-            <div className="py-12 text-center text-gray-400">Loading your tickets...</div>
+            <div className="py-12 text-center" style={{ color: "var(--ink-500)" }}>
+              Loading your tickets…
+            </div>
+          ) : bookingsError ? (
+            <div
+              role="alert"
+              className="rounded-3xl border p-12 text-center space-y-3"
+              style={{
+                backgroundColor: "var(--danger-50)",
+                borderColor: "#fecaca",
+              }}
+            >
+              <h3 className="text-lg font-bold" style={{ color: "var(--danger-600)" }}>
+                We couldn&apos;t load your bookings
+              </h3>
+              <p className="text-sm" style={{ color: "var(--ink-600)" }}>
+                This is a connection problem, not an empty account. Reload the page to try again.
+              </p>
+            </div>
           ) : bookings.length === 0 ? (
             <div className="bg-slate-50 border border-gray-200 rounded-3xl p-12 text-center space-y-4">
-              <FaTicket className="text-4xl text-gray-300 mx-auto" />
+              <FaTicket className="text-4xl text-gray-300 mx-auto" aria-hidden="true" />
               <h3 className="text-xl font-bold text-gray-800">No active bookings found</h3>
               <p className="text-gray-500 text-xs max-w-xs mx-auto">
                 You haven&apos;t reserved any arena match passes or camp enrollments yet.
               </p>
-              <Link
-                href="/get-ticket"
-                className="btn bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-2xl px-6 font-bold"
-              >
+              <Link href="/get-ticket" className="apex-btn apex-btn-primary">
                 Explore Match Passes
               </Link>
             </div>
@@ -456,19 +501,29 @@ function AccountContent() {
 
 export default function AccountPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900">
-      <Navbar />
-      <Suspense
-        fallback={
-          <div className="container mx-auto py-24 text-center text-gray-400 font-bold">
-            <span className="loading loading-spinner loading-lg text-[#FF4240]"></span>
-            <p className="mt-4 text-sm">Loading Member Portal...</p>
-          </div>
-        }
-      >
-        <AccountContent />
-      </Suspense>
-      <Footer />
+    // ProtectedRoute reads search params, which requires a Suspense boundary
+    // for static rendering.
+    <Suspense fallback={<FullPageSpinner />}>
+      <ProtectedRoute>
+        <div className="min-h-screen flex flex-col bg-white text-gray-900">
+          <Navbar />
+          <Suspense fallback={<FullPageSpinner label="Loading your portal…" />}>
+            <AccountContent />
+          </Suspense>
+          <Footer />
+        </div>
+      </ProtectedRoute>
+    </Suspense>
+  );
+}
+
+function FullPageSpinner({ label = "Loading…" }: { label?: string }) {
+  return (
+    <div className="container mx-auto py-24 text-center">
+      <Spinner className="h-6 w-6" />
+      <p className="mt-4 text-sm" style={{ color: "var(--ink-500)" }}>
+        {label}
+      </p>
     </div>
   );
 }

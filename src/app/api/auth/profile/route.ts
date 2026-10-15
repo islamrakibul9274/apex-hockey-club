@@ -1,40 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyJwt } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
+import { updateProfileSchema, fieldErrors } from "@/lib/validation";
+import {
+  withErrorHandling,
+  badRequest,
+  unauthorized,
+  serverError,
+} from "@/lib/api";
+import { getSession, toPublicUser } from "@/lib/session";
 
 export async function PUT(req: NextRequest) {
-  const token = req.cookies.get("auth_token")?.value;
-  if (!token) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  return withErrorHandling("auth/profile", async () => {
+    const session = await getSession(req);
+    if (!session) return unauthorized();
 
-  const payload = verifyJwt(token);
-  if (!payload) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
+      return badRequest("Request body must be valid JSON");
+    }
 
-  try {
-    const data = await req.json();
-    await connectToDatabase();
+    const parsed = updateProfileSchema.safeParse(body);
+    if (!parsed.success) {
+      const fields = fieldErrors(parsed.error);
+      return badRequest(fields.form ?? "Check the highlighted fields", fields);
+    }
 
+    const { name, phone, avatar, address } = parsed.data;
+
+    const conn = await connectToDatabase();
+    if (!conn) {
+      return serverError("We could not reach the account service. Please try again shortly.");
+    }
+
+    // Explicit allow-list. `role`, `membershipPlan` and `_id` can never be set
+    // through this endpoint, so the request cannot escalate itself.
     const updated = await User.findByIdAndUpdate(
-      payload.userId,
-      {
-        name: data.name,
-        phone: data.phone,
-        avatar: data.avatar,
-        address: data.address,
-      },
-      { new: true }
-    ).catch(() => null);
+      session.id,
+      { $set: { name, phone, ...(avatar !== undefined ? { avatar } : {}), ...(address ? { address } : {}) } },
+      { new: true, runValidators: true }
+    );
 
-    return NextResponse.json({
-      success: true,
-      user: updated || { ...payload, ...data },
-    });
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Failed to update profile";
-    return NextResponse.json({ error: msg }, { status: 500 });
-  }
+    // Previously .catch(() => null) made a failed write report success. Now a
+    // missing row is an error, not a fake acknowledgement.
+    if (!updated) {
+      return unauthorized("Your account could not be found. Please sign in again.");
+    }
+
+    return NextResponse.json({ success: true, user: toPublicUser(updated) });
+  });
 }

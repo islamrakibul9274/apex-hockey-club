@@ -16,6 +16,10 @@ export interface IUser extends Document {
     country?: string;
   };
   notificationsEnabled: boolean;
+  /** SHA-256 hash of a password-reset token. Never the raw token. */
+  passwordResetHash?: string;
+  passwordResetExpires?: Date;
+  passwordChangedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -37,8 +41,17 @@ const UserSchema = new Schema<IUser>(
       country: { type: String, default: "" },
     },
     notificationsEnabled: { type: Boolean, default: true },
+    passwordResetHash: { type: String, default: undefined, select: false },
+    passwordResetExpires: { type: Date, default: undefined, select: false },
+    passwordChangedAt: { type: Date, default: undefined },
   },
   { timestamps: true }
 );
+
+/**
+ * Reset fields are `select: false` so they can never leak into a query that
+ * forgets to project them away.
+ */
+UserSchema.index({ passwordResetHash: 1 });
 
 export default (mongoose.models.User as Model<IUser>) || mongoose.model<IUser>("User", UserSchema);
