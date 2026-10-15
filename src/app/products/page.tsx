@@ -120,12 +120,12 @@ function ProductsContent() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900">
+    <div className="min-h-screen flex flex-col bg-surface-0 text-ink-900">
       <Navbar />
 
       {toastMessage && (
         <div className="toast toast-top toast-center z-50 animate-in slide-in-from-top-4">
-          <div className="alert alert-success text-white font-bold rounded-2xl shadow-xl flex items-center gap-2">
+          <div className="apex-alert apex-alert-success text-white font-bold rounded-2xl shadow-xl flex items-center gap-2">
             <FaCheck />
             <span>Added &quot;{toastMessage}&quot; to Equipment Bag!</span>
           </div>
@@ -135,40 +135,40 @@ function ProductsContent() {
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-10">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <span className="badge badge-sm bg-red-100 text-[#FF4240] font-extrabold uppercase tracking-widest px-3 py-2">
+          <span className="apex-badge apex-badge-sm bg-brand-100 text-brand-600 font-extrabold uppercase tracking-widest px-3 py-2">
             Pro Shop & Gear
           </span>
-          <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl font-black text-ink-900 tracking-tight">
             Official Hockey Gear & Equipment
           </h1>
-          <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
+          <p className="text-ink-600 text-base sm:text-lg leading-relaxed">
             Tournament-approved sticks, protective helmets, pro skates, and accessories engineered for explosive on-ice speed and superior puck control.
           </p>
         </div>
 
         {/* Search, Filter & Sort Controls */}
-        <div className="bg-slate-50 border border-gray-200 rounded-3xl p-6 space-y-4 shadow-sm">
+        <div className="bg-surface-50 border border-line-200 rounded-3xl p-6 space-y-4 shadow-sm">
           <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
             {/* Search Input */}
             <div className="relative w-full md:w-80">
-              <FaMagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
+              <FaMagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-500 text-sm" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search products by keyword..."
-                className="input input-sm w-full pl-10 bg-white border border-gray-200 rounded-2xl text-xs focus:ring-2 focus:ring-[#FF4240]"
+                className="apex-input apex-input-sm w-full pl-10 bg-surface-0 border border-line-200 rounded-2xl text-xs focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             {/* Sort Selection */}
             <div className="flex items-center gap-2 w-full md:w-auto justify-end">
-              <FaSliders className="text-gray-500 text-xs" />
-              <span className="text-xs font-bold text-gray-600">Sort by:</span>
+              <FaSliders className="text-ink-600 text-xs" />
+              <span className="text-xs font-bold text-ink-600">Sort by:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="select select-sm bg-white border border-gray-200 rounded-2xl text-xs font-semibold focus:ring-2 focus:ring-[#FF4240]"
+                className="select select-sm bg-surface-0 border border-line-200 rounded-2xl text-xs font-semibold focus:ring-2 focus:ring-brand-500"
               >
                 <option value="recommended">Featured & Recommended</option>
                 <option value="price-low">Price: Low to High</option>
@@ -180,15 +180,15 @@ function ProductsContent() {
           </div>
 
           {/* Category Tabs */}
-          <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-200">
+          <div className="flex flex-wrap gap-2 pt-2 border-t border-line-200">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all ${
                   activeCategory === cat
-                    ? "bg-[#FF4240] text-white shadow-md shadow-red-500/20"
-                    : "bg-white text-gray-700 hover:bg-gray-200 border border-gray-200"
+                    ? "bg-brand-500 text-white shadow-md shadow-brand-500/20"
+                    : "bg-surface-0 text-ink-700 hover:bg-gray-200 border border-line-200"
                 }`}
               >
                 {cat}
@@ -209,14 +209,14 @@ function ProductsContent() {
           </div>
         ) : sortedProducts.length === 0 ? (
           <div className="py-16 text-center space-y-4">
-            <h3 className="text-xl font-bold text-gray-800">No equipment found matching criteria</h3>
-            <p className="text-gray-500 text-sm">Try clearing your search query or selecting another category.</p>
+            <h3 className="text-xl font-bold text-ink-800">No equipment found matching criteria</h3>
+            <p className="text-ink-600 text-sm">Try clearing your search query or selecting another category.</p>
             <button
               onClick={() => {
                 setSearchQuery("");
                 setActiveCategory("All");
               }}
-              className="btn btn-sm bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-xl"
+              className="apex-btn apex-btn-sm bg-brand-500 hover:bg-brand-600 text-white border-none rounded-xl"
             >
               Reset Filters
             </button>
@@ -228,11 +228,11 @@ function ProductsContent() {
               return (
                 <div
                   key={product.id}
-                  className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group"
+                  className="bg-surface-0 border border-line-200 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group"
                 >
                   <div>
                     <div
-                      className="relative w-full h-56 bg-slate-50 rounded-2xl p-4 flex items-center justify-center overflow-hidden mb-4 cursor-pointer"
+                      className="relative w-full h-56 bg-surface-50 rounded-2xl p-4 flex items-center justify-center overflow-hidden mb-4 cursor-pointer"
                       onClick={() => setSelectedProduct(product)}
                     >
                       <Image
@@ -243,7 +243,7 @@ function ProductsContent() {
                         className="object-contain max-h-48 group-hover:scale-105 transition-transform duration-300"
                       />
                       <div className="absolute top-3 left-3">
-                        <span className="badge badge-sm bg-white text-gray-700 font-bold border-none shadow-sm text-[10px]">
+                        <span className="apex-badge apex-badge-sm bg-surface-0 text-ink-700 font-bold border-none shadow-sm text-[10px]">
                           {product.category}
                         </span>
                       </div>
@@ -253,7 +253,7 @@ function ProductsContent() {
                           handleLike(product.id);
                         }}
                         className={`btn btn-circle btn-xs absolute top-3 right-3 shadow-md border-none ${
-                          isLiked ? "bg-red-500 text-white" : "bg-white text-gray-400 hover:text-red-500"
+                          isLiked ? "bg-brand-500 text-white" : "bg-surface-0 text-ink-500 hover:text-danger-600"
                         }`}
                         aria-label="Like product"
                       >
@@ -261,18 +261,18 @@ function ProductsContent() {
                       </button>
                     </div>
 
-                    <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
+                    <div className="flex items-center justify-between text-xs text-ink-500 mb-2">
                       <div className="flex items-center gap-1 text-amber-500 font-bold">
                         <FaStar />
                         <span>{product.rating.toFixed(1)}</span>
-                        <span className="text-gray-400 font-normal">({product.reviewsCount || 42})</span>
+                        <span className="text-ink-500 font-normal">({product.reviewsCount || 42})</span>
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="flex items-center gap-1">
                           <FaEye /> {product.views}
                         </span>
                         <span className="flex items-center gap-1">
-                          <FaHeart className={isLiked ? "text-red-500" : ""} />{" "}
+                          <FaHeart className={isLiked ? "text-danger-600" : ""} />{" "}
                           {product.likes + (isLiked ? 1 : 0)}
                         </span>
                       </div>
@@ -280,19 +280,19 @@ function ProductsContent() {
 
                     <h3
                       onClick={() => setSelectedProduct(product)}
-                      className="font-extrabold text-lg text-gray-900 group-hover:text-[#FF4240] transition-colors cursor-pointer line-clamp-1"
+                      className="font-extrabold text-lg text-ink-900 group-hover:text-brand-600 transition-colors cursor-pointer line-clamp-1"
                     >
                       {product.title}
                     </h3>
-                    <p className="text-gray-500 text-xs mt-1 line-clamp-2 leading-relaxed">
+                    <p className="text-ink-600 text-xs mt-1 line-clamp-2 leading-relaxed">
                       {product.description}
                     </p>
                   </div>
 
-                  <div className="pt-4 border-t border-gray-100 flex items-center justify-between mt-4">
+                  <div className="pt-4 border-t border-line-200 flex items-center justify-between mt-4">
                     <div>
-                      <span className="text-xs text-gray-400 font-medium">Price</span>
-                      <div className="text-xl font-black text-[#FF4240]">
+                      <span className="text-xs text-ink-500 font-medium">Price</span>
+                      <div className="text-xl font-black text-brand-600">
                         ${product.price.toFixed(2)}
                       </div>
                     </div>
@@ -300,14 +300,14 @@ function ProductsContent() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => setSelectedProduct(product)}
-                        className="btn btn-sm btn-ghost text-gray-600 hover:text-gray-900 rounded-xl text-xs"
+                        className="apex-btn apex-btn-sm apex-btn-ghost text-ink-600 hover:text-ink-900 rounded-xl text-xs"
                       >
                         Details
                       </button>
                       <button
                         onClick={() => handleAddToCart(product)}
                         aria-label={`Add ${product.title} to cart`}
-                        className="btn btn-sm bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-xl font-bold shadow-md shadow-red-500/20 flex items-center gap-1.5"
+                        className="apex-btn apex-btn-sm bg-brand-500 hover:bg-brand-600 text-white border-none rounded-xl font-bold shadow-md shadow-brand-500/20 flex items-center gap-1.5"
                       >
                         <FaCartPlus aria-hidden="true" /> Add
                       </button>
@@ -322,16 +322,16 @@ function ProductsContent() {
         {/* Product Modal */}
         {selectedProduct && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-white w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative animate-in zoom-in-95 max-h-[90vh] overflow-y-auto">
+            <div className="bg-surface-0 w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative animate-in zoom-in-95 max-h-[90vh] overflow-y-auto">
               <button
                 onClick={() => setSelectedProduct(null)}
-                className="btn btn-circle btn-ghost btn-sm absolute top-4 right-4 text-gray-400 hover:text-gray-700"
+                className="apex-btn apex-btn-icon apex-btn-ghost apex-btn-sm absolute top-4 right-4 text-ink-500 hover:text-ink-700"
               >
                 <FaXmark className="text-lg" />
               </button>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
-                <div className="bg-slate-50 rounded-2xl p-6 flex items-center justify-center">
+                <div className="bg-surface-50 rounded-2xl p-6 flex items-center justify-center">
                   <Image
                     src={selectedProduct.image}
                     alt={selectedProduct.title}
@@ -342,28 +342,28 @@ function ProductsContent() {
                 </div>
 
                 <div className="space-y-3">
-                  <span className="badge bg-red-100 text-[#FF4240] font-bold text-xs">
+                  <span className="apex-badge bg-brand-100 text-brand-600 font-bold text-xs">
                     {selectedProduct.category}
                   </span>
-                  <h3 className="text-2xl font-extrabold text-gray-900 leading-tight">
+                  <h3 className="text-2xl font-extrabold text-ink-900 leading-tight">
                     {selectedProduct.title}
                   </h3>
                   <div className="flex items-center gap-2 text-sm text-amber-500 font-bold">
                     <FaStar /> {selectedProduct.rating.toFixed(1)} / 5.0 (
                     {selectedProduct.reviewsCount || 48} Customer Reviews)
                   </div>
-                  <div className="text-2xl font-black text-[#FF4240]">
+                  <div className="text-2xl font-black text-brand-600">
                     ${selectedProduct.price.toFixed(2)}
                   </div>
-                  <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
+                  <p className="text-ink-600 text-xs sm:text-sm leading-relaxed">
                     {selectedProduct.description}
                   </p>
 
                   {selectedProduct.features && (
                     <div className="space-y-1 pt-1">
-                      <p className="text-xs font-bold text-gray-800">Key Features:</p>
+                      <p className="text-xs font-bold text-ink-800">Key Features:</p>
                       {selectedProduct.features.map((f, i) => (
-                        <p key={i} className="text-xs text-gray-600 flex items-center gap-1.5">
+                        <p key={i} className="text-xs text-ink-600 flex items-center gap-1.5">
                           <FaCheck className="text-emerald-500" /> {f}
                         </p>
                       ))}
@@ -377,7 +377,7 @@ function ProductsContent() {
                         setSelectedProduct(null);
                       }}
                       aria-label={`Add ${selectedProduct.title} to cart`}
-                      className="btn flex-1 bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-2xl font-bold shadow-lg"
+                      className="apex-btn flex-1 bg-brand-500 hover:bg-brand-600 text-white border-none rounded-2xl font-bold shadow-lg"
                     >
                       <FaCartPlus /> Add to Equipment Bag
                     </button>

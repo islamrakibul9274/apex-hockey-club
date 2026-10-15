@@ -1,10 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
-import { useCart } from "@/context/CartContext";
 import {
   FaBagShopping,
   FaUser,
@@ -14,287 +12,519 @@ import {
   FaRightToBracket,
   FaRightFromBracket,
   FaTicket,
-  FaShieldHalved,
+  FaChevronDown,
+  FaPhone,
+  FaEnvelope,
 } from "react-icons/fa6";
+import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
+import { useEscapeKey } from "@/lib/useDialog";
+import LogoMark from "@/components/Logo";
+
+/**
+ * Primary navigation.
+ *
+ * Redesigned from a flat eight-item row into a grouped structure: four direct
+ * links plus two dropdowns, so the information hierarchy is visible instead of
+ * every destination competing at equal weight.
+ *
+ * Not built on any component framework — the button, badge, input and menu
+ * primitives this needs are defined locally in globals.css under `apex-`.
+ */
+
+interface NavItem {
+  label: string;
+  href: string;
+  children?: { label: string; href: string; description: string }[];
+}
+
+const NAV: NavItem[] = [
+  {
+    label: "Programs",
+    href: "/programs",
+    children: [
+      {
+        label: "Junior Development",
+        href: "/programs#prog-junior",
+        description: "Ages 6–12. Fundamentals, confidence and fun on the ice.",
+      },
+      {
+        label: "Teen Academy",
+        href: "/programs#prog-teen",
+        description: "Ages 13–17. Competitive structure and position play.",
+      },
+      {
+        label: "Professional Masterclass",
+        href: "/programs#prog-pro",
+        description: "Senior squads. Tactics, video work and powerplay systems.",
+      },
+    ],
+  },
+  {
+    label: "Shop",
+    href: "/products",
+    children: [
+      {
+        label: "All equipment",
+        href: "/products",
+        description: "Sticks, skates, helmets and protective gear.",
+      },
+      {
+        label: "Memberships",
+        href: "/pricing",
+        description: "Season-long access to programmes and member pricing.",
+      },
+    ],
+  },
+  { label: "Tickets", href: "/get-ticket" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "Blog", href: "/blog" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+];
+
+const POPULAR_SEARCHES = ["CarbonFlex", "Vapor Skates", "Helmet", "Goalie gloves", "Chest protector"];
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
-  const { totalCount, openCart } = useCart();
+  const { totalCount, openCart, hydrated } = useCart();
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
   const [searchOpen, setSearchOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [scrolled, setScrolled] = useState(false);
 
-  const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "About", href: "/about" },
-    { name: "Programs", href: "/programs" },
-    { name: "Store", href: "/products" },
-    { name: "Pricing", href: "/pricing" },
-    { name: "Blog", href: "/blog" },
-    { name: "Contact", href: "/contact" },
-  ];
+  const menuRef = useRef<HTMLDivElement>(null);
+  const groupRef = useRef<HTMLUListElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEscapeKey(Boolean(mobileOpen || searchOpen || menuOpen || openGroup), () => {
+    setMobileOpen(false);
+    setSearchOpen(false);
+    setMenuOpen(false);
+    setOpenGroup(null);
+  });
+
+  // Close everything on navigation so nothing lingers over the new page.
+  useEffect(() => {
+    setMobileOpen(false);
+    setMenuOpen(false);
+    setSearchOpen(false);
+    setOpenGroup(null);
+  }, [pathname]);
+
+  // The header gains an elevation once the page scrolls, so it separates from
+  // content without needing a permanent heavy border.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen && !openGroup) return;
+    const handler = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (menuRef.current && !menuRef.current.contains(target)) setMenuOpen(false);
+      if (groupRef.current && !groupRef.current.contains(target)) setOpenGroup(null);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [menuOpen, openGroup]);
+
+  useEffect(() => {
+    if (searchOpen) searchInputRef.current?.focus();
+  }, [searchOpen]);
+
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href.split("#")[0]);
+
+  function submitSearch(term: string) {
+    const value = term.trim();
+    if (!value) return;
+    setSearchOpen(false);
+    setSearchQuery("");
+    router.push(`/products?search=${encodeURIComponent(value)}`);
+  }
+
+  const cartCount = hydrated ? totalCount : 0;
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm transition-all">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            {/* Mobile menu trigger + Brand Logo */}
-            <div className="flex items-center gap-4">
+      <a href="#main" className="skip-link">
+        Skip to main content
+      </a>
+
+      <header
+        className={[
+          "sticky top-0 z-40 bg-surface-0/90 backdrop-blur-lg transition-shadow",
+          scrolled ? "shadow-md" : "border-b border-line-200",
+        ].join(" ")}
+      >
+        <div className="apex-container">
+          <div className="flex h-16 items-center justify-between gap-2 lg:h-[4.5rem]">
+            {/* Left: mobile toggle + logo */}
+            <div className="flex items-center gap-1 lg:gap-3">
               <button
-                onClick={() => setMobileOpen(!mobileOpen)}
-                className="btn btn-ghost btn-circle lg:hidden text-gray-700"
-                aria-label="Toggle menu"
+                type="button"
+                onClick={() => setMobileOpen((v) => !v)}
+                aria-expanded={mobileOpen}
+                aria-controls="mobile-nav"
+                aria-label={mobileOpen ? "Close menu" : "Open menu"}
+                className="apex-btn apex-btn-icon -ml-2 text-ink-700 lg:hidden"
               >
-                {mobileOpen ? <FaXmark className="text-xl" /> : <FaBars className="text-xl" />}
+                {mobileOpen ? <FaXmark aria-hidden="true" /> : <FaBars aria-hidden="true" />}
               </button>
 
-              <Link href="/" className="flex items-center gap-2.5 group">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#FF4240] to-rose-400 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
-                  <FaShieldHalved className="text-xl" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-extrabold text-2xl tracking-tight text-gray-900 leading-none">
-                    Hockey<span className="text-[#FF4240]">&apos;</span>s
+              <Link
+                href="/"
+                className="flex items-center gap-2.5 rounded-md"
+                aria-label="Apex Hockey Club — home"
+              >
+                <LogoMark className="h-9 w-9 shrink-0 lg:h-10 lg:w-10" />
+                <span className="flex flex-col leading-none">
+                  <span className="font-display text-[15px] font-extrabold tracking-tight text-ink-900 lg:text-lg">
+                    Apex Hockey
                   </span>
-                  <span className="text-[10px] tracking-widest uppercase font-bold text-gray-400">
-                    Elite Club & Academy
+                  <span className="mt-0.5 hidden text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-500 sm:block">
+                    Elite Club &amp; Academy
                   </span>
-                </div>
+                </span>
               </Link>
             </div>
 
-            {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center space-x-1">
-              {navLinks.map((link) => {
-                const isActive = pathname === link.href;
-                return (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                      isActive
-                        ? "text-[#FF4240] bg-red-50"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                    }`}
-                  >
-                    {link.name}
-                  </Link>
-                );
-              })}
+            {/* Centre: primary navigation */}
+            <nav aria-label="Primary" className="hidden lg:block">
+              <ul ref={groupRef} className="flex items-center gap-0.5">
+                {NAV.map((item) => {
+                  const active = isActive(item.href);
+
+                  if (!item.children) {
+                    return (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          aria-current={active ? "page" : undefined}
+                          className={[
+                            "block rounded-lg px-3.5 py-2 text-[15px] font-semibold transition-colors",
+                            active
+                              ? "bg-brand-50 text-brand-600"
+                              : "text-ink-700 hover:bg-surface-100 hover:text-ink-900",
+                          ].join(" ")}
+                        >
+                          {item.label}
+                        </Link>
+                      </li>
+                    );
+                  }
+
+                  const open = openGroup === item.label;
+                  return (
+                    <li key={item.label} className="relative">
+                      <div className="flex items-center">
+                        <Link
+                          href={item.href}
+                          aria-current={active ? "page" : undefined}
+                          className={[
+                            "rounded-l-lg py-2 pl-3.5 pr-1 text-[15px] font-semibold transition-colors",
+                            active || open
+                              ? "bg-brand-50 text-brand-600"
+                              : "text-ink-700 hover:bg-surface-100 hover:text-ink-900",
+                          ].join(" ")}
+                        >
+                          {item.label}
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => setOpenGroup(open ? null : item.label)}
+                          aria-expanded={open}
+                          aria-label={`${item.label} menu`}
+                          className={[
+                            "rounded-r-lg px-1.5 py-2 transition-colors",
+                            active || open
+                              ? "bg-brand-50 text-brand-600"
+                              : "text-ink-700 hover:bg-surface-100",
+                          ].join(" ")}
+                        >
+                          <FaChevronDown
+                            aria-hidden="true"
+                            className={`text-[10px] transition-transform ${open ? "rotate-180" : ""}`}
+                          />
+                        </button>
+                      </div>
+
+                      {open && (
+                        <div className="absolute left-0 top-full z-50 mt-2 w-[22rem] animate-scale-in rounded-2xl border border-line-200 bg-surface-0 p-2 shadow-lg">
+                          {item.children.map((child) => (
+                            <Link
+                              key={child.href}
+                              href={child.href}
+                              className="block rounded-xl px-3.5 py-3 transition-colors hover:bg-surface-50"
+                            >
+                              <span className="block text-sm font-semibold text-ink-900">
+                                {child.label}
+                              </span>
+                              <span className="mt-0.5 block text-xs leading-relaxed text-ink-600">
+                                {child.description}
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
             </nav>
 
-            {/* Right Action Icons & CTA */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* Search Modal Trigger */}
+            {/* Right: actions */}
+            <div className="flex items-center gap-0.5 sm:gap-1">
               <button
+                type="button"
                 onClick={() => setSearchOpen(true)}
-                className="btn btn-ghost btn-circle text-gray-600 hover:text-[#FF4240] hover:bg-red-50"
-                aria-label="Search"
+                aria-label="Search the store"
+                aria-expanded={searchOpen}
+                className="apex-btn apex-btn-icon text-ink-700 hover:bg-surface-100"
               >
-                <FaMagnifyingGlass className="text-base" />
+                <FaMagnifyingGlass aria-hidden="true" />
               </button>
 
-              {/* Shopping Bag / Cart */}
               <button
+                type="button"
                 onClick={openCart}
-                className="btn btn-ghost btn-circle text-gray-600 hover:text-[#FF4240] hover:bg-red-50 relative"
-                aria-label="Cart"
+                aria-label={`Open cart, ${cartCount} item${cartCount === 1 ? "" : "s"}`}
+                className="apex-btn apex-btn-icon relative text-ink-700 hover:bg-surface-100"
               >
-                <FaBagShopping className="text-lg" />
-                {totalCount > 0 && (
-                  <span className="badge badge-xs bg-[#FF4240] border-none text-white absolute top-1 right-1 font-bold p-1 min-w-[1.2rem] h-[1.2rem] flex items-center justify-center text-[10px]">
-                    {totalCount}
+                <FaBagShopping aria-hidden="true" />
+                {cartCount > 0 && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute right-0.5 top-0.5 flex h-[1.15rem] min-w-[1.15rem] items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold text-white"
+                  >
+                    {cartCount > 99 ? "99+" : cartCount}
                   </span>
                 )}
               </button>
 
-              {/* User Account / Profile */}
               {user ? (
-                <div className="dropdown dropdown-end">
-                  <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar border-2 border-[#FF4240]/40">
-                    <div className="w-9 rounded-full">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={user.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150"}
-                        alt={user.name}
-                      />
-                    </div>
-                  </div>
-                  <ul
-                    tabIndex={0}
-                    className="menu menu-sm dropdown-content bg-white rounded-2xl z-50 mt-3 w-56 p-3 shadow-2xl border border-gray-100 space-y-1 text-gray-700"
+                <div className="relative" ref={menuRef}>
+                  <button
+                    type="button"
+                    onClick={() => setMenuOpen((v) => !v)}
+                    aria-expanded={menuOpen}
+                    aria-haspopup="menu"
+                    className="apex-btn apex-btn-sm ml-0.5 gap-2 border border-line-300 px-2.5 text-ink-800 hover:bg-surface-100"
                   >
-                    <li className="menu-title px-2 py-1 text-xs border-b border-gray-100 mb-1">
-                      <div className="font-extrabold text-gray-900 text-sm">{user.name}</div>
-                      <div className="text-[11px] text-gray-400 truncate">{user.email}</div>
-                      <div className="badge badge-xs bg-red-100 text-[#FF4240] font-bold mt-1">
-                        {user.membershipPlan || "VIP Athlete"}
+                    <span
+                      aria-hidden="true"
+                      className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-[11px] font-bold text-white"
+                    >
+                      {user.name.charAt(0).toUpperCase()}
+                    </span>
+                    <span className="hidden max-w-[7rem] truncate sm:block">
+                      {user.name.split(" ")[0]}
+                    </span>
+                  </button>
+
+                  {menuOpen && (
+                    <div
+                      role="menu"
+                      aria-label="Account"
+                      className="absolute right-0 top-full z-50 mt-2 w-64 animate-scale-in rounded-2xl border border-line-200 bg-surface-0 p-1.5 shadow-lg"
+                    >
+                      <div className="border-b border-line-200 px-3 py-2.5">
+                        <p className="truncate text-sm font-bold text-ink-900">{user.name}</p>
+                        <p className="truncate text-xs text-ink-500">{user.email}</p>
+                        <span className="apex-badge apex-badge-sm apex-badge-brand mt-1.5">
+                          {user.membershipPlan || "Member"}
+                        </span>
                       </div>
-                    </li>
-                    <li>
-                      <Link href="/account" className="py-2 hover:text-[#FF4240]">
-                        <FaUser className="mr-2" /> My Profile & Portal
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/account?tab=bookings" className="py-2 hover:text-[#FF4240]">
-                        <FaTicket className="mr-2" /> Match Tickets & Camp
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/account?tab=settings" className="py-2 hover:text-[#FF4240]">
-                        Account Settings
-                      </Link>
-                    </li>
-                    <li className="border-t border-gray-100 pt-1">
-                      <button onClick={logout} className="text-red-500 hover:bg-red-50">
-                        <FaRightFromBracket className="mr-2" /> Sign Out
+                      {[
+                        { href: "/account", label: "Profile & portal" },
+                        { href: "/account?tab=bookings", label: "Tickets & camps" },
+                        { href: "/account?tab=settings", label: "Settings" },
+                      ].map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          role="menuitem"
+                          className="block rounded-lg px-3 py-2 text-sm font-medium text-ink-700 transition-colors hover:bg-surface-50 hover:text-ink-900"
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={logout}
+                        className="mt-1 flex w-full items-center gap-2 rounded-lg border-t border-line-200 px-3 py-2 text-sm font-semibold text-danger-600 transition-colors hover:bg-danger-50"
+                      >
+                        <FaRightFromBracket aria-hidden="true" /> Sign out
                       </button>
-                    </li>
-                  </ul>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <Link
                   href={`/auth/signin?next=${encodeURIComponent(pathname)}`}
-                  className="apex-btn apex-btn-ghost apex-btn-sm hidden sm:inline-flex"
+                  className="apex-btn apex-btn-ghost apex-btn-sm ml-0.5 hidden sm:inline-flex"
                 >
-                  <FaRightToBracket aria-hidden="true" /> Sign In
+                  <FaRightToBracket aria-hidden="true" />
+                  Sign in
                 </Link>
               )}
 
-              {/* Get Ticket Primary Button */}
-              <Link
-                href="/get-ticket"
-                className="btn bg-[#FF4240] hover:bg-[#e03735] text-white border-none px-5 rounded-xl font-bold shadow-md shadow-red-500/20 hover:scale-[1.02] transition-all flex items-center gap-2"
-              >
-                <FaTicket className="text-sm" />
-                <span className="hidden sm:inline">Get Ticket</span>
+              <Link href="/get-ticket" className="apex-btn apex-btn-primary apex-btn-sm ml-1">
+                <FaTicket aria-hidden="true" />
+                <span className="hidden sm:inline">Get tickets</span>
+                <span className="sm:hidden">Tickets</span>
               </Link>
             </div>
           </div>
         </div>
 
-        {/* Mobile Navigation Drawer */}
+        {/* Mobile drawer */}
         {mobileOpen && (
-          <div className="lg:hidden border-t border-gray-100 bg-white px-4 py-6 space-y-3 animate-in slide-in-from-top-2">
-            <div className="flex flex-col space-y-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`px-4 py-3 rounded-xl text-base font-semibold ${
-                    pathname === link.href
-                      ? "text-[#FF4240] bg-red-50"
-                      : "text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </div>
+          <div
+            id="mobile-nav"
+            className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-line-200 bg-surface-0 lg:hidden"
+          >
+            <nav aria-label="Mobile" className="apex-container py-4">
+              <ul className="flex flex-col gap-0.5">
+                {NAV.map((item) => {
+                  const active = isActive(item.href);
+                  const expanded = openGroup === item.label;
 
-            <div className="pt-4 border-t border-gray-100 flex flex-col gap-2">
-              {!user ? (
-                <Link
-                  href={`/auth/signin?next=${encodeURIComponent(pathname)}`}
-                  onClick={() => setMobileOpen(false)}
-                  className="apex-btn apex-btn-secondary apex-btn-block"
-                >
-                  <FaRightToBracket aria-hidden="true" /> Sign in
-                </Link>
-              ) : (
-                <Link
-                  href="/account"
-                  onClick={() => setMobileOpen(false)}
-                  className="btn btn-outline border-gray-200 text-gray-800 btn-block rounded-xl font-bold"
-                >
-                  <FaUser /> Member Portal ({user.name})
-                </Link>
+                  return (
+                    <li key={item.label} className="border-b border-line-200 last:border-0">
+                      <div className="flex items-center">
+                        <Link
+                          href={item.href}
+                          aria-current={active ? "page" : undefined}
+                          className={[
+                            "flex-1 rounded-lg px-3 py-3 text-base font-semibold transition-colors",
+                            active ? "text-brand-600" : "text-ink-800 hover:bg-surface-50",
+                          ].join(" ")}
+                        >
+                          {item.label}
+                        </Link>
+                        {item.children && (
+                          <button
+                            type="button"
+                            onClick={() => setOpenGroup(expanded ? null : item.label)}
+                            aria-expanded={expanded}
+                            aria-label={`${item.label} submenu`}
+                            className="apex-btn apex-btn-icon text-ink-600"
+                          >
+                            <FaChevronDown
+                              aria-hidden="true"
+                              className={`text-xs transition-transform ${expanded ? "rotate-180" : ""}`}
+                            />
+                          </button>
+                        )}
+                      </div>
+
+                      {item.children && expanded && (
+                        <ul className="pb-2 pl-3">
+                          {item.children.map((child) => (
+                            <li key={child.href}>
+                              <Link
+                                href={child.href}
+                                className="block rounded-lg px-3 py-2.5 text-sm text-ink-600 transition-colors hover:bg-surface-50 hover:text-ink-900"
+                              >
+                                {child.label}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+
+              {!user && (
+                <div className="mt-4 space-y-2 border-t border-line-200 pt-4">
+                  <Link
+                    href={`/auth/signin?next=${encodeURIComponent(pathname)}`}
+                    className="apex-btn apex-btn-secondary apex-btn-block"
+                  >
+                    <FaRightToBracket aria-hidden="true" /> Sign in
+                  </Link>
+                  <a
+                    href="mailto:islamrakibul9274@gmail.com"
+                    className="apex-btn apex-btn-ghost apex-btn-block"
+                  >
+                    <FaEnvelope aria-hidden="true" /> Contact the club
+                  </a>
+                </div>
               )}
-            </div>
+            </nav>
           </div>
         )}
       </header>
 
-      {/* Global Search Modal */}
+      {/* Search overlay */}
       {searchOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-xl rounded-3xl p-6 shadow-2xl space-y-4 animate-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <h3 className="font-extrabold text-lg text-gray-900 flex items-center gap-2">
-                <FaMagnifyingGlass className="text-[#FF4240]" /> Search Apex Hockey
-              </h3>
-              <button
-                onClick={() => setSearchOpen(false)}
-                className="btn btn-circle btn-ghost btn-xs text-gray-400"
-              >
-                <FaXmark className="text-base" />
-              </button>
-            </div>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const term = searchQuery.trim();
-                if (!term) return;
-                // Client-side navigation rather than a full page reload.
-                router.push(`/products?search=${encodeURIComponent(term)}`);
-                setSearchOpen(false);
-                setSearchQuery("");
-              }}
-              className="flex gap-2"
-              role="search"
-            >
-              <label htmlFor="global-search" className="sr-only">
-                Search the store
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Search the store"
+          className="fixed inset-0 z-50 flex items-start justify-center bg-ink-900/50 p-4 pt-20 backdrop-blur-sm"
+        >
+          <button
+            type="button"
+            aria-label="Close search"
+            tabIndex={-1}
+            onClick={() => setSearchOpen(false)}
+            className="absolute inset-0 h-full w-full cursor-default"
+          />
+          <div className="relative z-10 w-full max-w-lg animate-scale-in rounded-2xl bg-surface-0 p-5 shadow-lg">
+            <form onSubmit={(e) => { e.preventDefault(); submitSearch(searchQuery); }} role="search">
+              <label htmlFor="global-search" className="apex-label">
+                Search products
               </label>
-              <input
-                id="global-search"
-                type="search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search sticks, skates, protective gear, programs..."
-                className="input w-full bg-gray-100 border-none rounded-2xl focus:ring-2 focus:ring-[#FF4240]"
-              />
-              <button
-                type="submit"
-                className="btn bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-2xl px-6 font-bold"
-              >
-                Search
-              </button>
+              <div className="flex gap-2">
+                <input
+                  id="global-search"
+                  ref={searchInputRef}
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Sticks, skates, helmets, gloves…"
+                  className="apex-input"
+                />
+                <button type="submit" className="apex-btn apex-btn-primary">
+                  Search
+                </button>
+              </div>
             </form>
 
-            <div className="space-y-2 pt-2">
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Popular Searches</p>
+            <div className="mt-4">
+              <p className="mb-2 text-xs font-bold uppercase tracking-wider text-ink-500">
+                Popular searches
+              </p>
               <div className="flex flex-wrap gap-2">
-                {["CarbonFlex Stick", "Vapor Ice Skates", "Junior Program", "Match Tickets", "Goalie Gloves"].map(
-                  (term) => (
-                    <button
-                      key={term}
-                      onClick={() => {
-                        router.push(`/products?search=${encodeURIComponent(term)}`);
-                        setSearchOpen(false);
-                      }}
-                      className="badge badge-lg bg-gray-100 hover:bg-red-50 hover:text-[#FF4240] border-none text-gray-600 text-xs py-3 px-3 cursor-pointer transition-colors"
-                    >
-                      {term}
-                    </button>
-                  )
-                )}
+                {POPULAR_SEARCHES.map((term) => (
+                  <button
+                    key={term}
+                    type="button"
+                    onClick={() => submitSearch(term)}
+                    className="apex-badge transition-colors hover:border-brand-200 hover:bg-brand-50 hover:text-brand-600"
+                  >
+                    {term}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
         </div>
       )}
-
     </>
   );
 }

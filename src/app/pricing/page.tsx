@@ -87,36 +87,36 @@ export default function PricingPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900">
+    <div className="min-h-screen flex flex-col bg-surface-0 text-ink-900">
       <Navbar />
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-12">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <span className="badge badge-sm bg-red-100 text-[#FF4240] font-extrabold uppercase tracking-widest px-3 py-2">
+          <span className="apex-badge apex-badge-sm bg-brand-100 text-brand-600 font-extrabold uppercase tracking-widest px-3 py-2">
             Membership Plans
           </span>
-          <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl font-black text-ink-900 tracking-tight">
             Transparent Pricing for Every Hockey Goal
           </h1>
-          <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
+          <p className="text-ink-600 text-base sm:text-lg leading-relaxed">
             Gain unlimited arena ice access, pro coach masterclasses, VIP match tickets, and gear discounts with an Apex Hockey membership.
           </p>
 
           {/* Billing Toggle */}
           <div className="flex items-center justify-center gap-3 pt-4">
-            <span className={`text-sm font-bold ${!annual ? "text-gray-900" : "text-gray-400"}`}>
+            <span className={`text-sm font-bold ${!annual ? "text-ink-900" : "text-ink-500"}`}>
               Monthly Billing
             </span>
             <input
               type="checkbox"
-              className="toggle toggle-error bg-gray-200"
+              className="apex-toggle toggle-error bg-gray-200"
               checked={annual}
               onChange={() => setAnnual(!annual)}
             />
-            <span className={`text-sm font-bold flex items-center gap-1.5 ${annual ? "text-gray-900" : "text-gray-400"}`}>
+            <span className={`text-sm font-bold flex items-center gap-1.5 ${annual ? "text-ink-900" : "text-ink-500"}`}>
               Annual Billing
-              <span className="badge badge-sm bg-emerald-500 text-white font-extrabold text-[10px]">
+              <span className="apex-badge apex-badge-sm bg-emerald-500 text-white font-extrabold text-[10px]">
                 SAVE 20%
               </span>
             </span>
@@ -133,15 +133,15 @@ export default function PricingPage() {
             return (
               <div
                 key={plan.name}
-                className={`bg-white rounded-3xl p-8 transition-all duration-300 flex flex-col justify-between relative ${
+                className={`bg-surface-0 rounded-3xl p-8 transition-all duration-300 flex flex-col justify-between relative ${
                   plan.isPopular
-                    ? "border-2 border-[#FF4240] shadow-2xl shadow-red-500/10 scale-105"
-                    : "border border-gray-200 shadow-sm hover:shadow-xl"
+                    ? "border-2 border-brand-500 shadow-2xl shadow-red-500/10 scale-105"
+                    : "border border-line-200 shadow-sm hover:shadow-xl"
                 }`}
               >
                 {plan.isPopular && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                    <span className="badge bg-[#FF4240] text-white border-none font-bold text-xs px-4 py-3 uppercase tracking-wider shadow-md">
+                    <span className="apex-badge bg-brand-500 text-white border-none font-bold text-xs px-4 py-3 uppercase tracking-wider shadow-md">
                       {plan.badge}
                     </span>
                   </div>
@@ -149,31 +149,31 @@ export default function PricingPage() {
 
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <div className="w-12 h-12 rounded-2xl bg-red-50 text-[#FF4240] flex items-center justify-center text-2xl">
+                    <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-2xl">
                       <Icon />
                     </div>
                     {!plan.isPopular && (
-                      <span className="badge badge-ghost text-gray-600 font-bold text-xs">
+                      <span className="apex-badge text-ink-600 font-bold text-xs">
                         {plan.badge}
                       </span>
                     )}
                   </div>
 
                   <div>
-                    <h3 className="text-2xl font-extrabold text-gray-900">{plan.name}</h3>
-                    <p className="text-gray-500 text-xs mt-1">{plan.tagline}</p>
+                    <h3 className="text-2xl font-extrabold text-ink-900">{plan.name}</h3>
+                    <p className="text-ink-600 text-xs mt-1">{plan.tagline}</p>
                   </div>
 
                   <div className="flex items-baseline gap-1">
-                    <span className="text-4xl sm:text-5xl font-black text-gray-900">${price}</span>
-                    <span className="text-gray-500 text-sm font-semibold">{period}</span>
+                    <span className="text-4xl sm:text-5xl font-black text-ink-900">${price}</span>
+                    <span className="text-ink-600 text-sm font-semibold">{period}</span>
                   </div>
 
-                  <div className="border-t border-gray-100 pt-6 space-y-3">
-                    <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">What&apos;s Included:</p>
+                  <div className="border-t border-line-200 pt-6 space-y-3">
+                    <p className="text-xs font-bold text-ink-700 uppercase tracking-wider">What&apos;s Included:</p>
                     {plan.features.map((feat, idx) => (
-                      <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-gray-600">
-                        <FaCheck className="text-[#FF4240] text-xs mt-1 flex-shrink-0" />
+                      <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-ink-600">
+                        <FaCheck className="text-brand-600 text-xs mt-1 flex-shrink-0" />
                         <span>{feat}</span>
                       </div>
                     ))}
@@ -186,8 +186,8 @@ export default function PricingPage() {
                     disabled={loadingPlan === plan.name}
                     className={`btn btn-block rounded-2xl font-bold py-3 transition-all ${
                       plan.isPopular
-                        ? "bg-[#FF4240] hover:bg-[#e03735] text-white border-none shadow-lg shadow-red-500/20"
-                        : "btn-outline border-gray-300 text-gray-800 hover:bg-gray-900 hover:border-gray-900 hover:text-white"
+                        ? "bg-brand-500 hover:bg-brand-600 text-white border-none shadow-lg shadow-brand-500/20"
+                        : "btn-outline border-line-300 text-ink-800 hover:bg-gray-900 hover:border-gray-900 hover:text-white"
                     }`}
                   >
                     {loadingPlan === plan.name ? "Redirecting to Stripe..." : `Get Started with ${plan.name}`}
@@ -199,9 +199,9 @@ export default function PricingPage() {
         </div>
 
         {/* Guarantee Banner */}
-        <div className="bg-slate-50 border border-gray-200 rounded-3xl p-8 max-w-3xl mx-auto text-center space-y-3">
-          <h4 className="font-extrabold text-lg text-gray-900">14-Day On-Ice Satisfaction Guarantee</h4>
-          <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
+        <div className="bg-surface-50 border border-line-200 rounded-3xl p-8 max-w-3xl mx-auto text-center space-y-3">
+          <h4 className="font-extrabold text-lg text-ink-900">14-Day On-Ice Satisfaction Guarantee</h4>
+          <p className="text-ink-600 text-xs sm:text-sm leading-relaxed">
             If you don&apos;t experience measurable improvements in skating agility and shooting power within your first 2 weeks, we will provide a 100% refund with zero questions asked.
           </p>
         </div>

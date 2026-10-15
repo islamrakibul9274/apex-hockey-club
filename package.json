@@ -10,7 +10,8 @@
     "migrate": "tsx scripts/migrate-001-password-reset.ts",
     "migrate:002": "tsx scripts/migrate-002-notifications.ts",
     "seed": "tsx scripts/seed.ts",
-    "verify:auth": "bash scripts/verify-auth.sh"
+    "verify:auth": "bash scripts/verify-auth.sh",
+    "migrate:003": "tsx scripts/migrate-003-images.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -34,7 +35,6 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.20",
-    "daisyui": "^4.12.23",
     "playwright": "^1.64.1",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",

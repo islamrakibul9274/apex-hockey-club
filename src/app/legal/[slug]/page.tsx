@@ -1,91 +1,182 @@
-"use client";
-
-import React from "react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { FaArrowLeft } from "react-icons/fa6";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Link from "next/link";
-import { useParams, notFound } from "next/navigation";
-import { FaArrowLeft } from "react-icons/fa6";
 
-const LEGAL_DOCS: Record<string, { title: string; effectiveDate: string; content: string }> = {
+/**
+ * Static legal content, rendered on the server.
+ *
+ * This page was previously `"use client"` and read its slug with useParams,
+ * which shipped the whole document set to the browser and painted nothing
+ * until hydration finished. It is now prerendered with generateStaticParams,
+ * so the HTML arrives complete and the route carries almost no JavaScript.
+ */
+
+interface LegalDoc {
+  title: string;
+  effectiveDate: string;
+  summary: string;
+  sections: { heading: string; body: string }[];
+}
+
+const LEGAL_DOCS: Record<string, LegalDoc> = {
   terms: {
     title: "Terms of Service",
     effectiveDate: "August 2026",
-    content: `Welcome to Apex Hockey Club ("Apex Hockey", "we", "our"). By accessing our website, purchasing tournament match tickets, registering for training camps, or acquiring official equipment, you agree to comply with these terms.
-
-### 1. Account Responsibilities
-You are responsible for safeguarding your login credentials. Any activity under your account is your responsibility.
-
-### 2. Match Tickets and Camp Registrations
-All event tickets purchased through our platform are authentic and guarantee admission to the specified venue and seating tier. Cancellations and transfers must be requested at least 48 hours prior to game start.
-
-### 3. Equipment Store Orders
-We warrant all official composite sticks, helmets, and ice skates against manufacturer defects for a period of 60 days from delivery.`,
+    summary:
+      "The agreement that governs your use of Apex Hockey Club services, bookings and store.",
+    sections: [
+      {
+        heading: "1. Membership",
+        body: `A membership is personal and non-transferable. Membership runs for the term shown at checkout and renews only if you ask us to renew it. We do not charge a card on file without an explicit opt-in.`,
+      },
+      {
+        heading: "2. Bookings and cancellations",
+        body: `Match passes and programme places are held in your name against the email on your account. You may cancel up to 48 hours before the session for a full credit. Inside 48 hours a booking is non-refundable, because ice time and coaching are already committed.`,
+      },
+      {
+        heading: "3. On-ice safety",
+        body: `By enrolling in Apex Hockey camps, clinic masterclasses or open ice sessions you acknowledge inherent risks and agree to wear full certified protective equipment (CSA/HECC approved helmet, pads and skates) at all times on the ice sheet.`,
+      },
+      {
+        heading: "4. Store orders",
+        body: `Orders are confirmed once payment clears. Equipment that has been sized or fitted cannot be returned unless it is faulty. Faulty equipment is replaced or refunded at our option within 30 days of delivery.`,
+      },
+    ],
   },
   privacy: {
     title: "Privacy Policy",
     effectiveDate: "August 2026",
-    content: `Apex Hockey respects your privacy and is committed to protecting your personal information.
-
-### 1. Information Collected
-We collect your name, contact email, phone number, and billing information strictly to process tickets, camp enrollments, and store equipment dispatch.
-
-### 2. Data Protection
-All payment information is processed via 256-bit SSL encryption through Stripe. We do not store full credit card numbers on our servers.
-
-### 3. Third-Party Sharing
-We never sell, rent, or trade your personal information to third-party marketers.`,
+    summary: "What we collect, why we collect it, and the controls you have over it.",
+    sections: [
+      {
+        heading: "What we collect",
+        body: `Account details you give us (name, email, phone, billing address), booking and order history, and basic technical data such as your IP address when you sign in.`,
+      },
+      {
+        heading: "Why we collect it",
+        body: `To run your account, take payment, issue match passes and send the alerts you have opted into. We do not sell personal data and we do not share it with advertisers.`,
+      },
+      {
+        heading: "Cookies",
+        body: `We set a session cookie so you stay signed in, and a small cart cookie so your basket survives a refresh. We do not use advertising trackers.`,
+      },
+      {
+        heading: "Your controls",
+        body: `You can update your details and notification preferences from your account at any time. To delete your account entirely, contact us and we will remove your personal data within 30 days.`,
+      },
+    ],
   },
   cookies: {
-    title: "Cookie Policy",
+    title: "Cookie Settings",
     effectiveDate: "August 2026",
-    content: `Our website utilizes essential cookies to maintain your shopping bag items, manage your authenticated member session, and optimize page load speeds.
-
-### Essential Cookies
-Required for navigation, equipment bag state, and secure Stripe checkout.
-
-### Disabling Cookies
-You can manage cookie settings in your browser at any time, though disabling cookies may affect checkout and session persistence.`,
+    summary: "The small number of cookies this site sets, and why each one exists.",
+    sections: [
+      {
+        heading: "Essential cookies",
+        body: `auth_token keeps you signed in and is httpOnly, so scripts cannot read it. apex_hockey_cart stores your basket in your browser so it survives a refresh. Neither is used for tracking.`,
+      },
+      {
+        heading: "Analytics",
+        body: `We measure aggregate page performance with privacy-friendly, cookieless analytics. No cross-site profile is built from your visit.`,
+      },
+      {
+        heading: "Managing cookies",
+        body: `You can clear or block cookies in your browser settings. Blocking the session cookie means you will be signed out on every visit, and blocking the cart cookie means your basket will not persist.`,
+      },
+    ],
   },
   waiver: {
-    title: "Athletic Participation & Liability Waiver",
+    title: "Athletic Waiver",
     effectiveDate: "August 2026",
-    content: `Ice hockey is a physical sport involving speed, body contact, and hard pucks.
-
-By enrolling in Apex Hockey camps, clinic masterclasses, or open ice sessions, participants and guardians acknowledge inherent risks and agree to wear full certified protective equipment (CSA/HECC approved helmet, pads, and skates) at all times on the ice sheet.`,
+    summary: "The acknowledgement every athlete signs before taking the ice with us.",
+    sections: [
+      {
+        heading: "Assumption of risk",
+        body: `Ice hockey is a contact sport played at speed. I understand that participation carries a risk of injury, and I accept that risk voluntarily.`,
+      },
+      {
+        heading: "Fitness to participate",
+        body: `I confirm I am medically fit to skate and play, and I will tell my coach about any injury or condition that could be aggravated by the session.`,
+      },
+      {
+        heading: "Equipment",
+        body: `I will arrive in certified protective equipment appropriate to my position, including a helmet with a full cage or visor, and I will wear it for the whole session.`,
+      },
+    ],
   },
 };
 
-export default function LegalPage() {
-  const params = useParams();
-  const rawSlug = (params?.slug as string) || "terms";
-  // An unknown slug previously rendered Terms of Service with HTTP 200.
-  const doc = LEGAL_DOCS[rawSlug];
+export function generateStaticParams() {
+  return Object.keys(LEGAL_DOCS).map((slug) => ({ slug }));
+}
+
+export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+  const doc = LEGAL_DOCS[params.slug];
+  if (!doc) return { title: "Not found" };
+  return {
+    title: `${doc.title} — Apex Hockey Club`,
+    description: doc.summary,
+    alternates: { canonical: `/legal/${params.slug}` },
+  };
+}
+
+export default function LegalPage({ params }: { params: { slug: string } }) {
+  const doc = LEGAL_DOCS[params.slug];
+
+  // An unknown slug is a 404, not a silent render of the Terms page.
   if (!doc) notFound();
 
+  const siblings = Object.entries(LEGAL_DOCS).filter(([slug]) => slug !== params.slug);
+
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900">
+    <div className="flex min-h-screen flex-col bg-surface-0">
       <Navbar />
+      <main id="main" className="container mx-auto flex-1 px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-brand-600 hover:underline"
+          >
+            <FaArrowLeft aria-hidden="true" className="text-xs" />
+            Return home
+          </Link>
 
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 max-w-3xl space-y-8">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-[#FF4240] transition-colors"
-        >
-          <FaArrowLeft /> Return Home
-        </Link>
+          <article className="mt-6">
+            <header className="border-b border-line-200 pb-6">
+              <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{doc.title}</h1>
+              <p className="mt-2 text-sm text-ink-500">Effective {doc.effectiveDate}</p>
+              <p className="mt-3 text-base text-ink-600">{doc.summary}</p>
+            </header>
 
-        <div className="space-y-2 border-b border-gray-200 pb-6">
-          <span className="badge bg-gray-100 text-gray-700 font-bold text-xs">Legal & Regulatory</span>
-          <h1 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">{doc.title}</h1>
-          <p className="text-xs text-gray-400">Effective Date: {doc.effectiveDate}</p>
-        </div>
+            <div className="mt-8 space-y-8">
+              {doc.sections.map((section) => (
+                <section key={section.heading}>
+                  <h2 className="text-lg font-bold text-ink-900">{section.heading}</h2>
+                  <p className="mt-2 leading-relaxed text-ink-600">{section.body}</p>
+                </section>
+              ))}
+            </div>
+          </article>
 
-        <div className="prose max-w-none text-gray-700 leading-relaxed space-y-6 whitespace-pre-line text-sm sm:text-base">
-          {doc.content}
+          <nav aria-label="Other policies" className="mt-12 border-t border-line-200 pt-6">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-ink-500">
+              Other policies
+            </h2>
+            <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+              {siblings.map(([slug, s]) => (
+                <li key={slug}>
+                  <Link href={`/legal/${slug}`} className="text-sm font-semibold text-brand-600 hover:underline">
+                    {s.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
       </main>
-
       <Footer />
     </div>
   );

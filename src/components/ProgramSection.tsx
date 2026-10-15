@@ -86,15 +86,15 @@ export default function ProgramSection() {
   return (
     <section id="programs" className="px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="text-center space-y-3 my-8 py-8 border-dashed border-2 border-l-0 border-r-0 border-gray-200">
-        <span className="badge badge-sm bg-red-100 text-[#FF4240] font-extrabold uppercase tracking-widest px-3 py-2">
+      <div className="text-center space-y-3 my-8 py-8 border-dashed border-2 border-l-0 border-r-0 border-line-200">
+        <span className="apex-badge apex-badge-sm bg-brand-100 text-brand-600 font-extrabold uppercase tracking-widest px-3 py-2">
           Development Paths
         </span>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">
+        <h2 className="text-3xl sm:text-4xl font-extrabold text-ink-900">
           Program Sections
         </h2>
-        <p className="text-gray-500 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-          Dit amet consectetur. Condimentum dignissim adipiscing aliquam turpis placerat <br className="hidden sm:inline" /> dolor. Purus urna in sit nullam proin.
+        <p className="text-ink-600 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+          Three age-group pathways, each built around real ice time rather than drills on a treadmill.
         </p>
       </div>
 
@@ -110,7 +110,7 @@ export default function ProgramSection() {
               }`}
               style={{ backgroundImage: `url(${program.image || "/images/2.png"})` }}
             >
-              <div className="hero-overlay bg-gradient-to-t from-black via-black/75 to-black/30"></div>
+              <div className="apex-hero-overlay bg-gradient-to-t from-black via-black/75 to-black/30"></div>
               <div
                 className={`hero-content text-neutral-content p-6 sm:p-10 w-full flex ${
                   isFullSpan ? "justify-start" : "justify-start"
@@ -118,13 +118,13 @@ export default function ProgramSection() {
               >
                 <div className="max-w-xl space-y-4 text-left">
                   <div className="flex flex-wrap gap-2">
-                    <span className="badge bg-[#FF4240] text-white border-none font-bold text-xs">
+                    <span className="apex-badge bg-brand-500 text-white border-none font-bold text-xs">
                       {program.ageGroup}
                     </span>
-                    <span className="badge bg-white/20 text-white border-none font-semibold text-xs backdrop-blur-md">
+                    <span className="apex-badge bg-surface-0/20 text-white border-none font-semibold text-xs backdrop-blur-md">
                       {program.duration}
                     </span>
-                    <span className="badge bg-amber-400 text-gray-900 border-none font-bold text-xs">
+                    <span className="apex-badge bg-amber-400 text-ink-900 border-none font-bold text-xs">
                       {program.spotsLeft} Spots Left
                     </span>
                   </div>
@@ -139,7 +139,7 @@ export default function ProgramSection() {
 
                   <div className="flex items-center gap-4 text-xs text-gray-300">
                     <span className="flex items-center gap-1.5">
-                      <FaCalendarDays className="text-[#FF4240]" /> {program.schedule}
+                      <FaCalendarDays className="text-brand-600" /> {program.schedule}
                     </span>
                     <span className="font-extrabold text-white text-base">
                       ${program.price}
@@ -149,13 +149,13 @@ export default function ProgramSection() {
                   <div className="pt-2 flex flex-wrap gap-3">
                     <button
                       onClick={() => setSelectedProgram(program)}
-                      className="btn bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-2xl px-6 font-bold shadow-lg shadow-red-500/30 flex items-center gap-2"
+                      className="apex-btn bg-brand-500 hover:bg-brand-600 text-white border-none rounded-2xl px-6 font-bold shadow-lg shadow-red-500/30 flex items-center gap-2"
                     >
                       <FaUserPlus /> Register Now!
                     </button>
                     <Link
                       href={`/programs#${program.id}`}
-                      className="btn bg-white/20 hover:bg-white text-white hover:text-gray-900 border-none rounded-2xl px-5 font-semibold backdrop-blur-md text-xs"
+                      className="apex-btn bg-surface-0/20 hover:bg-surface-0 text-white hover:text-ink-900 border-none rounded-2xl px-5 font-semibold backdrop-blur-md text-xs"
                     >
                       View Syllabus
                     </Link>
@@ -170,10 +170,10 @@ export default function ProgramSection() {
       {/* Registration Modal */}
       {selectedProgram && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white w-full max-w-lg rounded-3xl p-8 shadow-2xl space-y-6 relative animate-in zoom-in-95">
+          <div className="bg-surface-0 w-full max-w-lg rounded-3xl p-8 shadow-2xl space-y-6 relative animate-in zoom-in-95">
             <button
               onClick={() => setSelectedProgram(null)}
-              className="btn btn-circle btn-ghost btn-sm absolute top-4 right-4 text-gray-400 hover:text-gray-700"
+              className="apex-btn apex-btn-icon apex-btn-ghost apex-btn-sm absolute top-4 right-4 text-ink-500 hover:text-ink-700"
             >
               <FaXmark className="text-lg" />
             </button>
@@ -186,16 +186,16 @@ export default function ProgramSection() {
 
             {registeredSuccess ? (
               <div role="status" className="text-center py-8 space-y-4">
-                <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mx-auto">
+                <div className="w-16 h-16 rounded-full bg-success-50 text-success-700 flex items-center justify-center text-2xl mx-auto">
                   <FaCheck />
                 </div>
-                <h3 className="text-2xl font-extrabold text-gray-900">Registration Confirmed!</h3>
-                <p className="text-gray-500 text-sm">
+                <h3 className="text-2xl font-extrabold text-ink-900">Registration Confirmed!</h3>
+                <p className="text-ink-600 text-sm">
                   Welcome to {selectedProgram.title}. We&apos;ve sent program details and schedule to your email.
                 </p>
                 <Link
                   href="/account?tab=bookings"
-                  className="btn bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-2xl px-6 font-bold"
+                  className="apex-btn bg-brand-500 hover:bg-brand-600 text-white border-none rounded-2xl px-6 font-bold"
                 >
                   View in My Portal
                 </Link>
@@ -203,59 +203,59 @@ export default function ProgramSection() {
             ) : (
               <>
                 <div className="space-y-2">
-                  <span className="badge bg-red-100 text-[#FF4240] font-bold text-xs">
+                  <span className="apex-badge bg-brand-100 text-brand-600 font-bold text-xs">
                     {selectedProgram.category} Program
                   </span>
-                  <h3 className="text-2xl font-extrabold text-gray-900">{selectedProgram.title}</h3>
-                  <p className="text-gray-500 text-xs">
-                    Coach: <span className="font-bold text-gray-700">{selectedProgram.coach}</span> | Fee:{" "}
-                    <span className="font-extrabold text-[#FF4240] text-sm">${selectedProgram.price}</span>
+                  <h3 className="text-2xl font-extrabold text-ink-900">{selectedProgram.title}</h3>
+                  <p className="text-ink-600 text-xs">
+                    Coach: <span className="font-bold text-ink-700">{selectedProgram.coach}</span> | Fee:{" "}
+                    <span className="font-extrabold text-brand-600 text-sm">${selectedProgram.price}</span>
                   </p>
                 </div>
 
                 <form onSubmit={handleRegister} className="space-y-4">
-                  <div className="form-control">
-                    <label className="label text-xs font-bold text-gray-700">Athlete Name</label>
+                  <div className="apex-field">
+                    <label className="label text-xs font-bold text-ink-700">Athlete Name</label>
                     <input
                       type="text"
                       value={athleteName}
                       onChange={(e) => setAthleteName(e.target.value)}
                       placeholder="Full Name"
-                      className="input bg-gray-100 border-none rounded-xl focus:ring-2 focus:ring-[#FF4240]"
+                      className="apex-input bg-surface-100 border-none rounded-xl focus:ring-2 focus:ring-brand-500"
                       required
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="form-control">
-                      <label className="label text-xs font-bold text-gray-700">Contact Email</label>
+                    <div className="apex-field">
+                      <label className="label text-xs font-bold text-ink-700">Contact Email</label>
                       <input
                         type="email"
                         value={athleteEmail}
                         onChange={(e) => setAthleteEmail(e.target.value)}
                         placeholder="athlete@example.com"
-                        className="input bg-gray-100 border-none rounded-xl focus:ring-2 focus:ring-[#FF4240]"
+                        className="apex-input bg-surface-100 border-none rounded-xl focus:ring-2 focus:ring-brand-500"
                         required
                       />
                     </div>
-                    <div className="form-control">
-                      <label className="label text-xs font-bold text-gray-700">Athlete Age</label>
+                    <div className="apex-field">
+                      <label className="label text-xs font-bold text-ink-700">Athlete Age</label>
                       <input
                         type="number"
                         value={athleteAge}
                         onChange={(e) => setAthleteAge(e.target.value)}
                         placeholder="e.g. 14"
-                        className="input bg-gray-100 border-none rounded-xl focus:ring-2 focus:ring-[#FF4240]"
+                        className="apex-input bg-surface-100 border-none rounded-xl focus:ring-2 focus:ring-brand-500"
                         required
                       />
                     </div>
                   </div>
 
-                  <div className="bg-gray-50 p-4 rounded-2xl text-xs text-gray-600 space-y-1">
-                    <p className="font-bold text-gray-800">Included in registration:</p>
+                  <div className="bg-surface-50 p-4 rounded-2xl text-xs text-ink-600 space-y-1">
+                    <p className="font-bold text-ink-800">Included in registration:</p>
                     {selectedProgram.features.slice(0, 3).map((f, i) => (
                       <p key={i} className="flex items-center gap-1.5">
-                        <FaCheck className="text-[#FF4240] text-[10px]" /> {f}
+                        <FaCheck className="text-brand-600 text-[10px]" /> {f}
                       </p>
                     ))}
                   </div>
@@ -263,7 +263,7 @@ export default function ProgramSection() {
                   <button
                     type="submit"
                     disabled={registering}
-                    className="btn btn-block bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-2xl font-bold py-3"
+                    className="apex-btn apex-btn-block bg-brand-500 hover:bg-brand-600 text-white border-none rounded-2xl font-bold py-3"
                   >
                     {registering ? "Confirming..." : `Confirm Registration ($${selectedProgram.price})`}
                   </button>

@@ -197,7 +197,7 @@ function AccountContent() {
     <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-8">
       {/* Payment Confirmation Banner */}
       {paymentSuccess && (
-        <div className="alert alert-success text-white font-bold rounded-2xl shadow-xl flex items-center justify-between animate-in slide-in-from-top-2">
+        <div className="apex-alert apex-alert-success text-white font-bold rounded-2xl shadow-xl flex items-center justify-between animate-in slide-in-from-top-2">
           <div className="flex items-center gap-3">
             <FaCheck className="text-xl" />
             <div>
@@ -217,16 +217,16 @@ function AccountContent() {
           <img
             src={user.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150"}
             alt={user.name}
-            className="w-20 h-20 rounded-full object-cover border-4 border-[#FF4240] shadow-md"
+            className="w-20 h-20 rounded-full object-cover border-4 border-brand-500 shadow-md"
           />
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <h1 className="text-2xl sm:text-3xl font-black text-white">{user.name}</h1>
-              <span className="badge bg-[#FF4240] text-white border-none font-bold text-xs uppercase px-2 py-1">
+              <span className="apex-badge bg-brand-500 text-white border-none font-bold text-xs uppercase px-2 py-1">
                 {user.role}
               </span>
             </div>
-            <p className="text-xs text-slate-400">{user.email}</p>
+            <p className="text-xs text-ink-500">{user.email}</p>
             <div className="flex items-center gap-2 pt-1 text-xs text-amber-400 font-bold">
               <FaShieldHalved /> Plan: {user.membershipPlan || "Elite Champion"}
             </div>
@@ -236,7 +236,7 @@ function AccountContent() {
         <div className="flex items-center gap-3">
           <button
             onClick={logout}
-            className="btn btn-sm btn-outline border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl"
+            className="apex-btn apex-btn-sm apex-btn-secondary border-line-300 text-ink-500 hover:text-white hover:bg-slate-800 rounded-xl"
           >
             <FaRightFromBracket /> Sign Out
           </button>
@@ -244,13 +244,13 @@ function AccountContent() {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex border-b border-gray-200 gap-4 overflow-x-auto no-scrollbar">
+      <div className="flex border-b border-line-200 gap-4 overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveTab("overview")}
           className={`pb-4 px-3 text-sm font-extrabold flex items-center gap-2 border-b-2 transition-all ${
             activeTab === "overview"
-              ? "border-[#FF4240] text-[#FF4240]"
-              : "border-transparent text-gray-500 hover:text-gray-900"
+              ? "border-brand-500 text-brand-600"
+              : "border-transparent text-ink-600 hover:text-ink-900"
           }`}
         >
           <FaUser /> Profile & Portal
@@ -259,8 +259,8 @@ function AccountContent() {
           onClick={() => setActiveTab("bookings")}
           className={`pb-4 px-3 text-sm font-extrabold flex items-center gap-2 border-b-2 transition-all ${
             activeTab === "bookings"
-              ? "border-[#FF4240] text-[#FF4240]"
-              : "border-transparent text-gray-500 hover:text-gray-900"
+              ? "border-brand-500 text-brand-600"
+              : "border-transparent text-ink-600 hover:text-ink-900"
           }`}
         >
           <FaTicket /> Match Tickets & Camps ({bookings.length})
@@ -269,8 +269,8 @@ function AccountContent() {
           onClick={() => setActiveTab("settings")}
           className={`pb-4 px-3 text-sm font-extrabold flex items-center gap-2 border-b-2 transition-all ${
             activeTab === "settings"
-              ? "border-[#FF4240] text-[#FF4240]"
-              : "border-transparent text-gray-500 hover:text-gray-900"
+              ? "border-brand-500 text-brand-600"
+              : "border-transparent text-ink-600 hover:text-ink-900"
           }`}
         >
           <FaGear /> Account Settings
@@ -281,46 +281,46 @@ function AccountContent() {
       {activeTab === "overview" && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-slate-50 border border-gray-200 rounded-3xl p-6 space-y-4">
-              <h3 className="font-extrabold text-base text-gray-900">Active Membership Benefits</h3>
-              <div className="space-y-2 text-xs text-gray-600">
+            <div className="bg-surface-50 border border-line-200 rounded-3xl p-6 space-y-4">
+              <h3 className="font-extrabold text-base text-ink-900">Active Membership Benefits</h3>
+              <div className="space-y-2 text-xs text-ink-600">
                 <div className="flex items-center gap-2">
-                  <FaCheck className="text-[#FF4240]" /> 24/7 Unlimited Ice Rink Access
+                  <FaCheck className="text-brand-600" /> 24/7 Unlimited Ice Rink Access
                 </div>
                 <div className="flex items-center gap-2">
-                  <FaCheck className="text-[#FF4240]" /> Free Weekly Skate Sharpening
+                  <FaCheck className="text-brand-600" /> Free Weekly Skate Sharpening
                 </div>
                 <div className="flex items-center gap-2">
-                  <FaCheck className="text-[#FF4240]" /> 30% Off Official Store Equipment
+                  <FaCheck className="text-brand-600" /> 30% Off Official Store Equipment
                 </div>
                 <div className="flex items-center gap-2">
-                  <FaCheck className="text-[#FF4240]" /> VIP Tournament Match Seating
+                  <FaCheck className="text-brand-600" /> VIP Tournament Match Seating
                 </div>
               </div>
               <Link
                 href="/pricing"
-                className="btn btn-sm btn-block bg-white border border-gray-200 text-gray-800 rounded-xl hover:bg-gray-100 font-bold"
+                className="apex-btn apex-btn-sm apex-btn-block bg-surface-0 border border-line-200 text-ink-800 rounded-xl hover:bg-surface-100 font-bold"
               >
                 Manage Membership Plan
               </Link>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-3xl p-6 space-y-3">
-              <h3 className="font-extrabold text-base text-gray-900">Need On-Ice Assistance?</h3>
-              <p className="text-xs text-gray-500">
+            <div className="bg-surface-0 border border-line-200 rounded-3xl p-6 space-y-3">
+              <h3 className="font-extrabold text-base text-ink-900">Need On-Ice Assistance?</h3>
+              <p className="text-xs text-ink-600">
                 Contact the Head Coach desk for private ice time scheduling or equipment fitting.
               </p>
               <Link
                 href="/contact"
-                className="btn btn-sm btn-block bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-xl font-bold"
+                className="apex-btn apex-btn-sm apex-btn-block bg-brand-500 hover:bg-brand-600 text-white border-none rounded-xl font-bold"
               >
                 Contact Concierge
               </Link>
             </div>
           </div>
 
-          <div className="lg:col-span-8 bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 space-y-6">
-            <h2 className="text-2xl font-extrabold text-gray-900">Personal Athlete Profile</h2>
+          <div className="lg:col-span-8 bg-surface-0 border border-line-200 rounded-3xl p-6 sm:p-8 space-y-6">
+            <h2 className="text-2xl font-extrabold text-ink-900">Personal Athlete Profile</h2>
             {savedSuccess && (
               <div role="status" className="apex-alert apex-alert-success">
                 Profile settings saved successfully.
@@ -334,64 +334,64 @@ function AccountContent() {
 
             <form onSubmit={handleProfileSave} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="form-control">
-                  <label className="label text-xs font-bold text-gray-700">Full Name</label>
+                <div className="apex-field">
+                  <label className="label text-xs font-bold text-ink-700">Full Name</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="input bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF4240]"
+                    className="apex-input bg-surface-50 border border-line-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500"
                     required
                   />
                 </div>
 
-                <div className="form-control">
-                  <label className="label text-xs font-bold text-gray-700">Email (Read Only)</label>
+                <div className="apex-field">
+                  <label className="label text-xs font-bold text-ink-700">Email (Read Only)</label>
                   <input
                     type="email"
                     value={user.email}
                     disabled
-                    className="input bg-gray-100 border border-gray-200 rounded-xl text-sm text-gray-400"
+                    className="apex-input bg-surface-100 border border-line-200 rounded-xl text-sm text-ink-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="form-control">
-                  <label className="label text-xs font-bold text-gray-700">Phone Number</label>
+                <div className="apex-field">
+                  <label className="label text-xs font-bold text-ink-700">Phone Number</label>
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="input bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF4240]"
+                    className="apex-input bg-surface-50 border border-line-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
 
-                <div className="form-control">
-                  <label className="label text-xs font-bold text-gray-700">City / District</label>
+                <div className="apex-field">
+                  <label className="label text-xs font-bold text-ink-700">City / District</label>
                   <input
                     type="text"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    className="input bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF4240]"
+                    className="apex-input bg-surface-50 border border-line-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
               </div>
 
-              <div className="form-control">
-                <label className="label text-xs font-bold text-gray-700">Street Address</label>
+              <div className="apex-field">
+                <label className="label text-xs font-bold text-ink-700">Street Address</label>
                 <input
                   type="text"
                   value={street}
                   onChange={(e) => setStreet(e.target.value)}
-                  className="input bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF4240]"
+                  className="apex-input bg-surface-50 border border-line-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={saving}
-                className="btn bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-2xl px-8 font-bold"
+                className="apex-btn bg-brand-500 hover:bg-brand-600 text-white border-none rounded-2xl px-8 font-bold"
               >
                 {saving ? "Saving Changes..." : "Save Profile Details"}
               </button>
@@ -405,12 +405,12 @@ function AccountContent() {
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-2xl font-extrabold text-gray-900">Your Tickets & Camp Passes</h2>
-              <p className="text-gray-500 text-xs">Present digital barcode at arena turnstile for entry</p>
+              <h2 className="text-2xl font-extrabold text-ink-900">Your Tickets & Camp Passes</h2>
+              <p className="text-ink-600 text-xs">Present digital barcode at arena turnstile for entry</p>
             </div>
             <Link
               href="/get-ticket"
-              className="btn btn-sm bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-xl font-bold"
+              className="apex-btn apex-btn-sm bg-brand-500 hover:bg-brand-600 text-white border-none rounded-xl font-bold"
             >
               + Book Match Pass
             </Link>
@@ -426,7 +426,7 @@ function AccountContent() {
               className="rounded-3xl border p-12 text-center space-y-3"
               style={{
                 backgroundColor: "var(--danger-50)",
-                borderColor: "#fecaca",
+                borderColor: "rgb(var(--brand-200))",
               }}
             >
               <h3 className="text-lg font-bold" style={{ color: "var(--danger-600)" }}>
@@ -437,10 +437,10 @@ function AccountContent() {
               </p>
             </div>
           ) : bookings.length === 0 ? (
-            <div className="bg-slate-50 border border-gray-200 rounded-3xl p-12 text-center space-y-4">
+            <div className="bg-surface-50 border border-line-200 rounded-3xl p-12 text-center space-y-4">
               <FaTicket className="text-4xl text-gray-300 mx-auto" aria-hidden="true" />
-              <h3 className="text-xl font-bold text-gray-800">No active bookings found</h3>
-              <p className="text-gray-500 text-xs max-w-xs mx-auto">
+              <h3 className="text-xl font-bold text-ink-800">No active bookings found</h3>
+              <p className="text-ink-600 text-xs max-w-xs mx-auto">
                 You haven&apos;t reserved any arena match passes or camp enrollments yet.
               </p>
               <Link href="/get-ticket" className="apex-btn apex-btn-primary">
@@ -452,40 +452,40 @@ function AccountContent() {
               {bookings.map((b) => (
                 <div
                   key={b._id}
-                  className="bg-white border-2 border-gray-200 rounded-3xl p-6 shadow-sm flex flex-col justify-between space-y-4 relative overflow-hidden"
+                  className="bg-surface-0 border-2 border-line-200 rounded-3xl p-6 shadow-sm flex flex-col justify-between space-y-4 relative overflow-hidden"
                 >
                   <div className="space-y-2">
                     <div className="flex justify-between items-start">
-                      <span className="badge bg-red-100 text-[#FF4240] font-bold text-xs">
+                      <span className="apex-badge bg-brand-100 text-brand-600 font-bold text-xs">
                         {b.bookingType.toUpperCase()} PASS
                       </span>
-                      <span className="badge bg-emerald-100 text-emerald-700 font-bold text-xs">
+                      <span className="apex-badge bg-success-50 text-success-700 font-bold text-xs">
                         {b.status.toUpperCase()}
                       </span>
                     </div>
 
-                    <h3 className="text-xl font-black text-gray-900 leading-tight">
+                    <h3 className="text-xl font-black text-ink-900 leading-tight">
                       {b.itemTitle}
                     </h3>
 
-                    <div className="flex items-center gap-4 text-xs text-gray-500 pt-1">
+                    <div className="flex items-center gap-4 text-xs text-ink-600 pt-1">
                       <span className="flex items-center gap-1">
-                        <FaCalendarDays className="text-[#FF4240]" /> {b.date || "Upcoming Season"}
+                        <FaCalendarDays className="text-brand-600" /> {b.date || "Upcoming Season"}
                       </span>
                       <span>Tier: {b.tierOrPlan}</span>
                       <span>Seats: x{b.seatsCount}</span>
                     </div>
                   </div>
 
-                  <div className="border-t border-dashed border-gray-300 pt-4 flex items-center justify-between bg-slate-50 p-4 rounded-2xl">
+                  <div className="border-t border-dashed border-line-300 pt-4 flex items-center justify-between bg-surface-50 p-4 rounded-2xl">
                     <div>
-                      <p className="text-[10px] text-gray-400 font-bold uppercase">Pass Code</p>
-                      <p className="font-mono text-xs font-bold text-gray-800">
+                      <p className="text-[10px] text-ink-500 font-bold uppercase">Pass Code</p>
+                      <p className="font-mono text-xs font-bold text-ink-800">
                         APX-{b._id.slice(-8).toUpperCase()}
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <div className="flex items-center gap-2 text-xs text-ink-600">
                       <FaTicket aria-hidden="true" /> Reference only
                     </div>
                   </div>
@@ -498,8 +498,8 @@ function AccountContent() {
 
       {/* Tab 3: Account Settings */}
       {activeTab === "settings" && (
-        <div className="max-w-2xl bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 space-y-6">
-          <h2 className="text-2xl font-extrabold text-gray-900">Account Preferences</h2>
+        <div className="max-w-2xl bg-surface-0 border border-line-200 rounded-3xl p-6 sm:p-8 space-y-6">
+          <h2 className="text-2xl font-extrabold text-ink-900">Account Preferences</h2>
 
           {prefsError && (
             <div role="alert" className="apex-alert apex-alert-error">
@@ -507,26 +507,26 @@ function AccountContent() {
             </div>
           )}
 
-          <div className="space-y-4 divide-y divide-gray-100">
+          <div className="space-y-4 divide-y divide-line-200">
             {(
               [
                 {
                   key: "matchAlerts" as const,
                   title: "Match & Ticket Alerts",
                   body: "Receive notifications when tournament tickets go live",
-                  icon: <FaBell className="text-[#FF4240]" aria-hidden="true" />,
+                  icon: <FaBell className="text-brand-600" aria-hidden="true" />,
                 },
                 {
                   key: "trainingReminders" as const,
                   title: "Training & Clinic Reminders",
                   body: "A reminder two hours before scheduled ice time",
-                  icon: <FaCalendarDays className="text-[#FF4240]" aria-hidden="true" />,
+                  icon: <FaCalendarDays className="text-brand-600" aria-hidden="true" />,
                 },
                 {
                   key: "gearDrops" as const,
                   title: "Pro Shop Gear Drops",
                   body: "Member discount codes on newly released equipment",
-                  icon: <FaGear className="text-[#FF4240]" aria-hidden="true" />,
+                  icon: <FaGear className="text-brand-600" aria-hidden="true" />,
                 },
               ] as const
             ).map((pref) => (
@@ -534,12 +534,12 @@ function AccountContent() {
                 <div className="space-y-0.5">
                   <label
                     htmlFor={`pref-${pref.key}`}
-                    className="font-bold text-sm text-gray-900 flex items-center gap-2 cursor-pointer"
+                    className="font-bold text-sm text-ink-900 flex items-center gap-2 cursor-pointer"
                   >
                     {pref.icon}
                     {pref.title}
                   </label>
-                  <p className="text-xs text-gray-500">{pref.body}</p>
+                  <p className="text-xs text-ink-600">{pref.body}</p>
                 </div>
                 <input
                   id={`pref-${pref.key}`}
@@ -547,16 +547,16 @@ function AccountContent() {
                   checked={preferences[pref.key]}
                   disabled={savingPrefs}
                   onChange={(e) => togglePreference(pref.key, e.target.checked)}
-                  className="toggle toggle-error shrink-0"
+                  className="apex-toggle toggle-error shrink-0"
                 />
               </div>
             ))}
           </div>
 
-          <div className="pt-6 border-t border-gray-200">
+          <div className="pt-6 border-t border-line-200">
             <button
               onClick={logout}
-              className="btn bg-red-50 text-[#FF4240] hover:bg-red-100 border-none rounded-2xl font-bold"
+              className="apex-btn bg-brand-50 text-brand-600 hover:bg-brand-100 border-none rounded-2xl font-bold"
             >
               <FaRightFromBracket /> Sign Out
             </button>
@@ -573,7 +573,7 @@ export default function AccountPage() {
     // for static rendering.
     <Suspense fallback={<FullPageSpinner />}>
       <ProtectedRoute>
-        <div className="min-h-screen flex flex-col bg-white text-gray-900">
+        <div className="min-h-screen flex flex-col bg-surface-0 text-ink-900">
           <Navbar />
           <Suspense fallback={<FullPageSpinner label="Loading your portal…" />}>
             <AccountContent />

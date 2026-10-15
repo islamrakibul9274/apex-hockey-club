@@ -58,19 +58,19 @@ const FACILITIES = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900">
+    <div className="min-h-screen flex flex-col bg-surface-0 text-ink-900">
       <Navbar />
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-16">
         {/* Hero Section */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <span className="badge badge-sm bg-red-100 text-[#FF4240] font-extrabold uppercase tracking-widest px-3 py-2">
+          <span className="apex-badge apex-badge-sm bg-brand-100 text-brand-600 font-extrabold uppercase tracking-widest px-3 py-2">
             The Apex Story
           </span>
-          <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl font-black text-ink-900 tracking-tight">
             Building Champions on & off the Ice
           </h1>
-          <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
+          <p className="text-ink-600 text-base sm:text-lg leading-relaxed">
             Founded with a passion for speed, precision, and athletic excellence, Apex Hockey Club stands as one of the premier ice hockey academies in the world.
           </p>
         </div>
@@ -78,29 +78,29 @@ export default function AboutPage() {
         {/* Story & Philosophy Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="space-y-6">
-            <h2 className="text-3xl font-extrabold text-gray-900">
+            <h2 className="text-3xl font-extrabold text-ink-900">
               A Legacy of High Performance & Integrity
             </h2>
-            <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
+            <p className="text-ink-600 leading-relaxed text-sm sm:text-base">
               At Apex Hockey, we believe elite hockey development requires more than just ice time. It demands structured biomechanical coaching, mental stamina training, and a deep culture of camaraderie and sportsmanship.
             </p>
-            <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
+            <p className="text-ink-600 leading-relaxed text-sm sm:text-base">
               From grassroots 6-year-old beginners stepping onto the rink for their very first glide to competitive junior athletes being drafted into professional leagues, our academy provides the roadmap for greatness.
             </p>
 
             <div className="grid grid-cols-2 gap-4 pt-2">
-              <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 space-y-1">
-                <div className="text-2xl font-black text-[#FF4240]">14+</div>
-                <div className="text-xs font-bold text-gray-700">Tournament Cups</div>
+              <div className="p-4 bg-surface-50 rounded-2xl border border-line-200 space-y-1">
+                <div className="text-2xl font-black text-brand-600">14+</div>
+                <div className="text-xs font-bold text-ink-700">Tournament Cups</div>
               </div>
-              <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 space-y-1">
-                <div className="text-2xl font-black text-[#FF4240]">98.4%</div>
-                <div className="text-xs font-bold text-gray-700">Player Advancement</div>
+              <div className="p-4 bg-surface-50 rounded-2xl border border-line-200 space-y-1">
+                <div className="text-2xl font-black text-brand-600">98.4%</div>
+                <div className="text-xs font-bold text-ink-700">Player Advancement</div>
               </div>
             </div>
           </div>
 
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl h-[380px] bg-slate-900">
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl h-[380px] bg-surface-100">
             <Image
               src="/images/1.png"
               alt="Apex Hockey Arena and Athletes"
@@ -109,7 +109,7 @@ export default function AboutPage() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-8 text-white">
               <div className="space-y-1">
-                <p className="text-xs font-bold uppercase tracking-widest text-[#FF4240]">Arena Headquarters</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-brand-600">Arena Headquarters</p>
                 <h3 className="text-xl font-extrabold">Mohakhali Olympic Ice Center</h3>
                 <p className="text-xs text-gray-300">Home of the Apex Predators Hockey Team</p>
               </div>
@@ -120,11 +120,11 @@ export default function AboutPage() {
         {/* Coaching Roster */}
         <section id="coaches" className="space-y-8 pt-6">
           <div className="text-center space-y-2">
-            <span className="badge badge-sm bg-red-100 text-[#FF4240] font-extrabold uppercase tracking-widest px-3 py-2">
+            <span className="apex-badge apex-badge-sm bg-brand-100 text-brand-600 font-extrabold uppercase tracking-widest px-3 py-2">
               Elite Leadership
             </span>
-            <h2 className="text-3xl font-extrabold text-gray-900">Meet Our Certified Coaching Staff</h2>
-            <p className="text-gray-500 text-sm max-w-xl mx-auto">
+            <h2 className="text-3xl font-extrabold text-ink-900">Meet Our Certified Coaching Staff</h2>
+            <p className="text-ink-600 text-sm max-w-xl mx-auto">
               Our coaching roster brings decades of Olympic, NHL, and international coaching credentials directly to your development.
             </p>
           </div>
@@ -133,9 +133,9 @@ export default function AboutPage() {
             {COACHES.map((c, i) => (
               <div
                 key={i}
-                className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 space-y-4 group"
+                className="bg-surface-0 border border-line-200 rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 space-y-4 group"
               >
-                <div className="relative h-64 w-full rounded-2xl overflow-hidden bg-slate-900">
+                <div className="relative h-64 w-full rounded-2xl overflow-hidden bg-surface-100">
                   <Image
                     src={c.image}
                     alt={c.name}
@@ -143,18 +143,18 @@ export default function AboutPage() {
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute top-3 right-3">
-                    <span className="badge bg-[#FF4240] text-white border-none font-bold text-[10px]">
+                    <span className="apex-badge bg-brand-500 text-white border-none font-bold text-[10px]">
                       {c.specialty}
                     </span>
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <h3 className="text-xl font-extrabold text-gray-900 group-hover:text-[#FF4240] transition-colors">
+                  <h3 className="text-xl font-extrabold text-ink-900 group-hover:text-brand-600 transition-colors">
                     {c.name}
                   </h3>
-                  <p className="text-xs font-bold text-[#FF4240]">{c.role}</p>
-                  <p className="text-gray-600 text-xs leading-relaxed pt-2">{c.bio}</p>
+                  <p className="text-xs font-bold text-brand-600">{c.role}</p>
+                  <p className="text-ink-600 text-xs leading-relaxed pt-2">{c.bio}</p>
                 </div>
               </div>
             ))}
@@ -164,20 +164,20 @@ export default function AboutPage() {
         {/* Facilities Section */}
         <section className="space-y-8 pt-6">
           <div className="text-center space-y-2">
-            <span className="badge badge-sm bg-red-100 text-[#FF4240] font-extrabold uppercase tracking-widest px-3 py-2">
+            <span className="apex-badge apex-badge-sm bg-brand-100 text-brand-600 font-extrabold uppercase tracking-widest px-3 py-2">
               State of the Art
             </span>
-            <h2 className="text-3xl font-extrabold text-gray-900">World-Class Athletic Facilities</h2>
+            <h2 className="text-3xl font-extrabold text-ink-900">World-Class Athletic Facilities</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {FACILITIES.map((f, i) => (
-              <div key={i} className="bg-slate-50 rounded-3xl p-6 space-y-4 border border-gray-100">
+              <div key={i} className="bg-surface-50 rounded-3xl p-6 space-y-4 border border-line-200">
                 <div className="relative h-44 w-full rounded-2xl overflow-hidden bg-slate-200">
                   <Image src={f.image} alt={f.title} fill className="object-cover" />
                 </div>
-                <h3 className="text-lg font-extrabold text-gray-900">{f.title}</h3>
-                <p className="text-xs text-gray-600 leading-relaxed">{f.desc}</p>
+                <h3 className="text-lg font-extrabold text-ink-900">{f.title}</h3>
+                <p className="text-xs text-ink-600 leading-relaxed">{f.desc}</p>
               </div>
             ))}
           </div>
@@ -185,27 +185,27 @@ export default function AboutPage() {
 
         {/* Careers & Press Section */}
         <div id="careers" className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6">
-          <div className="bg-slate-900 text-white rounded-3xl p-8 space-y-4">
+          <div className="rounded-2xl border border-line-200 bg-surface-50 p-8 space-y-4">
             <h3 className="text-2xl font-extrabold">Join the Apex Coaching & Ops Team</h3>
-            <p className="text-slate-300 text-sm leading-relaxed">
+            <p className="text-ink-500 text-sm leading-relaxed">
               We are actively hiring certified youth skills trainers, arena ice technicians, and sports physiotherapists for our upcoming season.
             </p>
             <Link
               href="/contact?subject=Careers"
-              className="btn bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-xl font-bold"
+              className="apex-btn bg-brand-500 hover:bg-brand-600 text-white border-none rounded-xl font-bold"
             >
               Submit Application
             </Link>
           </div>
 
-          <div id="press" className="bg-gray-50 border border-gray-200 rounded-3xl p-8 space-y-4">
-            <h3 className="text-2xl font-extrabold text-gray-900">Press & Media Accreditation</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">
+          <div id="press" className="bg-surface-50 border border-line-200 rounded-3xl p-8 space-y-4">
+            <h3 className="text-2xl font-extrabold text-ink-900">Press & Media Accreditation</h3>
+            <p className="text-ink-600 text-sm leading-relaxed">
               Covering the National Championship? Download high-res team photography, brand guidelines, broadcast schedules, and apply for press passes.
             </p>
             <Link
               href="/contact?subject=Press%20Inquiry"
-              className="btn btn-outline border-gray-300 text-gray-800 rounded-xl font-bold"
+              className="apex-btn apex-btn-secondary border-line-300 text-ink-800 rounded-xl font-bold"
             >
               Request Press Access
             </Link>

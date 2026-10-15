@@ -4,14 +4,12 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
   FaShieldHalved,
-  FaTwitter,
-  FaFacebookF,
-  FaInstagram,
-  FaGithub,
   FaPaperPlane,
-  FaPhone,
   FaEnvelope,
   FaLocationDot,
+  FaTicket,
+  FaCalendarDays,
+  FaNewspaper,
 } from "react-icons/fa6";
 
 export default function Footer() {
@@ -71,32 +69,32 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-slate-900 text-slate-300 mt-20 border-t border-slate-800">
+    <footer className="mt-20 border-t border-line-200 bg-surface-50 text-ink-600">
       {/* Top Banner & Newsletter */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 border-b border-slate-800">
+      <div className="apex-container pt-14 pb-10 border-b border-line-200">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-6 space-y-3">
             <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-[#FF4240] flex items-center justify-center text-white shadow-lg">
-                <FaShieldHalved className="text-lg" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-white">
+                <FaShieldHalved className="text-lg" aria-hidden="true" />
               </div>
-              <span className="font-extrabold text-2xl text-white">
-                Hockey<span className="text-[#FF4240]">&apos;</span>s
+              <span className="text-xl font-extrabold text-ink-900">
+                Apex<span className="text-brand-600">Hockey</span>
               </span>
             </div>
-            <p className="text-slate-400 text-sm max-w-md leading-relaxed">
+            <p className="max-w-md text-sm leading-relaxed text-ink-600">
               The international home of competitive ice hockey, Olympic-grade training camps, pro tournament match passes, and premier composite equipment.
             </p>
           </div>
 
           <div className="lg:col-span-6">
-            <div className="bg-slate-800/80 p-6 rounded-3xl border border-slate-700 space-y-3">
-              <h4 className="font-bold text-white text-base">Subscribe to League & Gear Updates</h4>
-              <p className="text-xs text-slate-400">Receive priority match ticket drops, training camp dates, and 15% off official gear.</p>
+            <div className="space-y-3 rounded-2xl border border-line-200 bg-surface-0 p-6">
+              <h4 className="text-base font-bold text-ink-900">Subscribe to league &amp; gear updates</h4>
+              <p className="text-xs text-ink-600">Get match ticket drops, training camp dates and member gear offers.</p>
               {subscribed ? (
                 <div
                   role="status"
-                  className="p-3 bg-emerald-500/20 text-emerald-300 rounded-xl text-xs font-semibold"
+                  className="rounded-xl bg-success-50 p-3 text-xs font-semibold text-success-700"
                 >
                   You&apos;re subscribed. Watch your inbox for ticket drops and gear sales.
                 </div>
@@ -113,22 +111,22 @@ export default function Footer() {
                     placeholder="Enter your email"
                     autoComplete="email"
                     disabled={subscribing}
-                    className="input input-sm flex-1 bg-slate-900 border border-slate-700 text-white rounded-xl text-xs focus:ring-2 focus:ring-[#FF4240]"
+                    className="apex-input apex-input-sm flex-1"
                     required
                   />
                   <button
                     type="submit"
                     disabled={subscribing}
-                    className="btn btn-sm bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-xl px-4 font-bold"
+                    className="apex-btn apex-btn-primary apex-btn-sm"
                   >
-                    <FaPaperPlane className="text-xs mr-1" />
+                    <FaPaperPlane className="text-xs" aria-hidden="true" />
                     {subscribing ? "Sending…" : "Join"}
                   </button>
                 </form>
               )}
 
               {newsletterError && (
-                <div role="alert" className="p-3 bg-red-500/20 text-red-300 rounded-xl text-xs">
+                <div role="alert" className="p-3 bg-brand-500/20 text-red-300 rounded-xl text-xs">
                   {newsletterError}
                 </div>
               )}
@@ -142,91 +140,101 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 text-sm">
           {/* Services */}
           <div className="space-y-3">
-            <h5 className="font-extrabold text-white text-xs tracking-wider uppercase">Services</h5>
-            <ul className="space-y-2 text-xs">
-              <li><Link href="/services/branding" className="hover:text-[#FF4240] transition-colors">Club Branding</Link></li>
-              <li><Link href="/services/design" className="hover:text-[#FF4240] transition-colors">Jersey Design</Link></li>
-              <li><Link href="/services/marketing" className="hover:text-[#FF4240] transition-colors">Tournament Marketing</Link></li>
-              <li><Link href="/services/advertisement" className="hover:text-[#FF4240] transition-colors">Arena Advertising</Link></li>
-              <li><Link href="/services/coaching" className="hover:text-[#FF4240] transition-colors">Coach Masterclasses</Link></li>
-              <li><Link href="/services/training" className="hover:text-[#FF4240] transition-colors">Facility Rentals</Link></li>
+            <h5 className="text-xs font-bold uppercase tracking-wider text-ink-900">Services</h5>
+            <ul className="space-y-2 text-xs text-ink-600">
+              <li><Link href="/services/branding" className="transition-colors hover:text-brand-600">Club Branding</Link></li>
+              <li><Link href="/services/design" className="transition-colors hover:text-brand-600">Jersey Design</Link></li>
+              <li><Link href="/services/marketing" className="transition-colors hover:text-brand-600">Tournament Marketing</Link></li>
+              <li><Link href="/services/advertisement" className="transition-colors hover:text-brand-600">Arena Advertising</Link></li>
+              <li><Link href="/services/coaching" className="transition-colors hover:text-brand-600">Coach Masterclasses</Link></li>
+              <li><Link href="/services/training" className="transition-colors hover:text-brand-600">Facility Rentals</Link></li>
             </ul>
           </div>
 
           {/* Company */}
           <div className="space-y-3">
-            <h5 className="font-extrabold text-white text-xs tracking-wider uppercase">Company</h5>
-            <ul className="space-y-2 text-xs">
-              <li><Link href="/about" className="hover:text-[#FF4240] transition-colors">About Us</Link></li>
-              <li><Link href="/contact" className="hover:text-[#FF4240] transition-colors">Contact Support</Link></li>
-              <li><Link href="/about#careers" className="hover:text-[#FF4240] transition-colors">Careers & Scouting</Link></li>
-              <li><Link href="/about#press" className="hover:text-[#FF4240] transition-colors">Press & Media Kit</Link></li>
-              <li><Link href="/about#coaches" className="hover:text-[#FF4240] transition-colors">Coaching Roster</Link></li>
+            <h5 className="text-xs font-bold uppercase tracking-wider text-ink-900">Company</h5>
+            <ul className="space-y-2 text-xs text-ink-600">
+              <li><Link href="/about" className="transition-colors hover:text-brand-600">About Us</Link></li>
+              <li><Link href="/contact" className="transition-colors hover:text-brand-600">Contact Support</Link></li>
+              <li><Link href="/about#careers" className="transition-colors hover:text-brand-600">Careers & Scouting</Link></li>
+              <li><Link href="/about#press" className="transition-colors hover:text-brand-600">Press & Media Kit</Link></li>
+              <li><Link href="/about#coaches" className="transition-colors hover:text-brand-600">Coaching Roster</Link></li>
             </ul>
           </div>
 
           {/* Legal */}
           <div className="space-y-3">
-            <h5 className="font-extrabold text-white text-xs tracking-wider uppercase">Legal</h5>
-            <ul className="space-y-2 text-xs">
-              <li><Link href="/legal/terms" className="hover:text-[#FF4240] transition-colors">Terms of Service</Link></li>
-              <li><Link href="/legal/privacy" className="hover:text-[#FF4240] transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/legal/cookies" className="hover:text-[#FF4240] transition-colors">Cookie Settings</Link></li>
-              <li><Link href="/legal/waiver" className="hover:text-[#FF4240] transition-colors">Athletic Waiver</Link></li>
+            <h5 className="text-xs font-bold uppercase tracking-wider text-ink-900">Legal</h5>
+            <ul className="space-y-2 text-xs text-ink-600">
+              <li><Link href="/legal/terms" className="transition-colors hover:text-brand-600">Terms of Service</Link></li>
+              <li><Link href="/legal/privacy" className="transition-colors hover:text-brand-600">Privacy Policy</Link></li>
+              <li><Link href="/legal/cookies" className="transition-colors hover:text-brand-600">Cookie Settings</Link></li>
+              <li><Link href="/legal/waiver" className="transition-colors hover:text-brand-600">Athletic Waiver</Link></li>
             </ul>
           </div>
 
-          {/* Social */}
+          {/* Community */}
           <div className="space-y-3">
-            <h5 className="font-extrabold text-white text-xs tracking-wider uppercase">Social</h5>
-            <ul className="space-y-2 text-xs">
+            <h5 className="text-xs font-bold uppercase tracking-wider text-ink-900">Community</h5>
+            <ul className="space-y-2 text-xs text-ink-600">
+              {/* These previously linked to bare twitter.com / facebook.com /
+                  instagram.com / github.com homepages while showing follower
+                  counts we could not substantiate. Every link was a dead end. */}
               <li>
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF4240] flex items-center gap-2">
-                  <FaTwitter className="text-slate-400" /> Twitter / X
-                </a>
+                <Link href="/programs" className="flex items-center gap-2 transition-colors hover:text-brand-600">
+                  <FaCalendarDays className="text-ink-500" aria-hidden="true" /> Training schedule
+                </Link>
               </li>
               <li>
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF4240] flex items-center gap-2">
-                  <FaInstagram className="text-slate-400" /> Instagram
-                </a>
+                <Link href="/get-ticket" className="flex items-center gap-2 transition-colors hover:text-brand-600">
+                  <FaTicket className="text-ink-500" aria-hidden="true" /> Match passes
+                </Link>
               </li>
               <li>
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF4240] flex items-center gap-2">
-                  <FaFacebookF className="text-slate-400" /> Facebook
-                </a>
+                <Link href="/blog" className="flex items-center gap-2 transition-colors hover:text-brand-600">
+                  <FaNewspaper className="text-ink-500" aria-hidden="true" /> Coaching guides
+                </Link>
               </li>
               <li>
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF4240] flex items-center gap-2">
-                  <FaGithub className="text-slate-400" /> GitHub
-                </a>
+                <Link href="/contact" className="flex items-center gap-2 transition-colors hover:text-brand-600">
+                  <FaEnvelope className="text-ink-500" aria-hidden="true" /> Contact the club
+                </Link>
               </li>
             </ul>
           </div>
 
           {/* Explore */}
           <div className="space-y-3">
-            <h5 className="font-extrabold text-white text-xs tracking-wider uppercase">Explore</h5>
-            <ul className="space-y-2 text-xs">
-              <li><Link href="/programs" className="hover:text-[#FF4240] transition-colors">Academy Programs</Link></li>
-              <li><Link href="/products" className="hover:text-[#FF4240] transition-colors">Equipment Store</Link></li>
-              <li><Link href="/pricing" className="hover:text-[#FF4240] transition-colors">Membership Pricing</Link></li>
-              <li><Link href="/get-ticket" className="hover:text-[#FF4240] transition-colors">Match Tickets</Link></li>
-              <li><Link href="/blog" className="hover:text-[#FF4240] transition-colors">Training Blog</Link></li>
+            <h5 className="text-xs font-bold uppercase tracking-wider text-ink-900">Explore</h5>
+            <ul className="space-y-2 text-xs text-ink-600">
+              <li><Link href="/programs" className="transition-colors hover:text-brand-600">Academy Programs</Link></li>
+              <li><Link href="/products" className="transition-colors hover:text-brand-600">Equipment Store</Link></li>
+              <li><Link href="/pricing" className="transition-colors hover:text-brand-600">Membership Pricing</Link></li>
+              <li><Link href="/get-ticket" className="transition-colors hover:text-brand-600">Match Tickets</Link></li>
+              <li><Link href="/blog" className="transition-colors hover:text-brand-600">Training Blog</Link></li>
             </ul>
           </div>
 
-          {/* Apps & Contact */}
+          {/* Contact */}
           <div className="space-y-3">
-            <h5 className="font-extrabold text-white text-xs tracking-wider uppercase">Club Direct</h5>
-            <ul className="space-y-2 text-xs text-slate-400">
-              <li className="flex items-center gap-2">
-                <FaPhone className="text-[#FF4240]" /> (+62) 123-321-543
-              </li>
-              <li className="flex items-center gap-2">
-                <FaEnvelope className="text-[#FF4240]" /> hockeys@support.com
+            <h5 className="text-xs font-bold uppercase tracking-wider text-ink-900">Club Direct</h5>
+            <ul className="space-y-2 text-xs text-ink-600">
+              <li className="flex items-start gap-2">
+                <FaEnvelope className="mt-0.5 text-brand-600" aria-hidden="true" />
+                <a
+                  href="mailto:islamrakibul9274@gmail.com"
+                  className="hover:text-brand-600 break-all transition-colors"
+                >
+                  islamrakibul9274@gmail.com
+                </a>
               </li>
               <li className="flex items-start gap-2">
-                <FaLocationDot className="text-[#FF4240] mt-0.5" /> 152/1 Mohakhali Wireless Gate, Arena 1
+                <FaLocationDot className="mt-0.5 text-brand-600" aria-hidden="true" />
+                <span>
+                  Booking desk — appointments by email, match-day box office opens 90 minutes
+                  before each fixture.
+                </span>
               </li>
             </ul>
           </div>
@@ -234,14 +242,14 @@ export default function Footer() {
       </div>
 
       {/* Copyright & Bottom Bar */}
-      <div className="border-t border-slate-800 bg-slate-950 py-6 text-center text-xs text-slate-500">
-        <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="border-t border-line-200 bg-surface-0 py-6 text-center text-xs text-ink-500">
+        <div className="apex-container flex flex-col items-center justify-between gap-4 sm:flex-row">
           <p>© {new Date().getFullYear()} Hockey&apos;s Club International. All rights reserved.</p>
-          <div className="flex gap-6">
-            <Link href="/legal/privacy" className="hover:text-slate-300">Privacy</Link>
-            <Link href="/legal/terms" className="hover:text-slate-300">Terms</Link>
-            <Link href="/legal/cookies" className="hover:text-slate-300">Security</Link>
-          </div>
+          <nav aria-label="Legal" className="flex gap-6">
+            <Link href="/legal/privacy" className="transition-colors hover:text-brand-600">Privacy</Link>
+            <Link href="/legal/terms" className="transition-colors hover:text-brand-600">Terms</Link>
+            <Link href="/legal/cookies" className="transition-colors hover:text-brand-600">Cookies</Link>
+          </nav>
         </div>
       </div>
     </footer>

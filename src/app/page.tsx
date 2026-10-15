@@ -16,7 +16,7 @@ import Footer from "@/components/Footer";
  */
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900">
+    <div className="min-h-screen flex flex-col bg-surface-0 text-ink-900">
       <Navbar />
       <main id="main" className="container mx-auto flex-1 space-y-4">
         <HeroBanner />

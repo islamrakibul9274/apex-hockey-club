@@ -67,19 +67,19 @@ export default function BlogPage() {
     selectedTag === "All" ? posts : posts.filter((b) => b.tags.includes(selectedTag));
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900">
+    <div className="min-h-screen flex flex-col bg-surface-0 text-ink-900">
       <Navbar />
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-12">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <span className="badge badge-sm bg-red-100 text-[#FF4240] font-extrabold uppercase tracking-widest px-3 py-2">
+          <span className="apex-badge apex-badge-sm bg-brand-100 text-brand-600 font-extrabold uppercase tracking-widest px-3 py-2">
             Insights & Guides
           </span>
-          <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl font-black text-ink-900 tracking-tight">
             Apex Hockey Training & Gear Blog
           </h1>
-          <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
+          <p className="text-ink-600 text-base sm:text-lg leading-relaxed">
             Professional skills drills, skate sharpening science, game-day sports nutrition, and gear breakdowns written by Olympic coaches.
           </p>
 
@@ -91,8 +91,8 @@ export default function BlogPage() {
                 onClick={() => setSelectedTag(tag)}
                 className={`px-4 py-1.5 rounded-2xl text-xs font-bold transition-all ${
                   selectedTag === tag
-                    ? "bg-[#FF4240] text-white shadow-md"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    ? "bg-brand-500 text-white shadow-md"
+                    : "bg-surface-100 text-ink-700 hover:bg-gray-200"
                 }`}
               >
                 {tag}
@@ -106,10 +106,10 @@ export default function BlogPage() {
           {filtered.map((post) => (
             <article
               key={post.id}
-              className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group"
+              className="bg-surface-0 border border-line-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group"
             >
               <div>
-                <Link href={`/blog/${post.slug}`} className="block relative h-52 bg-slate-900 overflow-hidden">
+                <Link href={`/blog/${post.slug}`} className="block relative h-52 bg-surface-100 overflow-hidden">
                   <Image
                     src={post.image}
                     alt={post.title}
@@ -117,14 +117,14 @@ export default function BlogPage() {
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute top-4 left-4">
-                    <span className="badge bg-[#FF4240] text-white border-none font-bold text-xs">
+                    <span className="apex-badge bg-brand-500 text-white border-none font-bold text-xs">
                       {post.category}
                     </span>
                   </div>
                 </Link>
 
                 <div className="p-6 space-y-3">
-                  <div className="flex items-center gap-3 text-xs text-gray-400">
+                  <div className="flex items-center gap-3 text-xs text-ink-500">
                     <span className="flex items-center gap-1">
                       <FaClock /> {post.readTime}
                     </span>
@@ -133,18 +133,18 @@ export default function BlogPage() {
                   </div>
 
                   <Link href={`/blog/${post.slug}`}>
-                    <h2 className="text-xl font-extrabold text-gray-900 group-hover:text-[#FF4240] transition-colors line-clamp-2 leading-snug">
+                    <h2 className="text-xl font-extrabold text-ink-900 group-hover:text-brand-600 transition-colors line-clamp-2 leading-snug">
                       {post.title}
                     </h2>
                   </Link>
 
-                  <p className="text-gray-600 text-xs sm:text-sm line-clamp-3 leading-relaxed">
+                  <p className="text-ink-600 text-xs sm:text-sm line-clamp-3 leading-relaxed">
                     {post.excerpt}
                   </p>
                 </div>
               </div>
 
-              <div className="p-6 pt-0 border-t border-gray-100 mt-4 flex items-center justify-between">
+              <div className="p-6 pt-0 border-t border-line-200 mt-4 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -153,14 +153,14 @@ export default function BlogPage() {
                     className="w-8 h-8 rounded-full object-cover"
                   />
                   <div>
-                    <p className="font-bold text-xs text-gray-900">{post.author.name}</p>
-                    <p className="text-[10px] text-gray-400">{post.author.role}</p>
+                    <p className="font-bold text-xs text-ink-900">{post.author.name}</p>
+                    <p className="text-[10px] text-ink-500">{post.author.role}</p>
                   </div>
                 </div>
 
                 <Link
                   href={`/blog/${post.slug}`}
-                  className="btn btn-circle btn-sm bg-gray-100 group-hover:bg-[#FF4240] group-hover:text-white border-none transition-all"
+                  className="apex-btn apex-btn-icon apex-btn-sm bg-surface-100 group-hover:bg-brand-500 group-hover:text-white border-none transition-all"
                   aria-label="Read article"
                 >
                   <FaArrowRight className="text-xs" />

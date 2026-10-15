@@ -95,19 +95,19 @@ export default function ProgramsPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900">
+    <div className="min-h-screen flex flex-col bg-surface-0 text-ink-900">
       <Navbar />
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-12">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <span className="badge badge-sm bg-red-100 text-[#FF4240] font-extrabold uppercase tracking-widest px-3 py-2">
+          <span className="apex-badge apex-badge-sm bg-brand-100 text-brand-600 font-extrabold uppercase tracking-widest px-3 py-2">
             Academy Pathways
           </span>
-          <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl font-black text-ink-900 tracking-tight">
             Hockey Development Programs & Masterclasses
           </h1>
-          <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
+          <p className="text-ink-600 text-base sm:text-lg leading-relaxed">
             Curated age-appropriate training programs designed by Olympic athletes and certified coaches to fast-track on-ice agility, shooting velocity, and team IQ.
           </p>
 
@@ -119,8 +119,8 @@ export default function ProgramsPage() {
                 onClick={() => setActiveFilter(tab)}
                 className={`px-5 py-2.5 rounded-2xl text-sm font-extrabold transition-all ${
                   activeFilter === tab
-                    ? "bg-[#FF4240] text-white shadow-lg shadow-red-500/20 scale-105"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    ? "bg-brand-500 text-white shadow-lg shadow-brand-500/20 scale-105"
+                    : "bg-surface-100 text-ink-700 hover:bg-gray-200"
                 }`}
               >
                 {tab} Programs
@@ -135,10 +135,10 @@ export default function ProgramsPage() {
               with no explanation and no way back. */}
           {filtered.length === 0 ? (
             <div className="py-16 text-center space-y-4">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-ink-800">
                 No programmes in this age group
               </h3>
-              <p className="text-gray-500 text-sm max-w-md mx-auto">
+              <p className="text-ink-600 text-sm max-w-md mx-auto">
                 We are not running a {activeFilter.toLowerCase()} programme this season. Try another
                 age group or talk to us about a private session.
               </p>
@@ -162,13 +162,13 @@ export default function ProgramsPage() {
             <div
               key={prog.id}
               id={prog.id}
-              className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 sm:p-8"
+              className="bg-surface-0 border border-line-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 sm:p-8"
             >
               {/* Visual Preview */}
-              <div className="lg:col-span-5 relative min-h-[260px] rounded-2xl overflow-hidden bg-slate-900">
+              <div className="lg:col-span-5 relative min-h-[260px] rounded-2xl overflow-hidden bg-surface-100">
                 <Image src={prog.image} alt={prog.title} fill className="object-cover" />
                 <div className="absolute top-4 left-4">
-                  <span className="badge bg-[#FF4240] text-white border-none font-bold text-xs py-3 px-3">
+                  <span className="apex-badge bg-brand-500 text-white border-none font-bold text-xs py-3 px-3">
                     {prog.category} Level
                   </span>
                 </div>
@@ -182,42 +182,42 @@ export default function ProgramsPage() {
               <div className="lg:col-span-7 flex flex-col justify-between space-y-4">
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-ink-900">
                       {prog.title}
                     </h2>
-                    <div className="text-3xl font-black text-[#FF4240]">
+                    <div className="text-3xl font-black text-brand-600">
                       ${prog.price}
-                      <span className="text-xs font-semibold text-gray-400"> / term</span>
+                      <span className="text-xs font-semibold text-ink-500"> / term</span>
                     </div>
                   </div>
 
-                  <p className="text-gray-600 text-sm leading-relaxed">{prog.description}</p>
+                  <p className="text-ink-600 text-sm leading-relaxed">{prog.description}</p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-600 pt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-ink-600 pt-2">
                     <div className="flex items-center gap-2">
-                      <FaCalendarDays className="text-[#FF4240]" />
+                      <FaCalendarDays className="text-brand-600" />
                       <span>{prog.schedule}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <FaClock className="text-[#FF4240]" />
+                      <FaClock className="text-brand-600" />
                       <span>Duration: {prog.duration}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <FaUserCheck className="text-[#FF4240]" />
+                      <FaUserCheck className="text-brand-600" />
                       <span>Lead Coach: {prog.coach}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <FaLocationDot className="text-[#FF4240]" />
+                      <FaLocationDot className="text-brand-600" />
                       <span>Olympic Arena Rink 1</span>
                     </div>
                   </div>
 
                   {prog.features && (
-                    <div className="bg-slate-50 p-4 rounded-2xl space-y-1.5 pt-3">
-                      <p className="text-xs font-bold text-gray-800 uppercase tracking-wider">Curriculum Highlights:</p>
+                    <div className="bg-surface-50 p-4 rounded-2xl space-y-1.5 pt-3">
+                      <p className="text-xs font-bold text-ink-800 uppercase tracking-wider">Curriculum Highlights:</p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {prog.features.map((f, i) => (
-                          <div key={i} className="text-xs text-gray-700 flex items-center gap-2">
+                          <div key={i} className="text-xs text-ink-700 flex items-center gap-2">
                             <FaCheck className="text-emerald-500 flex-shrink-0" />
                             <span>{f}</span>
                           </div>
@@ -230,13 +230,13 @@ export default function ProgramsPage() {
                 <div className="flex flex-wrap gap-4 pt-2">
                   <button
                     onClick={() => setSelectedProgram(prog)}
-                    className="btn bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-2xl px-8 font-bold shadow-md shadow-red-500/20"
+                    className="apex-btn bg-brand-500 hover:bg-brand-600 text-white border-none rounded-2xl px-8 font-bold shadow-md shadow-brand-500/20"
                   >
                     Enroll in Program
                   </button>
                   <Link
                     href={`/contact?subject=Question%20about%20${encodeURIComponent(prog.title)}`}
-                    className="btn btn-outline border-gray-300 text-gray-800 hover:bg-gray-100 rounded-2xl px-6 font-bold"
+                    className="apex-btn apex-btn-secondary border-line-300 text-ink-800 hover:bg-surface-100 rounded-2xl px-6 font-bold"
                   >
                     Ask Coach a Question
                   </Link>
@@ -250,10 +250,10 @@ export default function ProgramsPage() {
         {/* Modal */}
         {selectedProgram && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-white w-full max-w-md rounded-3xl p-8 shadow-2xl space-y-6 relative animate-in zoom-in-95">
+            <div className="bg-surface-0 w-full max-w-md rounded-3xl p-8 shadow-2xl space-y-6 relative animate-in zoom-in-95">
               <button
                 onClick={() => setSelectedProgram(null)}
-                className="btn btn-circle btn-ghost btn-sm absolute top-4 right-4 text-gray-400"
+                className="apex-btn apex-btn-icon apex-btn-ghost apex-btn-sm absolute top-4 right-4 text-ink-500"
               >
                 <FaXmark className="text-lg" />
               </button>
@@ -266,56 +266,56 @@ export default function ProgramsPage() {
 
               {success ? (
                 <div role="status" className="text-center py-8 space-y-4">
-                  <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mx-auto">
+                  <div className="w-16 h-16 rounded-full bg-success-50 text-success-700 flex items-center justify-center text-2xl mx-auto">
                     <FaCheck />
                   </div>
-                  <h3 className="text-2xl font-extrabold text-gray-900">Registration Complete!</h3>
-                  <p className="text-gray-500 text-sm">
+                  <h3 className="text-2xl font-extrabold text-ink-900">Registration Complete!</h3>
+                  <p className="text-ink-600 text-sm">
                     Athlete enrolled in {selectedProgram.title}. We look forward to seeing you on the ice.
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleBooking} className="space-y-4">
                   <div className="space-y-1">
-                    <span className="badge bg-red-100 text-[#FF4240] font-bold text-xs">
+                    <span className="apex-badge bg-brand-100 text-brand-600 font-bold text-xs">
                       {selectedProgram.category} Enrollment
                     </span>
-                    <h3 className="text-2xl font-extrabold text-gray-900">{selectedProgram.title}</h3>
-                    <p className="text-xs text-gray-500">Term Tuition: ${selectedProgram.price}</p>
+                    <h3 className="text-2xl font-extrabold text-ink-900">{selectedProgram.title}</h3>
+                    <p className="text-xs text-ink-600">Term Tuition: ${selectedProgram.price}</p>
                   </div>
 
-                  <div className="form-control">
-                    <label className="label text-xs font-bold text-gray-700">Athlete Full Name</label>
+                  <div className="apex-field">
+                    <label className="label text-xs font-bold text-ink-700">Athlete Full Name</label>
                     <input
                       type="text"
                       value={athleteName}
                       onChange={(e) => setAthleteName(e.target.value)}
                       placeholder="e.g. Liam Johnson"
-                      className="input bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#FF4240]"
+                      className="apex-input bg-surface-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-brand-500"
                       required
                     />
                   </div>
 
-                  <div className="form-control">
-                    <label className="label text-xs font-bold text-gray-700">Guardian / Athlete Email</label>
+                  <div className="apex-field">
+                    <label className="label text-xs font-bold text-ink-700">Guardian / Athlete Email</label>
                     <input
                       type="email"
                       value={athleteEmail}
                       onChange={(e) => setAthleteEmail(e.target.value)}
                       placeholder="parent@example.com"
-                      className="input bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#FF4240]"
+                      className="apex-input bg-surface-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-brand-500"
                       required
                     />
                   </div>
 
-                  <div className="form-control">
-                    <label className="label text-xs font-bold text-gray-700">Athlete Age</label>
+                  <div className="apex-field">
+                    <label className="label text-xs font-bold text-ink-700">Athlete Age</label>
                     <input
                       type="number"
                       value={athleteAge}
                       onChange={(e) => setAthleteAge(e.target.value)}
                       placeholder="e.g. 11"
-                      className="input bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#FF4240]"
+                      className="apex-input bg-surface-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-brand-500"
                       required
                     />
                   </div>
@@ -323,7 +323,7 @@ export default function ProgramsPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="btn btn-block bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-2xl font-bold py-3"
+                    className="apex-btn apex-btn-block bg-brand-500 hover:bg-brand-600 text-white border-none rounded-2xl font-bold py-3"
                   >
                     {submitting ? "Processing..." : `Confirm Enrollment ($${selectedProgram.price})`}
                   </button>

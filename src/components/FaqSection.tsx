@@ -1,114 +1,156 @@
 "use client";
 
-import React, { useState } from "react";
-import Image from "next/image";
+import React, { useId, useState } from "react";
+import Link from "next/link";
+import { FaChevronDown, FaArrowRight } from "react-icons/fa6";
 
-interface FaqItem {
-  id: string;
-  title: string;
-  content: string;
-}
+/**
+ * Frequently asked questions.
+ *
+ * Written fresh rather than adapted. The previous block was a two-column split
+ * whose right column was an image with a dark overlay card bolted on, and it
+ * carried lorem ipsum as its intro copy.
+ *
+ * The accordion is keyboard-operable and correctly announces its state:
+ * each trigger is a real button with aria-expanded and aria-controls, and the
+ * panel is a labelled region.
+ */
 
-const FAQS: FaqItem[] = [
+const FAQS = [
   {
-    id: "faq-1",
-    title: "What gear is required for beginner & junior hockey camps?",
-    content:
-      "All beginner skaters receive a full protective starter kit including an approved CSA/HECC helmet with cage, shoulder & elbow pads, hockey gloves, shin guards, and hockey skates. You only need to bring warm athletic apparel and a water bottle.",
+    q: "What gear do I need for beginner and junior camps?",
+    a: "All beginner skaters receive a full protective starter kit: a certified CSA/HECC helmet with a face cage, shoulder and elbow pads, hockey gloves, shin guards and skates. Bring warm athletic layers, a water bottle and a change of socks. If you already have your own equipment, our coaches will check it before your first session.",
   },
   {
-    id: "faq-2",
-    title: "How does the private coaching and 1-on-1 ice time work?",
-    content:
-      "Private lessons are scheduled with our Olympic and NHL-certified coaches during dedicated private ice hours. Lessons include video biomechanics analysis, tailored stick-handling drills, and stride optimization.",
+    q: "How does private coaching and one-on-one ice time work?",
+    a: "You book a 45-minute block on a rink reserved for you. We match you with a coach working on your specific goal — shooting mechanics, skating stride, defensive reads — and we send a short video breakdown afterwards so you can practise between sessions.",
   },
   {
-    id: "faq-3",
-    title: "Can I book arena match tickets and reserve seating online?",
-    content:
-      "Yes! You can reserve single match passes, VIP glass seats, or full-season tournament passes directly through our 'Get Ticket' portal with instant seat confirmation and mobile QR pass generation.",
+    q: "Can I book match tickets and reserve seating online?",
+    a: "Yes. Every fixture we host is bookable from the tickets page. Pick a match, choose a seating tier, and your passes are issued to your account as soon as payment clears. Seats are held for you for ten minutes while you check out.",
   },
   {
-    id: "faq-4",
-    title: "What is your refund and training rescheduling policy?",
-    content:
-      "We offer flexible 100% refunds on camp registrations up to 7 days before start date, and match tickets can be transferred or rescheduled to any alternative regular-season fixture with zero penalty fees.",
+    q: "What is your refund and rescheduling policy?",
+    a: "Cancel more than 48 hours before a session and you receive a full credit. Inside 48 hours we cannot refund, because the ice time and coach are already committed to you. Rescheduling is free at any point, subject to availability.",
   },
   {
-    id: "faq-5",
-    title: "Do you offer equipment sharpening and composite repair?",
-    content:
-      "Our Pro Shop on-site provides precision radius of hollow skate sharpening (1/2\", 5/8\", 3/4\"), blade profiling, and professional composite stick repair services with 24-hour turnaround.",
+    q: "Do you offer skate sharpening and composite repair?",
+    a: "We do. Our pro shop sharpens edges to your preferred hollow, from a shallow 1/2 inch for beginners up to a deep 4 inch for maximum glide. We also repair broken composite shafts and replace blade holders, usually same-day.",
   },
   {
-    id: "faq-6",
-    title: "Are memberships available for teams and clubs?",
-    content:
-      "Yes, we provide specialized Team & Club Academy tiers that include dedicated weekly ice slots, customized team jerseys, coach clinic certifications, and discounted bulk equipment orders.",
+    q: "Are memberships available for teams and clubs?",
+    a: "Yes. We offer group rates for teams of eight or more, with a dedicated booking window and a named coach. Send us a message with the age group and how often you train, and we will put a quote together.",
   },
 ];
 
-export default function FaqSection() {
-  const [openId, setOpenId] = useState<string>("faq-1");
+function FaqItem({
+  question,
+  answer,
+  isOpen,
+  onToggle,
+}: {
+  question: string;
+  answer: string;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  const id = useId();
+  const panelId = `${id}-panel`;
+  const buttonId = `${id}-button`;
 
   return (
-    <section className="px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="text-center space-y-3 my-8 py-8 border-dashed border-2 border-l-0 border-r-0 border-gray-200">
-        <span className="badge badge-sm bg-red-100 text-[#FF4240] font-extrabold uppercase tracking-widest px-3 py-2">
-          Knowledge Base
-        </span>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">
-          Clients Question
-        </h2>
-        <p className="text-gray-500 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-          Dit amet consectetur. Condimentum dignissim adipiscing aliquam turpis placerat <br className="hidden sm:inline" /> dolor. Purus urna in sit nullam proin.
-        </p>
-      </div>
+    <div
+      className={[
+        "overflow-hidden rounded-2xl border transition-colors",
+        isOpen
+          ? "border-brand-200 bg-surface-0 shadow-sm"
+          : "border-line-200 bg-surface-0 hover:border-line-300",
+      ].join(" ")}
+    >
+      <h3>
+        <button
+          type="button"
+          id={buttonId}
+          onClick={onToggle}
+          aria-expanded={isOpen}
+          aria-controls={panelId}
+          className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+        >
+          <span className="text-[15px] font-semibold leading-snug text-ink-900">
+            {question}
+          </span>
+          <span
+            aria-hidden="true"
+            className={[
+              "flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-all",
+              isOpen
+                ? "rotate-180 bg-brand-500 text-white"
+                : "bg-surface-100 text-ink-600",
+            ].join(" ")}
+          >
+            <FaChevronDown className="text-xs" />
+          </span>
+        </button>
+      </h3>
 
-      {/* Accordion + Image Container */}
-      <div className="flex items-center flex-col lg:flex-row gap-10 p-6 sm:p-10 lg:border-2 border-gray-100 rounded-3xl bg-white shadow-sm">
-        <div className="w-full lg:w-5/12 flex justify-center">
-          <div className="relative w-full max-w-sm rounded-2xl overflow-hidden bg-slate-50 p-4 border border-gray-100 shadow-inner">
-            <Image
-              src="/images/11.png"
-              alt="Hockey FAQ athlete illustration"
-              width={460}
-              height={460}
-              className="w-full h-auto object-contain rounded-xl"
-            />
-            <div className="absolute bottom-6 left-6 right-6 bg-slate-900/90 backdrop-blur-md text-white p-4 rounded-2xl text-xs space-y-1">
-              <p className="font-extrabold text-amber-300">Need Immediate Help?</p>
-              <p className="text-slate-300">Our concierge desk is open 7 days a week at the Main Arena.</p>
-            </div>
+      <div
+        id={panelId}
+        role="region"
+        aria-labelledby={buttonId}
+        hidden={!isOpen}
+        className="px-5 pb-5"
+      >
+        <p className="leading-relaxed text-ink-600">{answer}</p>
+      </div>
+    </div>
+  );
+}
+
+export default function FaqSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  return (
+    <section aria-labelledby="faq-heading" className="apex-container apex-section">
+      <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
+        {/* Intro column */}
+        <div className="lg:col-span-5">
+          <span className="apex-badge apex-badge-brand uppercase tracking-widest">
+            Before you book
+          </span>
+          <h2 id="faq-heading" className="mt-3 text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl">
+            Questions athletes ask us
+          </h2>
+          <p className="mt-4 leading-relaxed text-ink-600">
+            Sizing, schedules, kit and memberships — the practical things people want to know
+            before a first session.
+          </p>
+
+          <div className="mt-8 rounded-2xl border border-line-200 bg-surface-50 p-6">
+            <h3 className="text-base font-bold text-ink-900">Still not sure?</h3>
+            <p className="mt-1.5 text-sm leading-relaxed text-ink-600">
+              Our coaching desk answers sizing and programme questions, usually the same day.
+            </p>
+            <Link href="/contact" className="apex-btn apex-btn-primary apex-btn-sm mt-4">
+              Ask a question
+              <FaArrowRight className="text-xs" aria-hidden="true" />
+            </Link>
           </div>
         </div>
 
-        <div className="w-full lg:w-7/12 divide-y divide-gray-100 space-y-2">
-          {FAQS.map((faq) => {
-            const isOpen = openId === faq.id;
-            return (
-              <div
-                key={faq.id}
-                className="pt-2 transition-colors rounded-2xl"
-              >
-                <button
-                  onClick={() => setOpenId(isOpen ? "" : faq.id)}
-                  className="w-full flex items-center justify-between py-4 text-left font-extrabold text-base sm:text-lg text-gray-900 hover:text-[#FF4240] transition-colors"
-                >
-                  <span>{faq.title}</span>
-                  <span className={`text-xl transition-transform duration-200 ${isOpen ? "rotate-45 text-[#FF4240]" : "text-gray-400"}`}>
-                    +
-                  </span>
-                </button>
-                {isOpen && (
-                  <div className="pb-4 text-xs sm:text-sm text-gray-600 leading-relaxed animate-in fade-in slide-in-from-top-1">
-                    <p>{faq.content}</p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        {/* Accordion column */}
+        <div className="lg:col-span-7">
+          <ul className="space-y-3">
+            {FAQS.map((faq, index) => (
+              <li key={faq.q}>
+                <FaqItem
+                  question={faq.q}
+                  answer={faq.a}
+                  isOpen={openIndex === index}
+                  onToggle={() => setOpenIndex(openIndex === index ? null : index)}
+                />
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

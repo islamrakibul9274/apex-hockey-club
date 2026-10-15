@@ -67,37 +67,37 @@ export default function CartPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900">
+    <div className="min-h-screen flex flex-col bg-surface-0 text-ink-900">
       <Navbar />
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl font-black text-ink-900 tracking-tight">
               Equipment Shopping Bag
             </h1>
-            <p className="text-gray-500 text-sm mt-1">Review selected gear before dispatch</p>
+            <p className="text-ink-600 text-sm mt-1">Review selected gear before dispatch</p>
           </div>
           <Link
             href="/products"
-            className="btn btn-ghost btn-sm text-gray-600 hover:text-[#FF4240] rounded-xl flex items-center gap-2"
+            className="apex-btn apex-btn-ghost apex-btn-sm text-ink-600 hover:text-brand-600 rounded-xl flex items-center gap-2"
           >
             <FaArrowLeft /> Continue Shopping
           </Link>
         </div>
 
         {items.length === 0 ? (
-          <div className="bg-slate-50 border border-gray-200 rounded-3xl p-12 text-center space-y-4 max-w-xl mx-auto">
-            <div className="w-20 h-20 rounded-full bg-red-50 text-[#FF4240] flex items-center justify-center text-3xl mx-auto">
+          <div className="bg-surface-50 border border-line-200 rounded-3xl p-12 text-center space-y-4 max-w-xl mx-auto">
+            <div className="w-20 h-20 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center text-3xl mx-auto">
               <FaBagShopping />
             </div>
-            <h3 className="text-2xl font-extrabold text-gray-800">Your bag is currently empty</h3>
-            <p className="text-gray-500 text-sm max-w-sm mx-auto">
+            <h3 className="text-2xl font-extrabold text-ink-800">Your bag is currently empty</h3>
+            <p className="text-ink-600 text-sm max-w-sm mx-auto">
               Check out our match pucks, composite sticks, skates, and goalie pads in the official store.
             </p>
             <Link
               href="/products"
-              className="btn bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-2xl px-8 font-bold"
+              className="apex-btn bg-brand-500 hover:bg-brand-600 text-white border-none rounded-2xl px-8 font-bold"
             >
               Browse Equipment Store
             </Link>
@@ -106,14 +106,14 @@ export default function CartPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Items Table */}
             <div className="lg:col-span-8 space-y-4">
-              <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-sm divide-y divide-gray-100">
+              <div className="bg-surface-0 border border-line-200 rounded-3xl overflow-hidden shadow-sm divide-y divide-line-200">
                 {items.map((item) => (
                   <div
                     key={item.id}
                     className="p-6 flex flex-col sm:flex-row items-center gap-6 justify-between"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-24 h-24 bg-slate-50 rounded-2xl p-2 flex items-center justify-center flex-shrink-0">
+                      <div className="w-24 h-24 bg-surface-50 rounded-2xl p-2 flex items-center justify-center flex-shrink-0">
                         <Image
                           src={item.image}
                           alt={item.title}
@@ -123,11 +123,11 @@ export default function CartPage() {
                         />
                       </div>
                       <div className="space-y-1">
-                        <span className="badge badge-sm bg-gray-100 text-gray-700 font-semibold text-[10px]">
+                        <span className="apex-badge apex-badge-sm bg-surface-100 text-ink-700 font-semibold text-[10px]">
                           {item.category}
                         </span>
-                        <h3 className="font-extrabold text-base text-gray-900">{item.title}</h3>
-                        <p className="text-xs text-gray-400 font-medium">
+                        <h3 className="font-extrabold text-base text-ink-900">{item.title}</h3>
+                        <p className="text-xs text-ink-500 font-medium">
                           ${item.price.toFixed(2)} each
                         </p>
                       </div>
@@ -135,10 +135,10 @@ export default function CartPage() {
 
                     <div className="flex items-center gap-6">
                       {/* Quantity Modifier */}
-                      <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden bg-slate-50">
+                      <div className="flex items-center border border-line-200 rounded-xl overflow-hidden bg-surface-50">
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="px-3 py-1.5 text-gray-600 hover:bg-gray-200"
+                          className="px-3 py-1.5 text-ink-600 hover:bg-gray-200"
                           aria-label="Decrease quantity"
                         >
                           <FaMinus className="text-xs" />
@@ -146,7 +146,7 @@ export default function CartPage() {
                         <span className="px-3 py-1 text-sm font-extrabold">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="px-3 py-1.5 text-gray-600 hover:bg-gray-200"
+                          className="px-3 py-1.5 text-ink-600 hover:bg-gray-200"
                           aria-label="Increase quantity"
                         >
                           <FaPlus className="text-xs" />
@@ -154,14 +154,14 @@ export default function CartPage() {
                       </div>
 
                       <div className="text-right min-w-[80px]">
-                        <div className="text-lg font-black text-[#FF4240]">
+                        <div className="text-lg font-black text-brand-600">
                           ${(item.price * item.quantity).toFixed(2)}
                         </div>
                       </div>
 
                       <button
                         onClick={() => removeItem(item.id)}
-                        className="btn btn-ghost btn-circle btn-sm text-gray-400 hover:text-red-500"
+                        className="apex-btn apex-btn-ghost apex-btn-icon apex-btn-sm text-ink-500 hover:text-danger-600"
                         aria-label="Remove item"
                       >
                         <FaTrash />
@@ -174,11 +174,11 @@ export default function CartPage() {
               <div className="flex justify-between items-center px-2">
                 <button
                   onClick={clearCart}
-                  className="text-xs font-bold text-gray-500 hover:text-red-500"
+                  className="text-xs font-bold text-ink-600 hover:text-danger-600"
                 >
                   Clear Entire Bag
                 </button>
-                <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
+                <div className="flex items-center gap-2 text-xs font-semibold text-ink-600">
                   <FaTruckFast className="text-emerald-500" /> Fast Insured Shipping
                 </div>
               </div>
@@ -186,66 +186,66 @@ export default function CartPage() {
 
             {/* Order Summary & Stripe Checkout */}
             <div className="lg:col-span-4 space-y-6">
-              <div className="bg-slate-50 border border-gray-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-                <h3 className="font-extrabold text-xl text-gray-900 border-b border-gray-200 pb-4">
+              <div className="bg-surface-50 border border-line-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+                <h3 className="font-extrabold text-xl text-ink-900 border-b border-line-200 pb-4">
                   Order Summary
                 </h3>
 
                 <div className="space-y-3 text-sm">
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex justify-between text-ink-600">
                     <span>Items Subtotal</span>
-                    <span className="font-bold text-gray-900">${totalPrice.toFixed(2)}</span>
+                    <span className="font-bold text-ink-900">${totalPrice.toFixed(2)}</span>
                   </div>
 
                   {couponApplied && (
-                    <div className="flex justify-between text-emerald-600 font-semibold">
+                    <div className="flex justify-between text-success-700 font-semibold">
                       <span>Promo Discount</span>
                       <span>-${discount.toFixed(2)}</span>
                     </div>
                   )}
 
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex justify-between text-ink-600">
                     <span>Standard Courier Delivery</span>
-                    <span className="font-bold text-emerald-600">FREE</span>
+                    <span className="font-bold text-success-700">FREE</span>
                   </div>
 
-                  <div className="border-t border-gray-200 pt-3 flex justify-between font-black text-xl text-gray-900">
+                  <div className="border-t border-line-200 pt-3 flex justify-between font-black text-xl text-ink-900">
                     <span>Total</span>
-                    <span className="text-[#FF4240]">${finalTotal.toFixed(2)}</span>
+                    <span className="text-brand-600">${finalTotal.toFixed(2)}</span>
                   </div>
                 </div>
 
                 {/* Promo Code Form */}
-                <form onSubmit={handleApplyCoupon} className="space-y-2 pt-2 border-t border-gray-200">
-                  <label className="text-xs font-bold text-gray-700">Promo Code</label>
+                <form onSubmit={handleApplyCoupon} className="space-y-2 pt-2 border-t border-line-200">
+                  <label className="text-xs font-bold text-ink-700">Promo Code</label>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={coupon}
                       onChange={(e) => setCoupon(e.target.value)}
                       placeholder="e.g. APEX2026"
-                      className="input input-sm bg-white border border-gray-200 rounded-xl flex-1 text-xs uppercase"
+                      className="apex-input apex-input-sm bg-surface-0 border border-line-200 rounded-xl flex-1 text-xs uppercase"
                     />
                     <button
                       type="submit"
-                      className="btn btn-sm bg-gray-900 text-white rounded-xl hover:bg-gray-800 text-xs"
+                      className="apex-btn apex-btn-sm bg-gray-900 text-white rounded-xl hover:bg-gray-800 text-xs"
                     >
                       Apply
                     </button>
                   </div>
                   {couponApplied && (
-                    <p className="text-xs text-emerald-600 font-bold">✓ Promo code active (-$15)</p>
+                    <p className="text-xs text-success-700 font-bold">✓ Promo code active (-$15)</p>
                   )}
-                  {couponError && <p className="text-xs text-red-500 font-medium">{couponError}</p>}
+                  {couponError && <p className="text-xs text-danger-600 font-medium">{couponError}</p>}
                 </form>
 
                 <button
                   onClick={handleCheckout}
                   disabled={checkingOut}
-                  className="btn btn-block bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-2xl font-bold py-3 text-base shadow-lg shadow-red-500/20 flex items-center justify-center gap-2"
+                  className="apex-btn apex-btn-block bg-brand-500 hover:bg-brand-600 text-white border-none rounded-2xl font-bold py-3 text-base shadow-lg shadow-brand-500/20 flex items-center justify-center gap-2"
                 >
                   {checkingOut ? (
-                    <span className="loading loading-spinner loading-sm"></span>
+                    <span className="apex-spinner apex-spinner-sm"></span>
                   ) : (
                     <>
                       <FaCreditCard /> Complete Stripe Checkout
@@ -253,7 +253,7 @@ export default function CartPage() {
                   )}
                 </button>
 
-                <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
+                <div className="flex items-center justify-center gap-2 text-xs text-ink-500">
                   <FaShieldHalved /> 256-Bit SSL Encrypted & Protected
                 </div>
               </div>

@@ -1,110 +1,139 @@
-"use client";
-
-import React from "react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { FaClock, FaArrowLeft } from "react-icons/fa6";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Image from "next/image";
-import Link from "next/link";
-import { useParams } from "next/navigation";
 import { INITIAL_BLOG_POSTS } from "@/lib/mockData";
-import { notFound } from "next/navigation";
-import { FaClock, FaCalendarDays, FaArrowLeft, FaShareNodes, FaTag } from "react-icons/fa6";
+import Image from "next/image";
+import { SIZES } from "@/lib/images";
 
-export default function BlogPostDetail() {
-  const params = useParams();
-  const slug = params?.slug as string;
+/**
+ * Rendered on the server and prerendered per post.
+ *
+ * Previously `"use client"` with useParams, which meant no crawlable HTML for
+ * the blog's primary SEO surface and a 122 kB first load for a text page.
+ */
+export function generateStaticParams() {
+  return INITIAL_BLOG_POSTS.map((post) => ({ slug: post.slug }));
+}
 
-  const post = INITIAL_BLOG_POSTS.find((p) => p.slug === slug);
+export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+  const post = INITIAL_BLOG_POSTS.find((p) => p.slug === params.slug);
+  if (!post) return { title: "Not found" };
+  return {
+    title: `${post.title} — Apex Hockey Club`,
+    description: post.excerpt,
+    alternates: { canonical: `/blog/${post.slug}` },
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      type: "article",
+      publishedTime: post.publishedAt,
+      authors: [post.author.name],
+      images: [{ url: post.image, alt: post.title }],
+    },
+  };
+}
 
-  // Previously an unknown slug fell back to INITIAL_BLOG_POSTS[0], so
-  // /blog/anything-wrong served the first article with HTTP 200.
+/**
+ * The stored bodies contain light Markdown. Previously they were dumped into a
+ * `whitespace-pre-line` div, so visitors saw literal `###` and `**`.
+ */
+function renderBody(content: string) {
+  return content
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean)
+    .map((block) => ({
+      heading: block.startsWith("###"),
+      text: block
+        .replace(/^###\s*/, "")
+        .replace(/\*\*(.+?)\*\*/g, "$1")
+        .replace(/^[-*]\s*/, "")
+        .trim(),
+    }));
+}
+
+export default function BlogPostPage({ params }: { params: { slug: string } }) {
+  const post = INITIAL_BLOG_POSTS.find((p) => p.slug === params.slug);
+  // Unknown slug is a 404. It previously served the first article with a 200.
   if (!post) notFound();
 
+  const blocks = renderBody(post.content);
+
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900">
+    <div className="flex min-h-screen flex-col bg-surface-0">
       <Navbar />
 
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 max-w-4xl space-y-8">
-        <Link
-          href="/blog"
-          className="inline-flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-[#FF4240] transition-colors"
-        >
-          <FaArrowLeft /> Back to Blog Articles
-        </Link>
-
-        {/* Title & Metadata */}
-        <div className="space-y-4">
-          <span className="badge bg-red-100 text-[#FF4240] font-extrabold text-xs px-3 py-2">
-            {post.category}
-          </span>
-          <h1 className="text-3xl sm:text-5xl font-black text-gray-900 tracking-tight leading-tight">
-            {post.title}
-          </h1>
-
-          <div className="flex flex-wrap items-center justify-between gap-4 py-4 border-y border-gray-100 text-xs text-gray-500">
-            <div className="flex items-center gap-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={post.author.avatar}
-                alt={post.author.name}
-                className="w-10 h-10 rounded-full object-cover border border-gray-200"
-              />
-              <div>
-                <p className="font-bold text-gray-900 text-sm">{post.author.name}</p>
-                <p className="text-gray-400">{post.author.role}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1">
-                <FaCalendarDays className="text-[#FF4240]" /> {post.publishedAt}
-              </span>
-              <span className="flex items-center gap-1">
-                <FaClock className="text-[#FF4240]" /> {post.readTime}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Cover Photo */}
-        <div className="relative h-72 sm:h-96 w-full rounded-3xl overflow-hidden shadow-lg bg-slate-900">
-          <Image src={post.image} alt={post.title} fill className="object-cover" priority />
-        </div>
-
-        {/* Content Body */}
-        <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed space-y-6 pt-4">
-          <p className="text-lg font-medium text-gray-900 leading-relaxed border-l-4 border-[#FF4240] pl-4 italic">
-            {post.excerpt}
-          </p>
-
-          <div className="whitespace-pre-line text-sm sm:text-base space-y-4">
-            {post.content}
-          </div>
-        </div>
-
-        {/* Tags & Share */}
-        <div className="pt-8 border-t border-gray-200 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <FaTag className="text-gray-400 text-xs" />
-            {post.tags.map((tag) => (
-              <span key={tag} className="badge badge-sm bg-gray-100 text-gray-700 font-semibold">
-                #{tag}
-              </span>
-            ))}
-          </div>
-
-          <button
-            onClick={() => {
-              if (navigator.clipboard) {
-                navigator.clipboard.writeText(window.location.href);
-                alert("Article link copied to clipboard!");
-              }
-            }}
-            className="btn btn-sm btn-ghost text-gray-600 hover:text-[#FF4240] rounded-xl flex items-center gap-2"
+      <main id="main" className="container mx-auto flex-1 px-4 py-12 sm:px-6 lg:px-8">
+        <article className="mx-auto w-full max-w-3xl">
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-ink-600 transition-colors hover:text-brand-600"
           >
-            <FaShareNodes /> Share Article
-          </button>
-        </div>
+            <FaArrowLeft aria-hidden="true" className="text-xs" />
+            All coaching guides
+          </Link>
+
+          <header className="mt-6">
+            <span className="inline-block rounded-full bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-600">
+              {post.category}
+            </span>
+            <h1 className="mt-4 text-3xl font-extrabold leading-tight tracking-tight text-ink-900 sm:text-4xl">
+              {post.title}
+            </h1>
+            <p className="mt-4 text-lg leading-relaxed text-ink-600">{post.excerpt}</p>
+
+            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 border-y border-line-200 py-4 text-sm text-ink-500">
+              <span className="font-semibold text-ink-700">{post.author.name}</span>
+              <span>{post.author.role}</span>
+              <span className="inline-flex items-center gap-1.5">
+                <FaClock aria-hidden="true" className="text-xs" />
+                {post.readTime}
+              </span>
+            </div>
+          </header>
+
+          <Image
+            src={post.image}
+            alt={post.title}
+            width={1000}
+            height={750}
+            sizes={SIZES.banner}
+            className="mt-8 aspect-[4/3] w-full rounded-2xl border border-line-200 object-cover"
+          />
+
+          <div className="mt-8 space-y-5">
+            {blocks.map((block, i) =>
+              block.heading ? (
+                <h2 key={i} className="pt-2 text-xl font-bold text-ink-900">
+                  {block.text}
+                </h2>
+              ) : (
+                <p key={i} className="leading-relaxed text-ink-600">
+                  {block.text}
+                </p>
+              )
+            )}
+          </div>
+
+          <footer className="mt-10 border-t border-line-200 pt-6">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-ink-500">Topics</h2>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {post.tags.map((tag) => (
+                <li key={tag}>
+                  <Link
+                    href={`/blog?tag=${encodeURIComponent(tag)}`}
+                    className="inline-block rounded-full border border-line-200 bg-surface-50 px-3 py-1 text-xs font-semibold text-ink-600 transition-colors hover:border-brand-200 hover:bg-brand-50 hover:text-brand-600"
+                  >
+                    {tag}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </footer>
+        </article>
       </main>
 
       <Footer />

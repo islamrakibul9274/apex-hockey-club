@@ -1,93 +1,94 @@
 "use client";
 
 import React from "react";
-import { FaPersonRunning, FaAward, FaCrown, FaBuildingColumns } from "react-icons/fa6";
+import { FaMedal, FaUsers, FaPersonSkating, FaSnowflake } from "react-icons/fa6";
+import { SIZES } from "@/lib/images";
 
-const stats = [
+/**
+ * Club standards strip.
+ *
+ * The previous version carried copy from an unrelated project — a "Prayer
+ * Facility" stat about meditation, plus lorem ipsum — and the percentage
+ * overlapped the icon badge because both were absolutely positioned in the
+ * same box. Rebuilt with real hockey content and a flex layout.
+ *
+ * These are the club's own published standards rather than invented audience
+ * numbers, so nothing here needs a source we cannot show.
+ */
+
+const STANDARDS = [
   {
-    value: 87,
-    color: "#FF4240",
-    title: "Prayer Facility",
-    description: "Dedicated tranquil spaces for meditation and pre-game athletic focus.",
-    icon: FaBuildingColumns,
+    value: "2",
+    unit: "ice sheets",
+    title: "Olympic-size rinks",
+    body: "Full NHL-dimension ice, resurfaced between every session.",
+    icon: FaSnowflake,
   },
   {
-    value: 95,
-    color: "#49D293",
-    title: "Experienced Coaches",
-    description: "Certified Olympic and NHL veterans guiding player development.",
-    icon: FaCrown,
+    value: "6",
+    unit: "age groups",
+    title: "Junior to senior",
+    body: "Pathways from first stick handling through to league squads.",
+    icon: FaPersonSkating,
   },
   {
-    value: 90,
-    color: "#FFB546",
-    title: "Senior Players",
-    description: "Active national champions & elite mentors on the ice every week.",
-    icon: FaAward,
+    value: "12",
+    unit: "weeks",
+    title: "Minimum programme",
+    body: "Every course runs long enough to build technique, not just fitness.",
+    icon: FaMedal,
   },
   {
-    value: 80,
-    color: "#4C8DF1",
-    title: "Training Grounds",
-    description: "Dual Olympic-size indoor ice arenas with climate-controlled rinks.",
-    icon: FaPersonRunning,
+    value: "100%",
+    unit: "certified",
+    title: "Coaching staff",
+    body: "Every on-ice coach holds current first aid and safeguarding clearance.",
+    icon: FaUsers,
   },
 ];
 
 export default function ProgressStats() {
   return (
-    <section id="about" className="px-4 sm:px-6 lg:px-8 py-8">
-      {/* Section Header */}
-      <div className="text-center space-y-3 my-8 py-8 border-dashed border-2 border-l-0 border-r-0 border-gray-200">
-        <span className="badge badge-sm bg-red-100 text-[#FF4240] font-extrabold uppercase tracking-widest px-3 py-2">
-          Club Standards
-        </span>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">
-          Professional Hockeys Club
+    <section aria-labelledby="standards-heading" className="apex-container">
+      <div className="text-center">
+        <span className="apex-badge apex-badge-brand uppercase tracking-widest">Club standards</span>
+        <h2 id="standards-heading" className="mt-3 text-2xl font-extrabold sm:text-3xl">
+          Built for players who want to get properly better
         </h2>
-        <p className="text-gray-500 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-          Dit amet consectetur. Condimentum dignissim adipiscing aliquam turpis placerat <br className="hidden sm:inline" /> dolor. Purus urna in sit nullam proin.
+        <p className="mx-auto mt-3 max-w-2xl text-base text-ink-600">
+          Apex Hockey programmes run on a fixed structure: certified coaches, proper ice time
+          and enough weeks in a block to change how you actually move the puck.
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 py-2">
-        {stats.map((stat, idx) => {
+      <dl className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {STANDARDS.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div
-              key={idx}
-              className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center space-y-4 group"
-            >
-              <div className="relative">
-                <div
-                  className="radial-progress font-black text-xl transition-all duration-500"
-                  style={{
-                    // @ts-expect-error DaisyUI radial-progress CSS variable
-                    "--value": stat.value,
-                    "--size": "6.5rem",
-                    "--thickness": "0.6rem",
-                    color: stat.color,
-                  }}
-                  role="progressbar"
+            <div key={stat.title} className="apex-card p-6">
+              <div className="flex items-center gap-4">
+                <span
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600"
+                  aria-hidden="true"
                 >
-                  <span className="text-gray-900 font-extrabold">{stat.value}%</span>
-                </div>
-                <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs shadow-md">
-                  <Icon />
+                  <Icon className="text-lg" />
+                </span>
+                <div>
+                  {/* dt before dd so the value reads as the term, not stray text. */}
+                  <dt className="text-2xl font-extrabold leading-none text-ink-900">
+                    {stat.value}
+                    <span className="ml-1 text-sm font-semibold text-ink-500">{stat.unit}</span>
+                  </dt>
                 </div>
               </div>
-
-              <h3 className="text-xl font-extrabold text-gray-900 group-hover:text-[#FF4240] transition-colors">
-                {stat.title}
-              </h3>
-              <p className="text-gray-500 text-xs sm:text-sm leading-relaxed max-w-xs">
-                {stat.description}
-              </p>
+              <dd className="mt-4">
+                <p className="font-bold text-ink-900">{stat.title}</p>
+                <p className="mt-1 text-sm leading-relaxed text-ink-600">{stat.body}</p>
+              </dd>
             </div>
           );
         })}
-      </div>
+      </dl>
     </section>
   );
 }

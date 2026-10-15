@@ -1,195 +1,335 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
-import { FaPaperPlane, FaCheck } from "react-icons/fa6";
+import {
+  FaPaperPlane,
+  FaEnvelope,
+  FaClock,
+  FaUsers,
+  FaCircleCheck,
+} from "react-icons/fa6";
+
+/**
+ * Contact section.
+ *
+ * Written fresh rather than adapted.
+ *
+ * The contact details this replaces were placeholders — (+62) 123-321-543,
+ * hockeys@support.com and "152/1 Mohakhali Wireless Gate" — none of which
+ * resolve to anyone. The address below is the inbox the form actually delivers
+ * to, and we say plainly that we have not published a phone number rather than
+ * printing an invented one.
+ */
+
+const CLUB_EMAIL = "islamrakibul9274@gmail.com";
+
+const RESPONSE_TIMES = [
+  {
+    icon: FaClock,
+    title: "Email response",
+    body: "We reply to most messages within one working day, and always within two.",
+  },
+  {
+    icon: FaUsers,
+    title: "Group & team enquiries",
+    body: "Teams of eight or more — include the age group and training frequency for a faster quote.",
+  },
+];
+
+type Status =
+  | { kind: "idle" }
+  | { kind: "sending" }
+  | { kind: "sent" }
+  | { kind: "error"; message: string };
 
 export default function ContactSection() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [subject, setSubject] = useState("");
-  const [phone, setPhone] = useState("");
-  const [message, setMessage] = useState("");
+  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [status, setStatus] = useState<Status>({ kind: "idle" });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+  function update(field: keyof typeof form, value: string) {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setErrorMsg("");
+  function validate() {
+    const errors: Record<string, string> = {};
+    if (form.name.trim().length < 2) errors.name = "Please tell us your name";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()))
+      errors.email = "Enter a valid email address";
+    if (form.message.trim().length < 10)
+      errors.message = "Add a little more detail (at least 10 characters)";
+    return errors;
+  }
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+
+    const errors = validate();
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      setStatus({ kind: "error", message: "Check the highlighted fields." });
+      return;
+    }
+
+    setStatus({ kind: "sending" });
 
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, phone, subject, message }),
+        body: JSON.stringify({
+          name: form.name.trim(),
+          email: form.email.trim(),
+          subject: form.subject.trim() || "General enquiry",
+          message: form.message.trim(),
+        }),
       });
-      const data = await res.json();
-      if (res.ok) {
-        setSuccess(true);
-        setName("");
-        setEmail("");
-        setSubject("");
-        setPhone("");
-        setMessage("");
-        setTimeout(() => setSuccess(false), 5000);
-      } else {
-        setErrorMsg(data.error || "Failed to send message.");
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        // A failure is never shown as a success.
+        setStatus({
+          kind: "error",
+          message: data?.error ?? "We could not send that. Please try again.",
+        });
+        return;
       }
+
+      setStatus({ kind: "sent" });
+      setForm({ name: "", email: "", subject: "", message: "" });
     } catch {
-      // A dropped connection is not a delivered message.
-      setSuccess(false);
-      setErrorMsg("We could not reach the server. Your message was not sent — please try again.");
-    } finally {
-      setLoading(false);
+      setStatus({
+        kind: "error",
+        message: "We could not reach the server. Your message was not sent — please try again.",
+      });
     }
-  };
+  }
+
+  const sending = status.kind === "sending";
 
   return (
-    <section id="contact" className="px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="text-center space-y-3 my-8 py-8 border-dashed border-2 border-l-0 border-r-0 border-gray-200">
-        <span className="badge badge-sm bg-red-100 text-[#FF4240] font-extrabold uppercase tracking-widest px-3 py-2">
-          Concierge & Support
-        </span>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">
-          Get In Touch
-        </h2>
-        <p className="text-gray-500 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-          Dit amet consectetur. Condimentum dignissim adipiscing aliquam turpis placerat <br className="hidden sm:inline" /> dolor. Purus urna in sit nullam proin.
-        </p>
-      </div>
-
-      {/* Address Cards & Contact Form Container */}
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Info Cards */}
-        <div className="p-6 sm:p-8 border-2 border-gray-100 rounded-3xl space-y-4 lg:w-[35%] flex flex-col justify-between bg-white shadow-sm">
-          <div className="bg-[#dbf8ad]/60 p-6 space-y-2 rounded-2xl transition-all hover:scale-[1.02] border border-[#dbf8ad]">
-            <Image
-              src="/images/Group 1171275317.png"
-              alt="Phone icon"
-              width={44}
-              height={44}
-              className="w-11 h-11 object-contain"
-            />
-            <p className="text-gray-600 text-xs font-semibold uppercase tracking-wider">Phone Number :</p>
-            <h3 className="font-extrabold text-lg sm:text-xl text-gray-900">(+62) 123-321-543</h3>
-          </div>
-
-          <div className="bg-[#fbefc1]/60 p-6 space-y-2 rounded-2xl transition-all hover:scale-[1.02] border border-[#fbefc1]">
-            <Image
-              src="/images/Group 1171275318.png"
-              alt="Email icon"
-              width={44}
-              height={44}
-              className="w-11 h-11 object-contain"
-            />
-            <p className="text-gray-600 text-xs font-semibold uppercase tracking-wider">Email :</p>
-            <h3 className="font-extrabold text-lg sm:text-xl text-gray-900">hockeys@support.com</h3>
-          </div>
-
-          <div className="bg-[#b4cbec]/60 p-6 space-y-2 rounded-2xl transition-all hover:scale-[1.02] border border-[#b4cbec]">
-            <Image
-              src="/images/Group 1171275321.png"
-              alt="Location icon"
-              width={44}
-              height={44}
-              className="w-11 h-11 object-contain"
-            />
-            <p className="text-gray-600 text-xs font-semibold uppercase tracking-wider">Location :</p>
-            <h3 className="font-extrabold text-lg sm:text-xl text-gray-900">152/1 Mohakhali Wireless Gate</h3>
-          </div>
+    <section aria-labelledby="contact-heading" className="border-t border-line-200 bg-surface-50 apex-section">
+      <div className="apex-container">
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="apex-badge apex-badge-brand uppercase tracking-widest">
+            Concierge &amp; support
+          </span>
+          <h2 id="contact-heading" className="mt-3 text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl">
+            Get in touch
+          </h2>
+          <p className="mt-4 leading-relaxed text-ink-600">
+            Questions about programmes, private sessions or team bookings — tell us what you need
+            and we will come back with options.
+          </p>
         </div>
 
-        {/* Contact Form */}
-        <div className="lg:w-[65%] border-2 border-gray-100 rounded-3xl p-6 sm:p-8 bg-white shadow-sm flex flex-col justify-between">
-          {success ? (
-            <div className="my-auto py-12 text-center space-y-4 animate-in fade-in">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mx-auto shadow-inner">
-                <FaCheck />
-              </div>
-              <h3 className="text-2xl font-extrabold text-gray-900">Message Delivered!</h3>
-              <p className="text-gray-500 text-sm max-w-md mx-auto">
-                Thank you for contacting Apex Hockey Club. A training director or team representative will review your message and reach out shortly.
+        <div className="mt-10 grid gap-6 lg:grid-cols-5 lg:gap-8">
+          {/* Details column */}
+          <div className="lg:col-span-2">
+            <div className="apex-card h-full p-6">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-ink-500">
+                Reach the club
+              </h3>
+
+              <dl className="mt-4 space-y-4">
+                <div className="flex gap-3">
+                  <dt className="shrink-0">
+                    <span
+                      aria-hidden="true"
+                      className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-600"
+                    >
+                      <FaEnvelope />
+                    </span>
+                    <span className="sr-only">Email</span>
+                  </dt>
+                  <dd className="min-w-0">
+                    <p className="text-sm font-semibold text-ink-900">Email</p>
+                    <a
+                      href={`mailto:${CLUB_EMAIL}`}
+                      className="mt-0.5 block break-all text-sm text-ink-600 transition-colors hover:text-brand-600"
+                    >
+                      {CLUB_EMAIL}
+                    </a>
+                  </dd>
+                </div>
+
+                {RESPONSE_TIMES.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <div key={item.title} className="flex gap-3">
+                      <dt className="shrink-0">
+                        <span
+                          aria-hidden="true"
+                          className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-600"
+                        >
+                          <Icon />
+                        </span>
+                        <span className="sr-only">{item.title}</span>
+                      </dt>
+                      <dd className="min-w-0">
+                        <p className="text-sm font-semibold text-ink-900">{item.title}</p>
+                        <p className="mt-0.5 text-sm leading-relaxed text-ink-600">{item.body}</p>
+                      </dd>
+                    </div>
+                  );
+                })}
+              </dl>
+
+              <p className="mt-5 rounded-xl bg-surface-100 p-3 text-xs leading-relaxed text-ink-600">
+                We have not published a phone number. Email reaches the coaching desk directly and
+                is the fastest way to get an answer on sizing and availability.
               </p>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {errorMsg && (
-                <div className="alert alert-error text-xs text-white rounded-xl md:col-span-2">
-                  {errorMsg}
+          </div>
+
+          {/* Form column */}
+          <div className="lg:col-span-3">
+            <div className="apex-card p-6 sm:p-8">
+              {status.kind === "sent" ? (
+                <div role="status" className="py-6 text-center">
+                  <span
+                    aria-hidden="true"
+                    className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-success-50 text-2xl text-success-700"
+                  >
+                    <FaCircleCheck />
+                  </span>
+                  <h3 className="mt-4 text-xl font-bold text-ink-900">Message sent</h3>
+                  <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-ink-600">
+                    Thanks — your message reached the coaching desk. We usually reply within one
+                    working day.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setStatus({ kind: "idle" })}
+                    className="apex-btn apex-btn-secondary apex-btn-sm mt-6"
+                  >
+                    Send another message
+                  </button>
                 </div>
+              ) : (
+                <form onSubmit={handleSubmit} noValidate className="space-y-5">
+                  <h3 className="text-lg font-bold text-ink-900">Send a message</h3>
+
+                  {status.kind === "error" && (
+                    <div role="alert" className="apex-alert apex-alert-error">
+                      {status.message}
+                    </div>
+                  )}
+
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor="c-name" className="apex-label">
+                        Your name <span aria-hidden="true">*</span>
+                      </label>
+                      <input
+                        id="c-name"
+                        type="text"
+                        value={form.name}
+                        onChange={(e) => update("name", e.target.value)}
+                        placeholder="Jordan Matthews"
+                        autoComplete="name"
+                        disabled={sending}
+                        aria-invalid={fieldErrors.name ? true : undefined}
+                        aria-describedby={fieldErrors.name ? "c-name-err" : undefined}
+                        className="apex-input"
+                      />
+                      {fieldErrors.name && (
+                        <p id="c-name-err" className="apex-field-error">
+                          {fieldErrors.name}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label htmlFor="c-email" className="apex-label">
+                        Your email <span aria-hidden="true">*</span>
+                      </label>
+                      <input
+                        id="c-email"
+                        type="email"
+                        value={form.email}
+                        onChange={(e) => update("email", e.target.value)}
+                        placeholder="you@example.com"
+                        autoComplete="email"
+                        disabled={sending}
+                        aria-invalid={fieldErrors.email ? true : undefined}
+                        aria-describedby={fieldErrors.email ? "c-email-err" : undefined}
+                        className="apex-input"
+                      />
+                      {fieldErrors.email && (
+                        <p id="c-email-err" className="apex-field-error">
+                          {fieldErrors.email}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="c-subject" className="apex-label">
+                      Subject
+                    </label>
+                    <input
+                      id="c-subject"
+                      type="text"
+                      value={form.subject}
+                      onChange={(e) => update("subject", e.target.value)}
+                      placeholder="Training camp inquiry, arena pass, team booking…"
+                      disabled={sending}
+                      className="apex-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="c-message" className="apex-label">
+                      Message <span aria-hidden="true">*</span>
+                    </label>
+                    <textarea
+                      id="c-message"
+                      rows={5}
+                      value={form.message}
+                      onChange={(e) => update("message", e.target.value)}
+                      placeholder="Tell us the age group, the programme you're interested in, and any dates that work for you."
+                      disabled={sending}
+                      aria-invalid={fieldErrors.message ? true : undefined}
+                      aria-describedby={fieldErrors.message ? "c-message-err" : undefined}
+                      className="apex-input resize-y"
+                    />
+                    {fieldErrors.message && (
+                      <p id="c-message-err" className="apex-field-error">
+                        {fieldErrors.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={sending}
+                    className="apex-btn apex-btn-primary apex-btn-lg apex-btn-block"
+                  >
+                    {sending ? (
+                      <>
+                        <span className="apex-spinner apex-spinner-sm" aria-hidden="true" />
+                        Sending…
+                      </>
+                    ) : (
+                      <>
+                        <FaPaperPlane aria-hidden="true" />
+                        Send message
+                      </>
+                    )}
+                  </button>
+                </form>
               )}
-
-              <div className="form-control w-full">
-                <label className="label text-xs font-bold text-gray-700">Your Name</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter your full name"
-                  className="input w-full bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF4240]"
-                  required
-                />
-              </div>
-
-              <div className="form-control w-full">
-                <label className="label text-xs font-bold text-gray-700">Your Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  className="input w-full bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF4240]"
-                  required
-                />
-              </div>
-
-              <div className="form-control w-full">
-                <label className="label text-xs font-bold text-gray-700">Subject</label>
-                <input
-                  type="text"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Training camp inquiry, arena pass, etc."
-                  className="input w-full bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF4240]"
-                  required
-                />
-              </div>
-
-              <div className="form-control w-full">
-                <label className="label text-xs font-bold text-gray-700">Phone Number</label>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="(+1) 555-0123"
-                  className="input w-full bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF4240]"
-                />
-              </div>
-
-              <div className="form-control w-full md:col-span-2">
-                <label className="label text-xs font-bold text-gray-700">Message</label>
-                <textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  className="textarea w-full bg-gray-50 border border-gray-200 h-32 rounded-xl text-sm focus:ring-2 focus:ring-[#FF4240]"
-                  placeholder="Describe your inquiry or program questions..."
-                  required
-                ></textarea>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn text-white btn-block md:col-span-2 bg-[#FF4240] hover:bg-[#e03735] border-none text-base font-bold py-3 mt-2 rounded-xl shadow-lg shadow-red-500/20 flex items-center gap-2"
-              >
-                {loading ? "Sending..." : <><FaPaperPlane /> Send Message</>}
-              </button>
-            </form>
-          )}
+            </div>
+          </div>
         </div>
       </div>
     </section>

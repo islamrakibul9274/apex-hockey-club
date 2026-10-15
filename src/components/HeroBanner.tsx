@@ -51,7 +51,7 @@ export default function HeroBanner() {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="relative w-full rounded-3xl overflow-hidden shadow-2xl bg-black min-h-[480px] sm:min-h-[540px] lg:min-h-[580px] flex items-center">
+      <div className="relative w-full rounded-3xl overflow-hidden shadow-lg bg-surface-100 min-h-[420px] sm:min-h-[540px] lg:min-h-[580px] flex items-center">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -61,22 +61,25 @@ export default function HeroBanner() {
             priority
             className="object-cover object-center opacity-85 transition-all duration-700 scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+          {/* A single directional scrim instead of two stacked black
+              gradients. Keeps the headline at 4.5:1+ without turning the
+              whole panel into a black box. */}
+          <div className="absolute inset-0 bg-gradient-to-r from-ink-900/85 via-ink-900/45 to-ink-900/10" />
+          <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-ink-900/70 to-transparent" />
         </div>
 
         {/* Carousel Navigation Arrows */}
         <div className="absolute inset-x-4 sm:inset-x-8 top-1/2 -translate-y-1/2 flex justify-between z-20 pointer-events-none">
           <button
             onClick={prevSlide}
-            className="btn btn-circle bg-white/20 hover:bg-[#FF4240] text-white border-none backdrop-blur-md pointer-events-auto transition-all hover:scale-110 shadow-lg"
+            className="apex-btn apex-btn-icon bg-surface-0/20 hover:bg-brand-500 text-white border-none backdrop-blur-md pointer-events-auto transition-all hover:scale-110 shadow-lg"
             aria-label="Previous slide"
           >
             ❮
           </button>
           <button
             onClick={nextSlide}
-            className="btn btn-circle bg-white/20 hover:bg-[#FF4240] text-white border-none backdrop-blur-md pointer-events-auto transition-all hover:scale-110 shadow-lg"
+            className="apex-btn apex-btn-icon bg-surface-0/20 hover:bg-brand-500 text-white border-none backdrop-blur-md pointer-events-auto transition-all hover:scale-110 shadow-lg"
             aria-label="Next slide"
           >
             ❯
@@ -85,7 +88,7 @@ export default function HeroBanner() {
 
         {/* Main Content & CTA */}
         <div className="relative z-10 container mx-auto px-6 sm:px-12 lg:px-16 py-12 max-w-3xl space-y-6 text-white">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FF4240]/90 backdrop-blur-md text-white text-xs font-extrabold uppercase tracking-wider shadow-md animate-in fade-in slide-in-from-bottom-2">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-500/90 backdrop-blur-md text-white text-xs font-extrabold uppercase tracking-wider shadow-md animate-in fade-in slide-in-from-bottom-2">
             <FaFire className="text-amber-300" />
             {slide.badge}
           </div>
@@ -101,7 +104,7 @@ export default function HeroBanner() {
           <div className="flex flex-wrap gap-4 pt-2">
             <Link
               href={slide.ctaLink || "/get-ticket"}
-              className="btn bg-[#FF4240] hover:bg-[#e03735] text-white border-none rounded-2xl px-8 font-extrabold text-base shadow-xl shadow-red-500/30 hover:scale-105 transition-all flex items-center gap-2"
+              className="apex-btn bg-brand-500 hover:bg-brand-600 text-white border-none rounded-2xl px-8 font-extrabold text-base shadow-xl shadow-red-500/30 hover:scale-105 transition-all flex items-center gap-2"
             >
               <FaTicket />
               {slide.ctaText || "Book Match Tickets"}
@@ -109,7 +112,7 @@ export default function HeroBanner() {
 
             <Link
               href={slide.secondaryCtaLink || "/programs"}
-              className="btn bg-white/20 hover:bg-white text-white hover:text-gray-900 border-none backdrop-blur-md rounded-2xl px-6 font-bold text-base transition-all flex items-center gap-2"
+              className="apex-btn bg-surface-0/20 hover:bg-surface-0 text-white hover:text-ink-900 border-none backdrop-blur-md rounded-2xl px-6 font-bold text-base transition-all flex items-center gap-2"
             >
               {slide.secondaryCtaText || "Explore Programs"}
               <FaArrowRight className="text-xs" />
@@ -124,7 +127,7 @@ export default function HeroBanner() {
               key={idx}
               onClick={() => setCurrent(idx)}
               className={`h-2.5 rounded-full transition-all duration-300 ${
-                current === idx ? "w-8 bg-[#FF4240]" : "w-2.5 bg-white/50 hover:bg-white"
+                current === idx ? "w-8 bg-brand-500" : "w-2.5 bg-surface-0/50 hover:bg-surface-0"
               }`}
               aria-label={`Go to slide ${idx + 1}`}
             />

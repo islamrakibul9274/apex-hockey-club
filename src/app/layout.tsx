@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="light">
       <body
-        className={`${manrope.className} ${manrope.variable} ${poppins.variable} antialiased bg-white text-gray-900 selection:bg-red-100 selection:text-[#FF4240]`}
+        className={`${manrope.className} ${manrope.variable} ${poppins.variable} antialiased bg-surface-0 text-ink-900 selection:bg-brand-100 selection:text-brand-600`}
       >
         <AuthProvider>
           <CartProvider>
