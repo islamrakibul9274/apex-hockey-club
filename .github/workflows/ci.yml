@@ -63,22 +63,66 @@ jobs:
         run: npm run seed
         continue-on-error: true
 
-      # Both suites run for real against the service container.
-      - name: Unit and integration tests
-        run: npm test
-
-      # Poll rather than using wait-on, which is not a project dependency and
-      # would pull an extra package into CI for one wait.
-      - name: HTTP auth checks
+      # The integration suite makes real HTTP calls to a running server, so one
+      # has to exist before `npm test`. With a database present it no longer
+      # skips, and without a server it fails with ECONNREFUSED rather than
+      # quietly passing — which is what happened on the first attempt.
+      #
+      # Two servers are started in sequence, not in parallel: `next dev` and
+      # `next start` share .next, and the limiter has to be on for one of the
+      # suites and off for the others.
+      #
+      # Polled rather than using wait-on, which is not a project dependency and
+      # would add a package to CI for a single wait.
+      - name: Integration and feature checks
         run: |
-          RATE_LIMIT_DISABLED=true npm run dev -- --port 3000 &
-          for i in $(seq 1 90); do
-            if curl -sf http://localhost:3000/api/products >/dev/null 2>&1; then break; fi
-            if [ "$i" = "90" ]; then echo "server never became ready"; exit 1; fi
-            sleep 2
-          done
-          bash scripts/verify-auth.sh http://localhost:3000
+          start_server() {
+            # $1 = extra env assignment, or empty for the limiter-enabled server
+            env $1 npm run dev -- --port 3000 > /tmp/dev.log 2>&1 &
+            for i in $(seq 1 90); do
+              if curl -sf http://localhost:3000/api/products >/dev/null 2>&1; then
+                return 0
+              fi
+              if [ "$i" = "90" ]; then
+                echo "server never became ready"
+                tail -50 /tmp/dev.log
+                return 1
+              fi
+              sleep 2
+            done
+          }
+          stop_server() {
+            pkill -f "next dev" || true
+            pkill -f "next-server" || true
+            sleep 3
+          }
+
+          # Rate limits off: the integration suite signs up several users and
+          # would otherwise exhaust the real registration budget.
+          start_server "RATE_LIMIT_DISABLED=true"
+          TEST_BASE_URL=http://localhost:3000 npm test
           bash scripts/verify-features.sh http://localhost:3000
+          stop_server
+
+          # Rate limits ON: verify-auth.sh is the suite that proves the limiter
+          # blocks brute force, so it must not run against a disabled one.
+          start_server ""
+          # The reset link is written to the server log when no mail provider is
+          # configured, and verify-auth.sh reads the token from there. Without
+          # this it looks at the default /tmp/apex_dev.log, which does not exist
+          # on a fresh runner, and the reset checks silently pass on an empty
+          # token.
+          AUTH_LOG=/tmp/dev.log bash scripts/verify-auth.sh http://localhost:3000
+          stop_server
+
+      - name: Build
+        run: npm run build
+        env:
+          MONGODB_URI: mongodb://localhost:27017/apex_hockey_ci
+
+      - name: Server log
+        if: failure()
+        run: tail -60 /tmp/dev.log
 
   e2e:
     name: End-to-end tests
