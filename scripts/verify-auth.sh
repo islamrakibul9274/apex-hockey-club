@@ -121,6 +121,16 @@ done
 check "brute force blocked -> 429" 429 "$LAST"
 
 rm -f "$JAR"
+# These suites create real accounts, so remove them again. Uses the local tsx
+# binary rather than `command -v tsx`, which is false here because tsx is a
+# project dependency and not on PATH. Never fails the suite on cleanup.
+if [ -x "node_modules/.bin/tsx" ]; then
+  node_modules/.bin/tsx -e "import('./tests/helpers/fixtures').then(m => m.cleanupFixtures()).then(r => console.log('  cleanup:', JSON.stringify(r)))" \
+    || echo "  cleanup: skipped"
+else
+  echo "  cleanup: skipped (tsx not installed)"
+fi
+
 echo
 echo "  passed: $PASS   failed: $FAIL"
 [ "$FAIL" -eq 0 ] || exit 1

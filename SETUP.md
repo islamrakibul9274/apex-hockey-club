@@ -126,6 +126,18 @@ bash scripts/verify-auth.sh http://localhost:3000
 They also share a rate-limit budget, so run each against a freshly started
 server rather than back to back.
 
+`verify-features.sh` signs up and books as a real user, so start the server
+with `RATE_LIMIT_DISABLED=true` or the registration budget will be spent:
+
+```bash
+RATE_LIMIT_DISABLED=true npm run dev            # in one terminal
+bash scripts/verify-features.sh http://localhost:3000
+```
+
+All four suites clean up their own database fixtures afterwards
+(`tests/helpers/fixtures.ts`), so the seeded content and the demo account are
+left untouched.
+
 The integration and e2e suites set `RATE_LIMIT_DISABLED=true` so they can
 create fixtures on repeat runs. **The rate limiter's own behaviour is asserted
 end to end by `scripts/verify-auth.sh`, which does not set that flag** — and
