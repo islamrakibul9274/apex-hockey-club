@@ -21,22 +21,32 @@ export function generateStaticParams() {
   return SERVICE_SLUGS.map((service) => ({ service }));
 }
 
-export function generateMetadata({ params }: { params: { service: string } }): Metadata {
-  const service = SERVICES[params.service];
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ service: string }>;
+}): Promise<Metadata> {
+  const { service: slug } = await params;
+  const service = SERVICES[slug];
   if (!service) return { title: "Not found" };
   return {
     title: `${service.title} — Apex Hockey Club`,
     description: service.subtitle,
-    alternates: { canonical: `/services/${params.service}` },
+    alternates: { canonical: `/services/${slug}` },
   };
 }
 
-export default function ServiceDetailPage({ params }: { params: { service: string } }) {
-  const service = SERVICES[params.service];
+export default async function ServiceDetailPage({
+  params,
+}: {
+  params: Promise<{ service: string }>;
+}) {
+  const { service: slug } = await params;
+  const service = SERVICES[slug];
   // Unknown slug is a 404 rather than a silent render of branding.
   if (!service) notFound();
 
-  const others = SERVICE_SLUGS.filter((slug) => slug !== params.service);
+  const others = SERVICE_SLUGS.filter((other) => other !== slug);
 
   return (
     <div className="flex min-h-screen flex-col bg-surface-0">

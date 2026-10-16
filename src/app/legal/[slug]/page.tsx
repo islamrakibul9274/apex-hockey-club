@@ -113,23 +113,33 @@ export function generateStaticParams() {
   return Object.keys(LEGAL_DOCS).map((slug) => ({ slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const doc = LEGAL_DOCS[params.slug];
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const doc = LEGAL_DOCS[slug];
   if (!doc) return { title: "Not found" };
   return {
     title: `${doc.title} — Apex Hockey Club`,
     description: doc.summary,
-    alternates: { canonical: `/legal/${params.slug}` },
+    alternates: { canonical: `/legal/${slug}` },
   };
 }
 
-export default function LegalPage({ params }: { params: { slug: string } }) {
-  const doc = LEGAL_DOCS[params.slug];
+export default async function LegalPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const doc = LEGAL_DOCS[slug];
 
   // An unknown slug is a 404, not a silent render of the Terms page.
   if (!doc) notFound();
 
-  const siblings = Object.entries(LEGAL_DOCS).filter(([slug]) => slug !== params.slug);
+  const siblings = Object.entries(LEGAL_DOCS).filter(([other]) => other !== slug);
 
   return (
     <div className="flex min-h-screen flex-col bg-surface-0">

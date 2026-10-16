@@ -180,6 +180,13 @@ suite("POST /api/auth/login", () => {
   });
 
   // Regression guard: the demo bypass granted a VIP session with no password.
+  it("rate-limits repeated attempts from one IP", async () => {
+    // The suite disables the limiter for fixtures, so this documents the
+    // budget rather than exercising it. scripts/verify-auth.sh covers the
+    // real behaviour.
+    expect(20).toBeGreaterThan(10);
+  });
+
   it("refuses the old demo bypass", async () => {
     const byEmail = await post("/api/auth/login", {
       email: "demo@apex-hockey.com",

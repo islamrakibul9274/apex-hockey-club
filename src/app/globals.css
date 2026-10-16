@@ -1,6 +1,50 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* ==================================================================
+   Tailwind 4 theme mapping.
+
+   Tailwind 4 is CSS-first: it reads @theme rather than
+   tailwind.config.ts, so the palette is declared here as well. Both blocks
+   reference the same channel values, so a colour is defined once.
+   ================================================================== */
+@theme {
+  --color-brand-50: 254 242 242;
+  --color-brand-100: 254 226 226;
+  --color-brand-200: 254 202 202;
+  --color-brand-300: 255 66 64;
+  --color-brand-400: 229 72 77;
+  --color-brand-500: 210 47 47;
+  --color-brand-600: 198 40 40;
+  --color-brand-700: 160 31 31;
+
+  --color-ink-400: 156 163 175;
+  --color-ink-500: 107 114 128;
+  --color-ink-600: 75 85 99;
+  --color-ink-700: 55 65 81;
+  --color-ink-800: 31 41 55;
+  --color-ink-900: 17 24 39;
+
+  --color-line-200: 229 231 235;
+  --color-line-300: 209 213 219;
+
+  --color-surface-0: 255 255 255;
+  --color-surface-50: 249 250 251;
+  --color-surface-100: 243 244 246;
+
+  --color-accent-lime: 219 248 173;
+  --color-accent-sand: 251 239 193;
+  --color-accent-sky: 180 203 236;
+
+  --color-success-50: 240 253 244;
+  --color-success-700: 21 128 61;
+  --color-danger-50: 254 242 242;
+  --color-danger-600: 220 38 38;
+  --color-warning-50: 255 251 235;
+  --color-warning-700: 180 83 9;
+  --color-info-50: 239 246 255;
+  --color-info-700: 29 78 216;
+}
+
 
 /* ==================================================================
    Design tokens — the single source of truth.

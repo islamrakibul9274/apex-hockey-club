@@ -211,7 +211,7 @@ function AccountContent() {
       )}
 
       {/* Member Profile Hero Bar */}
-      <div className="bg-gradient-to-r from-slate-900 to-gray-900 text-white rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+      <div className="bg-linear-to-r from-slate-900 to-gray-900 text-white rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
         <div className="flex items-center gap-5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

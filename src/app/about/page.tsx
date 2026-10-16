@@ -99,7 +99,7 @@ export default function AboutPage() {
               fill
               className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-8 text-white">
+            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent flex items-end p-8 text-white">
               <div className="space-y-1">
                 <p className="text-xs font-bold uppercase tracking-widest text-brand-600">Arena Headquarters</p>
                 <h3 className="text-xl font-extrabold">Mohakhali Olympic Ice Center</h3>

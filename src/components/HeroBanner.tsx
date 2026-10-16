@@ -64,8 +64,8 @@ export default function HeroBanner() {
           {/* A single directional scrim instead of two stacked black
               gradients. Keeps the headline at 4.5:1+ without turning the
               whole panel into a black box. */}
-          <div className="absolute inset-0 bg-gradient-to-r from-ink-900/85 via-ink-900/45 to-ink-900/10" />
-          <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-ink-900/70 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-r from-ink-900/92 via-ink-900/70 to-ink-900/35" />
+          <div className="absolute inset-x-0 bottom-0 h-3/4 bg-linear-to-t from-ink-900/85 via-ink-900/25 to-transparent" />
         </div>
 
         {/* Carousel Navigation Arrows */}
@@ -97,7 +97,8 @@ export default function HeroBanner() {
             {slide.title}
           </h1>
 
-          <p className="text-gray-200 text-sm sm:text-base lg:text-lg max-w-xl leading-relaxed drop-shadow">
+          <p className="text-white text-sm sm:text-base lg:text-lg max-w-xl leading-relaxed"
+                style={{ textShadow: "0 1px 10px rgb(17 24 39 / 0.65)" }}>
             {slide.description}
           </p>
 

@@ -21,8 +21,14 @@ import { withErrorHandling, badRequest, unauthorized, tooManyRequests, serverErr
 import { enforceLimit } from "@/lib/rateLimit";
 import { toPublicUser } from "@/lib/session";
 
-/** 10 attempts per 15 minutes per IP. */
-const LIMIT = { max: 10, windowMs: 15 * 60 * 1000 };
+/**
+ * 20 attempts per 15 minutes per IP.
+ *
+ * Raised from 10: a shared office or university IP can see many legitimate
+ * sign-ins from the same address, and 10 per quarter hour was low enough that
+ * real users hit it. Still firmly below credential-stuffing volume.
+ */
+const LIMIT = { max: 20, windowMs: 15 * 60 * 1000 };
 
 /**
  * POST /api/auth/login

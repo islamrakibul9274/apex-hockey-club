@@ -95,7 +95,7 @@ export default function AiCoachWidget() {
       {isOpen && (
         <div className="fixed bottom-24 right-4 sm:right-6 z-50 w-[92vw] sm:w-[420px] max-h-[600px] h-[75vh] bg-surface-0 rounded-3xl shadow-2xl border border-line-200 flex flex-col overflow-hidden animate-scale-in duration-200">
           {/* Header */}
-          <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white p-4 flex items-center justify-between">
+          <div className="bg-linear-to-r from-gray-900 to-gray-800 text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-brand-500 flex items-center justify-center text-white shadow-md">
                 <FaWandMagicSparkles />

@@ -110,7 +110,7 @@ export default function ProgramSection() {
               }`}
               style={{ backgroundImage: `url(${program.image || "/images/team-action-card.webp"})` }}
             >
-              <div className="apex-hero-overlay bg-gradient-to-t from-black via-black/75 to-black/30"></div>
+              <div className="apex-hero-overlay bg-linear-to-t from-black via-black/75 to-black/30"></div>
               <div
                 className={`hero-content text-neutral-content p-6 sm:p-10 w-full flex ${
                   isFullSpan ? "justify-start" : "justify-start"
