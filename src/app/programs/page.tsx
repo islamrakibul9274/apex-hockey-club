@@ -200,7 +200,7 @@ export default async function ProgramsPage({
                     <div>
                       <dt className="text-ink-500">Pathway</dt>
                       <dd className="font-semibold text-ink-900">
-                        {program.coach}
+                        {program.category}
                       </dd>
                     </div>
                     <div>
