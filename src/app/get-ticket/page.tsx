@@ -1,6 +1,5 @@
 "use client";
 
-
 import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -19,7 +18,9 @@ import {
 
 export default function GetTicketPage() {
   const matches = INITIAL_MATCH_TICKETS;
-  const [selectedMatch, setSelectedMatch] = useState<MatchTicketData>(matches[0]);
+  const [selectedMatch, setSelectedMatch] = useState<MatchTicketData>(
+    matches[0],
+  );
   const [selectedTier, setSelectedTier] = useState<string>("General Admission");
   const [quantity, setQuantity] = useState<number>(2);
 
@@ -50,7 +51,9 @@ export default function GetTicketPage() {
     setCheckoutError("");
 
     if (!user) {
-      setCheckoutError("Sign in to book tickets so we can attach them to your account.");
+      setCheckoutError(
+        "Sign in to book tickets so we can attach them to your account.",
+      );
       return;
     }
 
@@ -62,7 +65,7 @@ export default function GetTicketPage() {
 
     if (quantity > currentTierObj.availableSeats) {
       setCheckoutError(
-        `Only ${currentTierObj.availableSeats} seats remain in ${currentTierObj.name}.`
+        `Only ${currentTierObj.availableSeats} seats remain in ${currentTierObj.name}.`,
       );
       return;
     }
@@ -92,7 +95,8 @@ export default function GetTicketPage() {
 
       if (!bookingRes.ok || !bookingData?.booking?._id) {
         setCheckoutError(
-          bookingData?.error ?? "We could not reserve your seats. You have not been charged."
+          bookingData?.error ??
+            "We could not reserve your seats. You have not been charged.",
         );
         return;
       }
@@ -116,7 +120,7 @@ export default function GetTicketPage() {
         // The seats stay reserved as pending; the webhook will never fire.
         setCheckoutError(
           checkoutData?.error ??
-            "We could not start the payment. Your seats are held but unpaid — please try again."
+            "We could not start the payment. Your seats are held but unpaid — please try again.",
         );
         return;
       }
@@ -124,26 +128,28 @@ export default function GetTicketPage() {
       window.location.href = checkoutData.url;
     } catch {
       setCheckoutError(
-        "We could not reach the payment service. Check your connection and try again — you have not been charged."
+        "We could not reach the payment service. Check your connection and try again — you have not been charged.",
       );
     } finally {
       setLoading(false);
     }
-  };  return (
+  };
+  return (
     <div className="min-h-screen flex flex-col bg-surface-0 text-ink-900">
       <Navbar />
 
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-12">
+      <main id="main" className="apex-container py-12 flex-1 space-y-12">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4">
+        <div className="apex-page-intro space-y-4">
           <span className="apex-badge apex-badge-sm bg-brand-100 text-brand-600 font-extrabold uppercase tracking-widest px-3 py-2">
             Match Passes & Seating
           </span>
           <h1 className="text-4xl sm:text-5xl font-black text-ink-900 tracking-tight">
-            Reserve Arena Match Tickets
+            YOUR SEAT. YOUR GAME.
           </h1>
           <p className="text-ink-600 text-base sm:text-lg leading-relaxed">
-            Experience high-velocity professional ice hockey live at the Mohakhali Olympic Ice Arena. Pick your fixture, seating tier, and instant digital pass.
+            Choose a fixture, compare seating tiers, and review your total
+            before continuing to secure checkout.
           </p>
         </div>
 
@@ -153,12 +159,19 @@ export default function GetTicketPage() {
               <FaCheck />
             </div>
             <div className="space-y-2">
-              <h2 className="text-3xl font-extrabold text-ink-900">Tickets Confirmed!</h2>
+              <h2 className="text-3xl font-extrabold text-ink-900">
+                Tickets Confirmed!
+              </h2>
               <p className="text-ink-600 text-sm">
-                Your reservation for <strong className="text-ink-900">{selectedMatch.matchTitle}</strong> ({quantity} {selectedTier} seats) is confirmed.
+                Your reservation for{" "}
+                <strong className="text-ink-900">
+                  {selectedMatch.matchTitle}
+                </strong>{" "}
+                ({quantity} {selectedTier} seats) is confirmed.
               </p>
               <p className="text-xs text-ink-500">
-                Digital mobile barcode passes have been synced to your account portal and emailed.
+                Digital mobile barcode passes have been synced to your account
+                portal and emailed.
               </p>
             </div>
 
@@ -182,17 +195,25 @@ export default function GetTicketPage() {
             {/* Match Selection */}
             <div className="lg:col-span-7 space-y-6">
               <h2 className="text-xl font-extrabold text-ink-900 flex items-center gap-2">
-                <FaCalendarDays className="text-brand-600" /> Select Match Fixture
+                <FaCalendarDays className="text-brand-600" /> Select Match
+                Fixture
               </h2>
 
               <div className="space-y-4">
                 {matches.map((match) => {
                   const isSelected = selectedMatch.id === match.id;
                   return (
-                    <div
+                    <button
+                      type="button"
+                      aria-pressed={isSelected}
                       key={match.id}
-                      onClick={() => setSelectedMatch(match)}
-                      className={`p-6 rounded-3xl cursor-pointer transition-all duration-200 border-2 ${
+                      onClick={() => {
+                        setSelectedMatch(match);
+                        setSelectedTier(match.priceTiers[0].name);
+                        setQuantity(1);
+                        setCheckoutError("");
+                      }}
+                      className={`w-full text-left p-6 rounded-xl cursor-pointer transition-all duration-200 border-2 ${
                         isSelected
                           ? "border-brand-500 bg-brand-50/40 shadow-lg shadow-red-500/10"
                           : "border-line-200 bg-surface-0 hover:border-line-300"
@@ -203,54 +224,68 @@ export default function GetTicketPage() {
                           <span className="apex-badge apex-badge-sm bg-surface-100 font-bold text-[10px]">
                             {match.tournament}
                           </span>
-                          <h3 className="text-xl font-extrabold text-ink-900">{match.matchTitle}</h3>
+                          <h3 className="text-xl font-extrabold text-ink-900">
+                            {match.matchTitle}
+                          </h3>
                           <div className="flex items-center gap-4 text-xs text-ink-600 pt-1">
                             <span className="flex items-center gap-1">
-                              <FaCalendarDays className="text-brand-600" /> {match.date} at {match.time}
+                              <FaCalendarDays className="text-brand-600" />{" "}
+                              {match.date} at {match.time}
                             </span>
                             <span className="flex items-center gap-1">
-                              <FaLocationDot className="text-brand-600" /> {match.venue}
+                              <FaLocationDot className="text-brand-600" />{" "}
+                              {match.venue}
                             </span>
                           </div>
                         </div>
 
                         <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center">
-                          <span className="text-xs text-ink-500">Starting from</span>
+                          <span className="text-xs text-ink-500">
+                            Starting from
+                          </span>
                           <span className="text-2xl font-black text-brand-600">
                             ${match.priceTiers[0].price}
                           </span>
                         </div>
                       </div>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
 
               {/* Seating Tiers */}
               <div className="space-y-4 pt-4">
-                <h2 className="text-xl font-extrabold text-ink-900">Choose Seating Tier</h2>
+                <h2 className="text-xl font-extrabold text-ink-900">
+                  Choose Seating Tier
+                </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {selectedMatch.priceTiers.map((tier) => {
                     const isSelected = selectedTier === tier.name;
                     return (
-                      <div
+                      <button
+                        type="button"
+                        aria-pressed={isSelected}
                         key={tier.name}
                         onClick={() => setSelectedTier(tier.name)}
-                        className={`p-5 rounded-2xl cursor-pointer transition-all border-2 text-center space-y-2 ${
+                        className={`w-full p-5 rounded-xl cursor-pointer transition-all border-2 text-center space-y-2 ${
                           isSelected
                             ? "border-brand-500 bg-brand-50/50 shadow-md"
                             : "border-line-200 bg-surface-0 hover:border-line-300"
                         }`}
                       >
-                        <h4 className="font-extrabold text-sm text-ink-900">{tier.name}</h4>
-                        <div className="text-2xl font-black text-brand-600">${tier.price}</div>
+                        <h4 className="font-extrabold text-sm text-ink-900">
+                          {tier.name}
+                        </h4>
+                        <div className="text-2xl font-black text-brand-600">
+                          ${tier.price}
+                        </div>
                         <p className="text-[11px] text-ink-600 line-clamp-2 leading-relaxed">
                           {tier.description}
                         </p>
                         <span className="apex-badge apex-badge-sm bg-surface-100 text-ink-600 font-semibold text-[10px]">
                           {tier.availableSeats} Seats Left
                         </span>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
@@ -265,7 +300,9 @@ export default function GetTicketPage() {
                     <FaTicket />
                   </div>
                   <div>
-                    <h3 className="font-extrabold text-lg text-ink-900">Pass Reservation</h3>
+                    <h3 className="font-extrabold text-lg text-ink-900">
+                      Pass Reservation
+                    </h3>
                     <p className="text-xs text-ink-600">Live match checkout</p>
                   </div>
                 </div>
@@ -279,7 +316,9 @@ export default function GetTicketPage() {
                   </div>
                   <div className="flex justify-between text-ink-600">
                     <span>Tier:</span>
-                    <span className="font-bold text-ink-900">{selectedTier} (${currentTierObj.price}/seat)</span>
+                    <span className="font-bold text-ink-900">
+                      {selectedTier} (${currentTierObj.price}/seat)
+                    </span>
                   </div>
                   <div className="flex justify-between items-center text-ink-600">
                     <span>Tickets Count:</span>
@@ -292,7 +331,9 @@ export default function GetTicketPage() {
                       >
                         <FaMinus className="text-xs" />
                       </button>
-                      <span className="px-3 py-1 font-extrabold text-ink-900">{quantity}</span>
+                      <span className="px-3 py-1 font-extrabold text-ink-900">
+                        {quantity}
+                      </span>
                       <button
                         type="button"
                         onClick={() => setQuantity((q) => Math.min(10, q + 1))}
@@ -313,9 +354,13 @@ export default function GetTicketPage() {
                 {/* Attendee Form */}
                 <form onSubmit={handleBookTicket} className="space-y-4 pt-2">
                   <div className="apex-field">
-                    <label className="label text-xs font-bold text-ink-700">Ticket Holder Name</label>
+                    <label htmlFor="ticket-name" className="apex-label">
+                      Ticket holder name
+                    </label>
                     <input
                       type="text"
+                      id="ticket-name"
+                      autoComplete="name"
                       value={customerName || user?.name || ""}
                       onChange={(e) => setCustomerName(e.target.value)}
                       placeholder="Alex Mercer"
@@ -325,9 +370,13 @@ export default function GetTicketPage() {
                   </div>
 
                   <div className="apex-field">
-                    <label className="label text-xs font-bold text-ink-700">Receipt & Barcode Email</label>
+                    <label htmlFor="ticket-email" className="apex-label">
+                      Receipt email
+                    </label>
                     <input
                       type="email"
+                      id="ticket-email"
+                      autoComplete="email"
                       value={customerEmail || user?.email || ""}
                       onChange={(e) => setCustomerEmail(e.target.value)}
                       placeholder="alex@example.com"
@@ -370,7 +419,8 @@ export default function GetTicketPage() {
                 </form>
 
                 <p className="text-[11px] text-ink-500 text-center leading-relaxed">
-                  Payment is taken by Stripe. Passes are issued to your account once payment clears.
+                  Payment is taken by Stripe. Passes are issued to your account
+                  once payment clears.
                 </p>
               </div>
             </div>

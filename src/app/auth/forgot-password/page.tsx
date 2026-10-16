@@ -50,13 +50,13 @@ export default function ForgotPasswordPage() {
         <div className="text-center mb-8">
           <div
             className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"
-            style={{ backgroundColor: "var(--brand-50)", color: "var(--brand-600)" }}
+            style={{ backgroundColor: "rgb(var(--brand-50))", color: "rgb(var(--brand-600))" }}
             aria-hidden="true"
           >
             <FaEnvelope />
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold">Reset your password</h1>
-          <p className="text-sm mt-1.5" style={{ color: "var(--ink-500)" }}>
+          <p className="text-sm mt-1.5" style={{ color: "rgb(var(--ink-500))" }}>
             Enter your email and we&apos;ll send you a link to choose a new one.
           </p>
         </div>
@@ -104,7 +104,7 @@ export default function ForgotPasswordPage() {
           <Link
             href="/auth/signin"
             className="inline-flex items-center gap-1.5 font-semibold hover:underline"
-            style={{ color: "var(--brand-600)" }}
+            style={{ color: "rgb(var(--brand-600))" }}
           >
             <FaArrowLeft aria-hidden="true" className="text-xs" />
             Back to sign in

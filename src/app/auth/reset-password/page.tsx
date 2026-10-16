@@ -66,13 +66,13 @@ function ResetPasswordForm() {
       <div className="w-full max-w-md text-center">
         <div
           className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"
-          style={{ backgroundColor: "var(--brand-50)", color: "var(--brand-600)" }}
+          style={{ backgroundColor: "rgb(var(--brand-50))", color: "rgb(var(--brand-600))" }}
           aria-hidden="true"
         >
           <FaTriangleExclamation />
         </div>
         <h1 className="text-2xl font-extrabold mb-2">This link is not valid</h1>
-        <p className="text-sm mb-6" style={{ color: "var(--ink-500)" }}>
+        <p className="text-sm mb-6" style={{ color: "rgb(var(--ink-500))" }}>
           The password reset link is missing its token. Request a new one.
         </p>
         <Link href="/auth/forgot-password">
@@ -87,13 +87,13 @@ function ResetPasswordForm() {
       <div className="w-full max-w-md text-center">
         <div
           className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"
-          style={{ backgroundColor: "var(--success-50)", color: "var(--success-700)" }}
+          style={{ backgroundColor: "rgb(var(--success-50))", color: "rgb(var(--success-700))" }}
           aria-hidden="true"
         >
           <FaCircleCheck />
         </div>
         <h1 className="text-2xl font-extrabold mb-2">Password updated</h1>
-        <p className="text-sm mb-6" style={{ color: "var(--ink-500)" }}>
+        <p className="text-sm mb-6" style={{ color: "rgb(var(--ink-500))" }}>
           You are signed in and your new password is active.
         </p>
         <Button size="lg" onClick={() => router.push("/account")}>
@@ -108,13 +108,13 @@ function ResetPasswordForm() {
       <div className="text-center mb-8">
         <div
           className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"
-          style={{ backgroundColor: "var(--brand-50)", color: "var(--brand-600)" }}
+          style={{ backgroundColor: "rgb(var(--brand-50))", color: "rgb(var(--brand-600))" }}
           aria-hidden="true"
         >
           <FaKey />
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold">Choose a new password</h1>
-        <p className="text-sm mt-1.5" style={{ color: "var(--ink-500)" }}>
+        <p className="text-sm mt-1.5" style={{ color: "rgb(var(--ink-500))" }}>
           Pick something you don&apos;t use anywhere else.
         </p>
       </div>

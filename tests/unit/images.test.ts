@@ -1,6 +1,13 @@
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
+import {
+  IMG,
+  img,
+  freshImage,
+  type ImageKey,
+  type ImageRole,
+} from "../../src/lib/images";
 
 /**
  * Guards against referencing images that do not exist.
@@ -45,21 +52,36 @@ describe("image references", () => {
       const onDisk = path.join("public", ref);
       expect(
         fs.existsSync(onDisk),
-        `${file} references ${ref}, which does not exist`
+        `${file} references ${ref}, which does not exist`,
       ).toBe(true);
-    }
+    },
   );
 
   it("the manifest generates paths that exist", () => {
-    const keys = ["hero-action", "hero-puck", "arena-empty", "team-action"];
-    const roles = ["wide", "card", "thumb"];
+    const keys = Object.keys(IMG) as ImageKey[];
+    const roles: ImageRole[] = ["wide", "card", "thumb"];
     for (const key of keys) {
       for (const role of roles) {
+        const source = img(key, role);
         expect(
-          fs.existsSync(path.join("public", "images", `${key}-${role}.webp`)),
-          `images/${key}-${role}.webp is referenced by the manifest but missing`
+          fs.existsSync(path.join("public", source)),
+          `${source} is missing`,
         ).toBe(true);
       }
     }
+  });
+});
+
+// Returning visitors previously cached the old photography for a full year.
+describe("photo cache versioning", () => {
+  it("versions local images, including persisted database paths", () => {
+    expect(freshImage("/images/hero-action-card.webp")).toMatch(/\?v=\d+$/);
+    expect(freshImage("/images/hero-action-card.webp?crop=wide")).toContain(
+      "&v=",
+    );
+  });
+  it("leaves user-provided remote avatars unchanged", () => {
+    const avatar = "https://example.com/avatar.webp";
+    expect(freshImage(avatar)).toBe(avatar);
   });
 });

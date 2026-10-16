@@ -1,6 +1,7 @@
 "use client";
 
 
+import { freshImage } from "@/lib/images";
 import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -74,7 +75,7 @@ export default function CartPage() {
     <div className="min-h-screen flex flex-col bg-surface-0 text-ink-900">
       <Navbar />
 
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-8">
+      <main id="main" className="apex-container py-12 flex-1 space-y-8">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl sm:text-4xl font-black text-ink-900 tracking-tight">
@@ -119,7 +120,7 @@ export default function CartPage() {
                     <div className="flex items-center gap-4">
                       <div className="w-24 h-24 bg-surface-50 rounded-2xl p-2 flex items-center justify-center flex-shrink-0">
                         <Image
-                          src={item.image}
+                          src={freshImage(item.image)}
                           alt={item.title}
                           width={80}
                           height={80}

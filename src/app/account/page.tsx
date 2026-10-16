@@ -179,13 +179,13 @@ function AccountContent() {
       <main id="main" className="container mx-auto px-4 py-16 flex-1 max-w-lg text-center space-y-6">
         <div
           className="w-20 h-20 rounded-full flex items-center justify-center text-3xl mx-auto"
-          style={{ backgroundColor: "var(--brand-50)", color: "var(--brand-600)" }}
+          style={{ backgroundColor: "rgb(var(--brand-50))", color: "rgb(var(--brand-600))" }}
           aria-hidden="true"
         >
           <FaShieldHalved />
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold">Sign in to view your portal</h1>
-        <p className="text-sm" style={{ color: "var(--ink-600)" }}>
+        <p className="text-sm" style={{ color: "rgb(var(--ink-600))" }}>
           Your profile, match passes and camp enrollments live behind your account.
         </p>
         <Link
@@ -199,7 +199,7 @@ function AccountContent() {
   }
 
   return (
-    <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-8">
+    <main id="main" className="apex-container py-12 flex-1 space-y-8">
       {/* Payment Confirmation Banner */}
       {paymentSuccess && (
         <div className="apex-alert apex-alert-success text-white font-bold rounded-2xl shadow-xl flex items-center justify-between animate-scale-in">
@@ -422,7 +422,7 @@ function AccountContent() {
           </div>
 
           {loadingBookings ? (
-            <div className="py-12 text-center" style={{ color: "var(--ink-500)" }}>
+            <div className="py-12 text-center" style={{ color: "rgb(var(--ink-500))" }}>
               Loading your tickets…
             </div>
           ) : bookingsError ? (
@@ -430,14 +430,14 @@ function AccountContent() {
               role="alert"
               className="rounded-3xl border p-12 text-center space-y-3"
               style={{
-                backgroundColor: "var(--danger-50)",
+                backgroundColor: "rgb(var(--danger-50))",
                 borderColor: "rgb(var(--brand-200))",
               }}
             >
-              <h3 className="text-lg font-bold" style={{ color: "var(--danger-600)" }}>
+              <h3 className="text-lg font-bold" style={{ color: "rgb(var(--danger-600))" }}>
                 We couldn&apos;t load your bookings
               </h3>
-              <p className="text-sm" style={{ color: "var(--ink-600)" }}>
+              <p className="text-sm" style={{ color: "rgb(var(--ink-600))" }}>
                 This is a connection problem, not an empty account. Reload the page to try again.
               </p>
             </div>
@@ -594,7 +594,7 @@ function FullPageSpinner({ label = "Loading…" }: { label?: string }) {
   return (
     <div className="container mx-auto py-24 text-center">
       <Spinner className="h-6 w-6" />
-      <p className="mt-4 text-sm" style={{ color: "var(--ink-500)" }}>
+      <p className="mt-4 text-sm" style={{ color: "rgb(var(--ink-500))" }}>
         {label}
       </p>
     </div>

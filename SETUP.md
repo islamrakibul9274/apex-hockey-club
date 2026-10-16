@@ -171,8 +171,8 @@ hotlinked. Each photo is emitted at three consistent crops (`wide` 16:9,
 bash scripts/fetch-images.sh   # re-download and re-crop
 ```
 
-Sources are Unsplash under the Unsplash License — see
-`public/images/ATTRIBUTION.md`. `src/lib/images.ts` is the single manifest for
+Sources are Pexels under the Pexels License — see
+`public/images/ATTRIBUTION.md`. The 2026 redesign replaces every content photograph while preserving filenames for existing database records. `src/lib/images.ts` is the single manifest for
 paths, dimensions, alt text and responsive `sizes`.
 
 ---

@@ -105,7 +105,7 @@ export function Field({ label, error, hint, required, children }: FieldProps) {
       <label htmlFor={id} className="apex-label">
         {label}
         {required && (
-          <span aria-hidden="true" className="ml-0.5" style={{ color: "var(--danger-600)" }}>
+          <span aria-hidden="true" className="ml-0.5" style={{ color: "rgb(var(--danger-600))" }}>
             *
           </span>
         )}
@@ -146,11 +146,11 @@ interface PasswordInputProps {
 }
 
 const METER_COLORS = [
-  "var(--danger-600)",
-  "var(--danger-600)",
-  "var(--warning-700)",
-  "var(--brand-500)",
-  "var(--success-700)",
+  "rgb(var(--danger-600))",
+  "rgb(var(--danger-600))",
+  "rgb(var(--warning-700))",
+  "rgb(var(--brand-500))",
+  "rgb(var(--success-700))",
 ];
 
 export function PasswordInput({
@@ -190,7 +190,7 @@ export function PasswordInput({
               onClick={() => setVisible((v) => !v)}
               disabled={disabled}
               aria-label={visible ? "Hide password" : "Show password"}
-              className="absolute right-1 top-1/2 -translate-y-1/2 rounded p-2 text-[var(--ink-500)] hover:bg-[var(--surface-100)] hover:text-[var(--ink-700)]"
+              className="absolute right-1 top-1/2 -translate-y-1/2 rounded p-2 text-[rgb(var(--ink-500))] hover:bg-[rgb(var(--surface-100))] hover:text-[rgb(var(--ink-700))]"
             >
               {visible ? <FaEyeSlash aria-hidden="true" /> : <FaEye aria-hidden="true" />}
             </button>
@@ -199,7 +199,7 @@ export function PasswordInput({
           {showMeter && value.length > 0 && (
             <div className="mt-2.5">
               <div className="flex items-center justify-between gap-3">
-                <span className="text-xs font-medium text-[var(--ink-600)]">Password strength</span>
+                <span className="text-xs font-medium text-[rgb(var(--ink-600))]">Password strength</span>
                 <span className="text-xs font-semibold" style={{ color: METER_COLORS[score] }}>
                   {label_text}
                 </span>
@@ -219,7 +219,7 @@ export function PasswordInput({
                     aria-hidden="true"
                     className="h-1.5 flex-1 rounded-full transition-colors"
                     style={{
-                      backgroundColor: i < score ? METER_COLORS[score] : "var(--line-200)",
+                      backgroundColor: i < score ? METER_COLORS[score] : "rgb(var(--line-200))",
                     }}
                   />
                 ))}
@@ -230,7 +230,7 @@ export function PasswordInput({
                     key={check.id}
                     className="flex items-center gap-1.5 text-xs"
                     style={{
-                      color: check.passed ? "var(--success-700)" : "var(--ink-500)",
+                      color: check.passed ? "rgb(var(--success-700))" : "rgb(var(--ink-500))",
                     }}
                   >
                     <span aria-hidden="true">{check.passed ? "✓" : "○"}</span>

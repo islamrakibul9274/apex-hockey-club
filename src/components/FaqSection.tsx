@@ -17,30 +17,11 @@ import { FaChevronDown, FaArrowRight } from "react-icons/fa6";
  */
 
 const FAQS = [
-  {
-    q: "What gear do I need for beginner and junior camps?",
-    a: "All beginner skaters receive a full protective starter kit: a certified CSA/HECC helmet with a face cage, shoulder and elbow pads, hockey gloves, shin guards and skates. Bring warm athletic layers, a water bottle and a change of socks. If you already have your own equipment, our coaches will check it before your first session.",
-  },
-  {
-    q: "How does private coaching and one-on-one ice time work?",
-    a: "You book a 45-minute block on a rink reserved for you. We match you with a coach working on your specific goal — shooting mechanics, skating stride, defensive reads — and we send a short video breakdown afterwards so you can practise between sessions.",
-  },
-  {
-    q: "Can I book match tickets and reserve seating online?",
-    a: "Yes. Every fixture we host is bookable from the tickets page. Pick a match, choose a seating tier, and your passes are issued to your account as soon as payment clears. Seats are held for you for ten minutes while you check out.",
-  },
-  {
-    q: "What is your refund and rescheduling policy?",
-    a: "Cancel more than 48 hours before a session and you receive a full credit. Inside 48 hours we cannot refund, because the ice time and coach are already committed to you. Rescheduling is free at any point, subject to availability.",
-  },
-  {
-    q: "Do you offer skate sharpening and composite repair?",
-    a: "We do. Our pro shop sharpens edges to your preferred hollow, from a shallow 1/2 inch for beginners up to a deep 4 inch for maximum glide. We also repair broken composite shafts and replace blade holders, usually same-day.",
-  },
-  {
-    q: "Are memberships available for teams and clubs?",
-    a: "Yes. We offer group rates for teams of eight or more, with a dedicated booking window and a named coach. Send us a message with the age group and how often you train, and we will put a quote together.",
-  },
+  { q: "Which program is right for me?", a: "The academy has three pathways: Junior for ages 6–12, Teen for ages 13–17, and Professional for adults 18+. Each program lists its focus, schedule, duration, and fee. If you’re unsure where to begin, send the club your age and experience level." },
+  { q: "What should I bring to my first session?", a: "Bring your hockey equipment, warm athletic layers, and a water bottle. Ask the club about the specific protective equipment and skate requirements for your program before attending. Equipment availability and fitting arrangements should be confirmed in advance." },
+  { q: "How do I book a program or match ticket?", a: "Choose a program to register your interest, or visit Tickets to select a fixture, seating tier, and quantity. Sign in so your booking can be attached to your account. Review the booking and any payment details before confirming." },
+  { q: "Where can I find my bookings?", a: "Sign in and open the member portal. The bookings tab lists your program and match reservations, along with their payment status. A pending booking means payment has not yet been confirmed." },
+  { q: "Can I ask about a team booking or a change of plans?", a: "Yes. Use the contact form and include your group size, age range, and preferred dates. For changes to an existing booking, include its reference. Contact the club to confirm availability and the applicable cancellation terms before making plans." },
 ];
 
 function FaqItem({
@@ -118,7 +99,8 @@ export default function FaqSection() {
             Before you book
           </span>
           <h2 id="faq-heading" className="mt-3 text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl">
-            Questions athletes ask us
+            BEFORE YOU
+            HIT THE ICE.
           </h2>
           <p className="mt-4 leading-relaxed text-ink-600">
             Sizing, schedules, kit and memberships — the practical things people want to know
@@ -128,7 +110,7 @@ export default function FaqSection() {
           <div className="mt-8 rounded-2xl border border-line-200 bg-surface-50 p-6">
             <h3 className="text-base font-bold text-ink-900">Still not sure?</h3>
             <p className="mt-1.5 text-sm leading-relaxed text-ink-600">
-              Our coaching desk answers sizing and programme questions, usually the same day.
+              Tell us about your experience and what you’d like to work on.
             </p>
             <Link href="/contact" className="apex-btn apex-btn-primary apex-btn-sm mt-4">
               Ask a question

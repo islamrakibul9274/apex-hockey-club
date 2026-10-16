@@ -1,20 +1,22 @@
-# Image attribution
+# Photography attribution
 
-All photography is from [Unsplash](https://unsplash.com) under the [Unsplash License](https://unsplash.com/license). Images are stored in this repository rather than hotlinked.
+New photography selected for the October 2026 redesign, replacing the complete previous image set. Photos are free to use and modify under the [Pexels License](https://www.pexels.com/license/). Stored locally as optimized WebP crops. These are illustrative stock photographs; people and venues pictured are not presented as Apex staff or facilities.
 
-| File | Unsplash photo |
-|---|---|
-| `hero-action-*` | https://unsplash.com/photos/1735656244148-318d5a10c131 |
-| `hero-puck-*` | https://unsplash.com/photos/1623229749981-273f0c811105 |
-| `arena-empty-*` | https://unsplash.com/photos/1701361172842-b132f9b09948 |
-| `team-action-*` | https://unsplash.com/photos/1609407578758-1183d70eb5e5 |
-| `team-duel-*` | https://unsplash.com/photos/1610884972303-15c0830ffb53 |
-| `player-gear-*` | https://unsplash.com/photos/1549598145-86b354509082 |
-| `goalie-kneel-*` | https://unsplash.com/photos/1638128505463-89294745ea21 |
-| `goalie-watch-*` | https://unsplash.com/photos/1753234196516-c3f7137e28c3 |
-| `sticks-lean-*` | https://unsplash.com/photos/1648312773792-3db3b560c793 |
-| `jersey-rw-*` | https://unsplash.com/photos/1609406567350-e60030e33f79 |
-| `match-board-*` | https://unsplash.com/photos/1609409982623-e20b46afceec |
-| `skater-red-*` | https://unsplash.com/photos/1608980125081-b8eb70af100a |
+Existing filenames are retained for compatibility with stored MongoDB records. No database updates are required.
 
-Regenerate with `bash scripts/fetch-images.sh`.
+| Local file family | Photographer | Source |
+|---|---|---|
+| `hero-action-*` | Ron Lach | [Pexels 8974837](https://www.pexels.com/photo/person-playing-ice-hockey-8974837/) |
+| `hero-puck-*` | Tima Miroshnichenko | [Pexels 6847470](https://www.pexels.com/photo/close-up-shot-of-a-hockey-puck-and-hockey-stick-6847470/) |
+| `arena-empty-*` | Tony Schnagl | [Pexels 6469031](https://www.pexels.com/photo/top-view-of-men-playing-ice-hockey-6469031/) |
+| `team-action-*` | Ron Lach | [Pexels 8974835](https://www.pexels.com/photo/people-playing-ice-hockey-on-ice-rink-8974835/) |
+| `team-duel-*` | Ron Lach | [Pexels 8975015](https://www.pexels.com/photo/young-men-playing-ice-hockey-in-a-rink-8975015/) |
+| `player-gear-*` | Tony Schnagl | [Pexels 6468939](https://www.pexels.com/photo/light-man-people-night-6468939/) |
+| `goalie-kneel-*` | Tony Schnagl | [Pexels 6468747](https://www.pexels.com/photo/men-playing-ice-hockey-6468747/) |
+| `goalie-watch-*` | Tima Miroshnichenko | [Pexels 6847273](https://www.pexels.com/photo/a-hockey-player-in-the-ice-rink-6847273/) |
+| `sticks-lean-*` | Tony Schnagl | [Pexels 6468598](https://www.pexels.com/photo/people-standing-on-an-ice-rink-while-wearing-figure-skates-6468598/) |
+| `jersey-rw-*` | Tima Miroshnichenko | [Pexels 6557325](https://www.pexels.com/photo/a-person-playing-hockey-6557325/) |
+| `match-board-*` | Tony Schnagl | [Pexels 6468942](https://www.pexels.com/photo/a-man-in-black-jacket-playing-ice-hockey-6468942/) |
+| `skater-red-*` | Ron Lach | [Pexels 8971929](https://www.pexels.com/photo/hands-sport-getting-ready-game-8971929/) |
+
+Regenerate with `bash scripts/fetch-images.sh`. Every family has wide, card, and thumb crops; hero-action also has a portrait crop.

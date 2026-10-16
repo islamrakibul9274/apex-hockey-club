@@ -1,5 +1,20 @@
 # Change Summary
 
+## October 2026 — Apex experience redesign
+
+- Bright editorial visual system with condensed display typography, working Tailwind 4 color tokens, consistent spacing, responsive layouts, and a simpler footer.
+- Static split hero, clear academy/ticket/club entry points, readable program cards, club story, and coaching journal.
+- Shared equipment cards and accessible product dialogs; immediate category/search filtering, price sorting, result counts, reset controls, and retryable error states.
+- New Pexels photography throughout, stored locally as 37 optimized WebP assets. All source links and license details are in `public/images/ATTRIBUTION.md`; versioned requests bypass previously cached images.
+- Contact page now shares the validated working form and preserves enquiry subjects. Placeholder contact details, fictional staff biographies, unsupported facility claims, and simulated newsletter subscriptions were removed.
+- Corrected async URL parameters for programs, blog, and pricing; normalized program IDs and preserved academy section anchors. Ticket and seat selection now work from the keyboard.
+- Provider-dependent verification emits explicit skips when keys are absent; checkout validation remains unconditional. The drawer regression still asserts the unconfigured-payment error in credential-free CI.
+- Preserved the pending ESLint exclusion for generated Netlify code. Builds use Next’s supported Webpack builder because the local Turbopack worker could not bind its compiler port.
+- Added regression checks for age-group filtering, keyboard dialog behavior, mobile overflow, empty-search recovery, image manifest paths, and photo cache versioning.
+- MongoDB schemas and stored club data are unchanged. No migrations or re-seeding are needed.
+
+---
+
 Work completed against the baseline commit `a48e026`.
 
 **174 files changed · +12,557 / −2,781**

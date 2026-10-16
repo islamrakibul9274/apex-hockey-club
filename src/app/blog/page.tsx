@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import { INITIAL_BLOG_POSTS } from "@/lib/mockData";
 import { connectToDatabase } from "@/lib/mongodb";
 import BlogPost from "@/models/BlogPost";
-import { SIZES } from "@/lib/images";
+import { SIZES, freshImage } from "@/lib/images";
 
 /**
  * Rendered on the server and prerendered.
@@ -67,10 +67,10 @@ async function getPosts(): Promise<Post[]> {
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams: { tag?: string };
+  searchParams: Promise<{ tag?: string }>;
 }) {
   const posts = await getPosts();
-  const activeTag = searchParams?.tag ?? "All";
+  const activeTag = (await searchParams)?.tag ?? "All";
   const tags = ["All", ...Array.from(new Set(posts.flatMap((p) => p.tags)))];
   const filtered =
     activeTag === "All" ? posts : posts.filter((p) => p.tags.includes(activeTag));
@@ -80,7 +80,7 @@ export default async function BlogPage({
       <Navbar />
 
       <main id="main" className="apex-container flex-1 space-y-10 py-12">
-        <header className="mx-auto max-w-3xl text-center">
+        <header className="apex-page-intro">
           <span className="apex-badge apex-badge-brand uppercase tracking-widest">
             Insights &amp; guides
           </span>
@@ -133,7 +133,7 @@ export default async function BlogPage({
                   <Link href={`/blog/${post.slug}`} className="block">
                     <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-100">
                       <Image
-                        src={post.image}
+                        src={freshImage(post.image)}
                         alt={post.title}
                         fill
                         sizes={SIZES.card}

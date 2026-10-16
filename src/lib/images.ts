@@ -6,7 +6,7 @@
  * Components reference a role here rather than hard-coding a filename, which
  * keeps aspect ratios consistent and makes swapping imagery a one-line change.
  *
- * Sources are Unsplash, stored in-repo rather than hotlinked. See
+ * Sources are Pexels, stored in-repo rather than hotlinked. See
  * public/images/ATTRIBUTION.md.
  */
 
@@ -32,14 +32,17 @@ export type ImageKey = keyof typeof IMG;
 
 /** Returns the path for a photo at a given crop. */
 export function img(key: ImageKey, role: ImageRole = "card"): string {
-  return `/images/${key}-${role}.webp`;
+  return `/images/${IMG[key]}-${role}.webp`;
 }
 
 /**
  * Intrinsic dimensions of each crop, so next/image can reserve space and the
  * page does not shift while images load.
  */
-export const IMG_DIMENSIONS: Record<ImageRole, { width: number; height: number }> = {
+export const IMG_DIMENSIONS: Record<
+  ImageRole,
+  { width: number; height: number }
+> = {
   wide: { width: 1600, height: 900 },
   card: { width: 1000, height: 750 },
   thumb: { width: 480, height: 480 },
@@ -47,18 +50,18 @@ export const IMG_DIMENSIONS: Record<ImageRole, { width: number; height: number }
 
 /** Descriptive alt text. Decorative images must use alt="" instead. */
 export const IMG_ALT: Record<ImageKey, string> = {
-  heroAction: "Ice hockey player in an orange jersey carrying the puck past the net",
-  heroPuck: "Skater driving the puck across the ice during a practice session",
-  arena: "Empty indoor ice hockey arena with green seating above the rink",
-  teamAction: "Two teams contesting the puck along the boards in a full rink",
-  teamDuel: "Players battling for position in front of the goal",
-  playerGear: "Player in full protective gear skating through the defensive zone",
-  goalieKneel: "Goalie kneeling in front of the net during a stoppage",
-  goalieWatch: "Goalie in an orange jersey watching play develop behind him",
-  sticks: "Two composite hockey sticks resting against a rink wall",
-  jersey: "Player in a red and white jersey standing on the ice",
-  matchBoard: "Players gathered along the boards during a match",
-  skater: "Wide view of a match in progress from the stands",
+  heroAction: "Young hockey player in full gear skating on an indoor rink",
+  heroPuck: "Hockey stick blade and black pucks on the ice",
+  arena: "Overhead view of hockey players and a referee at a face-off",
+  teamAction: "Ice hockey players approaching the goal during a game",
+  teamDuel: "Hockey players defending their goal on an indoor rink",
+  playerGear: "Hockey player wearing a helmet and gloves at a rink",
+  goalieKneel: "Hockey players practising on an indoor ice rink",
+  goalieWatch: "Player in a red jersey standing on an ice rink",
+  sticks: "Close view of hockey skates, sticks, and goalie pads on the ice",
+  jersey: "Hockey player manoeuvring a stick and puck on the ice",
+  matchBoard: "Hockey player carving a turn through ice spray",
+  skater: "Player tying the laces of a black hockey skate",
 };
 
 /**
@@ -72,3 +75,9 @@ export const SIZES = {
   tile: "(max-width: 640px) 50vw, 25vw",
   thumb: "96px",
 } as const;
+/** Version local photo requests so returning visitors do not see the old cached image set. */
+export function freshImage(source: string): string {
+  if (!source.startsWith("/images/")) return source;
+  const separator = source.includes("?") ? "&" : "?";
+  return `${source}${separator}v=20261016`;
+}

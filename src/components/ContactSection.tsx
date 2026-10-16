@@ -27,12 +27,12 @@ const RESPONSE_TIMES = [
   {
     icon: FaClock,
     title: "Email response",
-    body: "We reply to most messages within one working day, and always within two.",
+    body: "Leave your email so the club can get back to you.",
   },
   {
     icon: FaUsers,
     title: "Group & team enquiries",
-    body: "Teams of eight or more — include the age group and training frequency for a faster quote.",
+    body: "Tell us your group size, age range, and preferred training days.",
   },
 ];
 
@@ -42,8 +42,8 @@ type Status =
   | { kind: "sent" }
   | { kind: "error"; message: string };
 
-export default function ContactSection() {
-  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+export default function ContactSection({ initialSubject = "" }: { initialSubject?: string }) {
+  const [form, setForm] = useState({ name: "", email: "", subject: initialSubject, message: "" });
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
@@ -120,10 +120,11 @@ export default function ContactSection() {
       <div className="apex-container">
         <div className="mx-auto max-w-2xl text-center">
           <span className="apex-badge apex-badge-brand uppercase tracking-widest">
-            Concierge &amp; support
+            LET’S TALK HOCKEY
           </span>
           <h2 id="contact-heading" className="mt-3 text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl">
-            Get in touch
+            YOUR NEXT MOVE
+            STARTS HERE.
           </h2>
           <p className="mt-4 leading-relaxed text-ink-600">
             Questions about programmes, private sessions or team bookings — tell us what you need
@@ -184,8 +185,7 @@ export default function ContactSection() {
               </dl>
 
               <p className="mt-5 rounded-xl bg-surface-100 p-3 text-xs leading-relaxed text-ink-600">
-                We have not published a phone number. Email reaches the coaching desk directly and
-                is the fastest way to get an answer on sizing and availability.
+                Planning a first session? Include your age group and experience level so we can help you find a suitable program.
               </p>
             </div>
           </div>
@@ -203,8 +203,7 @@ export default function ContactSection() {
                   </span>
                   <h3 className="mt-4 text-xl font-bold text-ink-900">Message sent</h3>
                   <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-ink-600">
-                    Thanks — your message reached the coaching desk. We usually reply within one
-                    working day.
+                    Thanks — your enquiry has been received. Keep an eye on your inbox for a reply.
                   </p>
                   <button
                     type="button"

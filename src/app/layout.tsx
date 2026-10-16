@@ -1,4 +1,4 @@
-import { Manrope, Poppins } from "next/font/google";
+import { Manrope, Barlow_Condensed } from "next/font/google";
 import "./globals.css";
 import CartDrawer from "@/components/CartDrawer";
 import AiCoachWidget from "@/components/AiCoachWidget";
@@ -10,10 +10,10 @@ const manrope = Manrope({
   weight: ["200", "300", "400", "500", "600", "700", "800"],
 });
 
-const poppins = Poppins({
+const display = Barlow_Condensed({
   subsets: ["latin"],
-  variable: "--font-poppins",
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-barlow",
+  weight: ["600", "700", "800"],
 });
 
 export { metadata } from "./layout-metadata";
@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="light">
       <body
-        className={`${manrope.className} ${manrope.variable} ${poppins.variable} antialiased bg-surface-0 text-ink-900`}
+        className={`${manrope.className} ${manrope.variable} ${display.variable} antialiased bg-surface-0 text-ink-900`}
       >
         {/* Providers live inside an error boundary so a failure in the cart or
             auth context degrades to a recoverable message rather than a blank

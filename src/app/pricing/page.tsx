@@ -77,21 +77,21 @@ function formatMoney(amount: number): string {
   }).format(amount);
 }
 
-export default function PricingPage({
+export default async function PricingPage({
   searchParams,
 }: {
-  searchParams: { cycle?: string };
+  searchParams: Promise<{ cycle?: string }>;
 }) {
   // Driven by the URL rather than component state, so the billing period is
   // shareable, bookmarkable and survives a refresh without client JavaScript.
-  const annual = searchParams?.cycle === "annual";
+  const annual = (await searchParams)?.cycle === "annual";
 
   return (
     <div className="flex min-h-screen flex-col bg-surface-0">
       <Navbar />
 
       <main id="main" className="apex-container flex-1 py-12">
-        <header className="mx-auto max-w-3xl text-center">
+        <header className="apex-page-intro">
           <span className="apex-badge apex-badge-brand uppercase tracking-widest">
             Membership
           </span>
@@ -99,8 +99,8 @@ export default function PricingPage({
             Transparent pricing for every hockey goal
           </h1>
           <p className="mt-4 leading-relaxed text-ink-600">
-            Arena ice access, coaching masterclasses, match tickets and member gear pricing —
-            billed monthly or for the season.
+            Arena ice access, coaching masterclasses, match tickets and member
+            gear pricing — billed monthly or for the season.
           </p>
 
           {/* Billing period switch. Links, not a checkbox, so it works without JS. */}
@@ -113,7 +113,9 @@ export default function PricingPage({
               return (
                 <Link
                   key={cycle}
-                  href={cycle === "annual" ? "/pricing?cycle=annual" : "/pricing"}
+                  href={
+                    cycle === "annual" ? "/pricing?cycle=annual" : "/pricing"
+                  }
                   aria-current={active ? "true" : undefined}
                   className={[
                     "rounded-full px-5 py-2 text-sm font-semibold capitalize transition-colors",
@@ -154,9 +156,13 @@ export default function PricingPage({
                   </span>
                 )}
 
-                <h2 className="text-lg font-extrabold text-ink-900">{plan.name}</h2>
+                <h2 className="text-lg font-extrabold text-ink-900">
+                  {plan.name}
+                </h2>
                 <p className="mt-0.5 text-sm text-ink-500">{plan.audience}</p>
-                <p className="mt-3 text-sm leading-relaxed text-ink-600">{plan.tagline}</p>
+                <p className="mt-3 text-sm leading-relaxed text-ink-600">
+                  {plan.tagline}
+                </p>
 
                 <div className="mt-6 flex items-baseline gap-1.5">
                   <span className="text-3xl font-extrabold tracking-tight text-ink-900">
@@ -175,7 +181,10 @@ export default function PricingPage({
 
                 <ul className="mt-6 flex-1 space-y-2.5">
                   {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2.5 text-sm text-ink-700">
+                    <li
+                      key={feature}
+                      className="flex items-start gap-2.5 text-sm text-ink-700"
+                    >
                       <FaCheck
                         aria-hidden="true"
                         className="mt-0.5 shrink-0 text-brand-600"
@@ -199,7 +208,10 @@ export default function PricingPage({
 
         <p className="mt-10 text-center text-sm text-ink-500">
           Not sure which fits?{" "}
-          <Link href="/contact?subject=Membership%20advice" className="font-semibold text-brand-600 hover:underline">
+          <Link
+            href="/contact?subject=Membership%20advice"
+            className="font-semibold text-brand-600 hover:underline"
+          >
             Ask us and we will point you at the right one
           </Link>
           .

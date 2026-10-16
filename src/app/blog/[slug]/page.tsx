@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { INITIAL_BLOG_POSTS } from "@/lib/mockData";
 import Image from "next/image";
-import { SIZES } from "@/lib/images";
+import { SIZES, freshImage } from "@/lib/images";
 
 /**
  * Rendered on the server and prerendered per post.
@@ -106,7 +106,7 @@ export default async function BlogPostPage({
           </header>
 
           <Image
-            src={post.image}
+            src={freshImage(post.image)}
             alt={post.title}
             width={1000}
             height={750}

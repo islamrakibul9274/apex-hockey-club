@@ -63,13 +63,13 @@ function SignInForm() {
           <div className="text-center mb-8">
             <div
               className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"
-              style={{ backgroundColor: "var(--brand-50)", color: "var(--brand-600)" }}
+              style={{ backgroundColor: "rgb(var(--brand-50))", color: "rgb(var(--brand-600))" }}
               aria-hidden="true"
             >
               <FaShieldHalved />
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold">Welcome back</h1>
-            <p className="text-sm mt-1.5" style={{ color: "var(--ink-500)" }}>
+            <p className="text-sm mt-1.5" style={{ color: "rgb(var(--ink-500))" }}>
               Sign in to your Apex Hockey athlete account
             </p>
           </div>
@@ -110,7 +110,7 @@ function SignInForm() {
               <label
                 htmlFor="remember"
                 className="flex items-center gap-2 text-sm cursor-pointer"
-                style={{ color: "var(--ink-600)" }}
+                style={{ color: "rgb(var(--ink-600))" }}
               >
                 <input
                   id="remember"
@@ -118,7 +118,7 @@ function SignInForm() {
                   checked={remember}
                   onChange={(e) => setRemember(e.target.checked)}
                   disabled={loading}
-                  className="h-4 w-4 rounded border-[var(--line-300)] accent-[var(--brand-500)]"
+                  className="h-4 w-4 rounded border-[rgb(var(--line-300))] accent-[rgb(var(--brand-500))]"
                 />
                 Keep me signed in
               </label>
@@ -126,7 +126,7 @@ function SignInForm() {
               <Link
                 href="/auth/forgot-password"
                 className="text-sm font-semibold hover:underline"
-                style={{ color: "var(--brand-600)" }}
+                style={{ color: "rgb(var(--brand-600))" }}
               >
                 Forgot password?
               </Link>
@@ -137,12 +137,12 @@ function SignInForm() {
             </Button>
           </form>
 
-          <p className="text-center text-sm mt-6" style={{ color: "var(--ink-500)" }}>
+          <p className="text-center text-sm mt-6" style={{ color: "rgb(var(--ink-500))" }}>
             Don&apos;t have an account?{" "}
             <Link
               href="/auth/signup"
               className="font-semibold hover:underline"
-              style={{ color: "var(--brand-600)" }}
+              style={{ color: "rgb(var(--brand-600))" }}
             >
               Create one free
             </Link>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { freshImage } from "@/lib/images";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/navigation";
 
 export const metadata: Metadata = {
@@ -27,10 +28,10 @@ export const metadata: Metadata = {
     url: SITE_URL,
     images: [
       {
-        url: "/images/hero-action-wide.webp",
+        url: freshImage("/images/hero-action-wide.webp"),
         width: 1600,
         height: 900,
-        alt: "Ice hockey player in an orange jersey carrying the puck past the net",
+        alt: "Young hockey player in protective gear skating across an indoor rink",
       },
     ],
   },
@@ -38,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${SITE_NAME} — Camps, Match Passes & Equipment`,
     description: SITE_DESCRIPTION,
-    images: ["/images/hero-action-wide.webp"],
+    images: [freshImage("/images/hero-action-wide.webp")],
   },
   robots: {
     index: true,
@@ -59,7 +60,7 @@ export function pageMetadata(title: string, description: string, path: string): 
       url: path,
       images: [
         {
-          url: "/images/hero-action-wide.webp",
+          url: freshImage("/images/hero-action-wide.webp"),
           width: 1600,
           height: 900,
           alt: title,

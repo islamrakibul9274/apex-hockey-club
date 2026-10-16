@@ -115,12 +115,12 @@ export default function Navbar() {
 
       <header
         className={[
-          "sticky top-0 z-40 bg-surface-0/90 backdrop-blur-lg transition-shadow",
+          "apex-site-header sticky top-0 z-40 backdrop-blur-lg transition-shadow",
           scrolled ? "shadow-md" : "border-b border-line-200",
         ].join(" ")}
       >
         <div className="apex-container">
-          <div className="flex h-16 items-center justify-between gap-2 lg:h-[4.5rem]">
+          <div className="flex h-16 items-center justify-between gap-2 lg:h-20">
             {/* Left: mobile toggle + logo */}
             <div className="flex items-center gap-1 lg:gap-3">
               <button
@@ -141,11 +141,11 @@ export default function Navbar() {
               >
                 <LogoMark className="h-9 w-9 shrink-0 lg:h-10 lg:w-10" />
                 <span className="flex flex-col leading-none">
-                  <span className="font-display text-[15px] font-extrabold tracking-tight text-ink-900 lg:text-lg">
+                  <span className="apex-brand-name text-ink-900">
                     Apex Hockey
                   </span>
-                  <span className="mt-0.5 hidden text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-500 sm:block">
-                    Elite Club &amp; Academy
+                  <span className="apex-brand-caption mt-0.5 hidden font-semibold uppercase text-ink-500 sm:block">
+                    CLUB &amp; ACADEMY
                   </span>
                 </span>
               </Link>

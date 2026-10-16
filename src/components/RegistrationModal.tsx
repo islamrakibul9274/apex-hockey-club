@@ -47,7 +47,7 @@ export default function RegistrationModal({
     () => () => {
       if (timer.current) clearTimeout(timer.current);
     },
-    []
+    [],
   );
 
   // Reset when a different programme is opened.
@@ -107,7 +107,10 @@ export default function RegistrationModal({
 
       if (!res.ok) {
         setSuccess(false);
-        setErrorMsg(data?.error ?? "We could not complete the registration. Please try again.");
+        setErrorMsg(
+          data?.error ??
+            "We could not complete the registration. Please try again.",
+        );
         return;
       }
 
@@ -116,14 +119,20 @@ export default function RegistrationModal({
     } catch {
       // A dropped connection is not a completed registration.
       setSuccess(false);
-      setErrorMsg("We could not reach the server. Your registration was not submitted.");
+      setErrorMsg(
+        "We could not reach the server. Your registration was not submitted.",
+      );
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <Modal open={Boolean(program)} onClose={onClose ?? (() => {})} title={program.title}>
+    <Modal
+      open={Boolean(program)}
+      onClose={onClose ?? (() => {})}
+      title={program.title}
+    >
       {success ? (
         <div role="status" className="py-4 text-center">
           <span
@@ -132,11 +141,17 @@ export default function RegistrationModal({
           >
             <FaCheck />
           </span>
-          <h3 className="mt-4 text-lg font-bold text-ink-900">Registration received</h3>
+          <h3 className="mt-4 text-lg font-bold text-ink-900">
+            Registration received
+          </h3>
           <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-ink-600">
-            We&apos;ve held a place for {name}. The coaching desk will confirm by email shortly.
+            Your interest in this program has been recorded for {name}. Check
+            your bookings for its status.
           </p>
-          <Link href="/account?tab=bookings" className="apex-btn apex-btn-secondary apex-btn-sm mt-6">
+          <Link
+            href="/account?tab=bookings"
+            className="apex-btn apex-btn-secondary apex-btn-sm mt-6"
+          >
             View my bookings
           </Link>
         </div>
@@ -149,7 +164,11 @@ export default function RegistrationModal({
           )}
 
           <Field label="Athlete name" error={fieldErrors.name} required>
-            {({ id, "aria-invalid": invalid, "aria-describedby": describedBy }) => (
+            {({
+              id,
+              "aria-invalid": invalid,
+              "aria-describedby": describedBy,
+            }) => (
               <input
                 id={id}
                 type="text"
@@ -166,7 +185,11 @@ export default function RegistrationModal({
           </Field>
 
           <Field label="Email address" error={fieldErrors.email} required>
-            {({ id, "aria-invalid": invalid, "aria-describedby": describedBy }) => (
+            {({
+              id,
+              "aria-invalid": invalid,
+              "aria-describedby": describedBy,
+            }) => (
               <input
                 id={id}
                 type="email"
@@ -188,7 +211,11 @@ export default function RegistrationModal({
             hint="Used to place the athlete in the right group"
             required
           >
-            {({ id, "aria-invalid": invalid, "aria-describedby": describedBy }) => (
+            {({
+              id,
+              "aria-invalid": invalid,
+              "aria-describedby": describedBy,
+            }) => (
               <input
                 id={id}
                 type="number"
@@ -206,12 +233,18 @@ export default function RegistrationModal({
             )}
           </Field>
 
-          <Button type="submit" block loading={submitting} loadingText="Registering…">
+          <Button
+            type="submit"
+            block
+            loading={submitting}
+            loadingText="Registering…"
+          >
             Register interest
           </Button>
 
           <p className="text-center text-xs text-ink-500">
-            No payment is taken now. The coaching desk confirms availability first.
+            No payment is taken now. The coaching desk confirms availability
+            first.
           </p>
         </form>
       )}

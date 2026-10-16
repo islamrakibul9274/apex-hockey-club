@@ -1,5 +1,6 @@
 "use client";
 
+import { freshImage } from "@/lib/images";
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -113,7 +114,7 @@ export default function CartDrawer() {
                 >
                   <div className="w-20 h-20 bg-surface-50 rounded-lg p-2 flex items-center justify-center flex-shrink-0">
                     <Image
-                      src={item.image}
+                      src={freshImage(item.image)}
                       alt={item.title}
                       width={64}
                       height={64}

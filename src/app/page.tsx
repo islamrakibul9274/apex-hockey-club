@@ -7,6 +7,7 @@ import FaqSection from "@/components/FaqSection";
 import ContactSection from "@/components/ContactSection";
 import SocialSection from "@/components/SocialSection";
 import Footer from "@/components/Footer";
+import ClubStory from "@/components/ClubStory";
 
 /**
  * The homepage no longer calls /api/seed on mount. That was an unauthenticated
@@ -18,14 +19,15 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-surface-0 text-ink-900">
       <Navbar />
-      <main id="main" className="container mx-auto flex-1 space-y-4">
+      <main id="main" className="flex-1">
         <HeroBanner />
         <ProgressStats />
         <ProgramSection />
+        <ClubStory />
         <ProductsSection />
+        <SocialSection />
         <FaqSection />
         <ContactSection />
-        <SocialSection />
       </main>
       <Footer />
     </div>

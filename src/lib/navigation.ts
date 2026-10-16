@@ -77,4 +77,4 @@ export const SITE_URL =
 export const SITE_NAME = "Apex Hockey Club";
 
 export const SITE_DESCRIPTION =
-  "Ice hockey development camps, Olympic-grade coaching, tournament match passes and composite performance equipment.";
+  "Ice hockey programs for juniors, teens, and adults. Explore the academy, book match tickets, and shop hockey equipment with Apex Hockey Club.";

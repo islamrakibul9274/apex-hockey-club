@@ -60,13 +60,13 @@ export default function SignUpPage() {
           <div className="text-center mb-8">
             <div
               className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"
-              style={{ backgroundColor: "var(--brand-50)", color: "var(--brand-600)" }}
+              style={{ backgroundColor: "rgb(var(--brand-50))", color: "rgb(var(--brand-600))" }}
               aria-hidden="true"
             >
               <FaShieldHalved />
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold">Join Apex Hockey</h1>
-            <p className="text-sm mt-1.5" style={{ color: "var(--ink-500)" }}>
+            <p className="text-sm mt-1.5" style={{ color: "rgb(var(--ink-500))" }}>
               Create your athlete profile for camps, tickets and store discounts
             </p>
           </div>
@@ -157,7 +157,7 @@ export default function SignUpPage() {
               Create account
             </Button>
 
-            <p className="text-xs text-center" style={{ color: "var(--ink-500)" }}>
+            <p className="text-xs text-center" style={{ color: "rgb(var(--ink-500))" }}>
               By creating an account you agree to our{" "}
               <Link href="/legal/terms" className="underline hover:no-underline">
                 Terms of Service
@@ -170,12 +170,12 @@ export default function SignUpPage() {
             </p>
           </form>
 
-          <p className="text-center text-sm mt-6" style={{ color: "var(--ink-500)" }}>
+          <p className="text-center text-sm mt-6" style={{ color: "rgb(var(--ink-500))" }}>
             Already registered?{" "}
             <Link
               href="/auth/signin"
               className="font-semibold hover:underline"
-              style={{ color: "var(--brand-600)" }}
+              style={{ color: "rgb(var(--brand-600))" }}
             >
               Sign in
             </Link>

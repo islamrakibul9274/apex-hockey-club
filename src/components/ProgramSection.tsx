@@ -1,278 +1,102 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { freshImage } from "@/lib/images";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { INITIAL_PROGRAMS, ProgramData } from "@/lib/mockData";
-import { FaUserPlus, FaCalendarDays, FaCheck, FaXmark } from "react-icons/fa6";
+import { ArrowUpRight, Clock3 } from "lucide-react";
+import { INITIAL_PROGRAMS, type ProgramData } from "@/lib/mockData";
+import RegisterButton from "@/components/RegisterButton";
 
 export default function ProgramSection() {
   const [programs, setPrograms] = useState<ProgramData[]>(INITIAL_PROGRAMS);
-  const [selectedProgram, setSelectedProgram] = useState<ProgramData | null>(null);
-  const [registering, setRegistering] = useState(false);
-  const [registeredSuccess, setRegisteredSuccess] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-  const successTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  React.useEffect(
-    () => () => {
-      if (successTimer.current) clearTimeout(successTimer.current);
-    },
-    []
-  );
-
-  const [athleteName, setAthleteName] = useState("");
-  const [athleteEmail, setAthleteEmail] = useState("");
-  const [athleteAge, setAthleteAge] = useState("");
-
   useEffect(() => {
-    async function loadPrograms() {
-      try {
-        const res = await fetch("/api/programs");
-        const data = await res.json();
-        if (data.programs && data.programs.length > 0) {
-          setPrograms(data.programs);
-        }
-      } catch {
-        // fallback to initial
-      }
-    }
-    loadPrograms();
+    const controller = new AbortController();
+    fetch("/api/programs", { signal: controller.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.programs?.length) setPrograms(data.programs);
+      })
+      .catch(() => {});
+    return () => controller.abort();
   }, []);
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedProgram) return;
-    setRegistering(true);
-
-    try {
-      const bookingRes = await fetch("/api/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customerName: athleteName,
-          customerEmail: athleteEmail,
-          bookingType: "program",
-          itemId: selectedProgram.id,
-          itemTitle: `${selectedProgram.title} (${athleteAge ? `Age ${athleteAge}` : selectedProgram.ageGroup})`,
-          seatsCount: 1,
-        }),
-      });
-      if (!bookingRes.ok) {
-        const errData = await bookingRes.json().catch(() => ({}));
-        setErrorMsg(
-          errData?.error ?? "We could not complete your registration. Please try again."
-        );
-        return;
-      }
-
-      setRegisteredSuccess(true);
-      setErrorMsg("");
-      const t = setTimeout(() => {
-        setRegisteredSuccess(false);
-        setSelectedProgram(null);
-        setAthleteName("");
-        setAthleteEmail("");
-      }, 3000);
-      successTimer.current = t;
-    } catch {
-      // A dropped connection is not a completed registration.
-      setRegisteredSuccess(false);
-      setErrorMsg("We could not reach the server. Your registration was not submitted.");
-    } finally {
-      setRegistering(false);
-    }
-  };
-
   return (
-    <section id="programs" className="px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="text-center space-y-3 my-8 py-8 border-dashed border-2 border-l-0 border-r-0 border-line-200">
-        <span className="apex-badge apex-badge-sm bg-brand-100 text-brand-600 font-extrabold uppercase tracking-widest px-3 py-2">
-          Development Paths
-        </span>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-ink-900">
-          Program Sections
-        </h2>
-        <p className="text-ink-600 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-          Three age-group pathways, each built around real ice time rather than drills on a treadmill.
-        </p>
+    <section
+      id="programs"
+      className="apex-container apex-section"
+      aria-labelledby="programs-heading"
+    >
+      <div className="apex-section-heading">
+        <div>
+          <p className="apex-eyebrow">THE APEX ACADEMY</p>
+          <h2 id="programs-heading" className="apex-display">
+            EVERY PLAYER.
+            <br />
+            <span>A NEXT LEVEL.</span>
+          </h2>
+        </div>
+        <div className="apex-section-aside">
+          <p>
+            From finding your feet to finding your edge. Choose the pathway that
+            meets you where you are.
+          </p>
+          <Link className="apex-text-link" href="/programs">
+            Explore all programs <ArrowUpRight size={18} aria-hidden="true" />
+          </Link>
+        </div>
       </div>
-
-      {/* Program Cards Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {programs.map((program, idx) => {
-          const isFullSpan = idx === 2;
-          return (
-            <div
-              key={program.id}
-              className={`hero rounded-3xl min-h-[380px] overflow-hidden bg-cover bg-center relative shadow-lg hover:shadow-2xl transition-all duration-300 ${
-                isFullSpan ? "lg:col-span-2" : ""
-              }`}
-              style={{ backgroundImage: `url(${program.image || "/images/team-action-card.webp"})` }}
+      <div className="apex-program-grid">
+        {programs.slice(0, 3).map((program, index) => (
+          <article key={program.id} className="apex-program-card">
+            <Link
+              href={`/programs#${program.id}`}
+              className="apex-program-photo"
+              aria-label={`Explore ${program.title}`}
             >
-              <div className="apex-hero-overlay bg-linear-to-t from-black via-black/75 to-black/30"></div>
-              <div
-                className={`hero-content text-neutral-content p-6 sm:p-10 w-full flex ${
-                  isFullSpan ? "justify-start" : "justify-start"
-                }`}
-              >
-                <div className="max-w-xl space-y-4 text-left">
-                  <div className="flex flex-wrap gap-2">
-                    <span className="apex-badge bg-brand-500 text-white border-none font-bold text-xs">
-                      {program.ageGroup}
-                    </span>
-                    <span className="apex-badge bg-surface-0/20 text-white border-none font-semibold text-xs backdrop-blur-md">
-                      {program.duration}
-                    </span>
-                    <span className="apex-badge bg-amber-400 text-ink-900 border-none font-bold text-xs">
-                      {program.spotsLeft} Spots Left
-                    </span>
-                  </div>
-
-                  <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
-                    {program.title}
-                  </h3>
-
-                  <p className="text-gray-200 text-xs sm:text-sm leading-relaxed">
-                    {program.description}
-                  </p>
-
-                  <div className="flex items-center gap-4 text-xs text-gray-300">
-                    <span className="flex items-center gap-1.5">
-                      <FaCalendarDays className="text-brand-600" /> {program.schedule}
-                    </span>
-                    <span className="font-extrabold text-white text-base">
-                      ${program.price}
-                    </span>
-                  </div>
-
-                  <div className="pt-2 flex flex-wrap gap-3">
-                    <button
-                      onClick={() => setSelectedProgram(program)}
-                      className="apex-btn bg-brand-500 hover:bg-brand-600 text-white border-none rounded-2xl px-6 font-bold shadow-lg shadow-red-500/30 flex items-center gap-2"
-                    >
-                      <FaUserPlus /> Register Now!
-                    </button>
-                    <Link
-                      href={`/programs#${program.id}`}
-                      className="apex-btn bg-surface-0/20 hover:bg-surface-0 text-white hover:text-ink-900 border-none rounded-2xl px-5 font-semibold backdrop-blur-md text-xs"
-                    >
-                      View Syllabus
-                    </Link>
-                  </div>
-                </div>
+              <Image
+                src={freshImage(program.image)}
+                alt="Hockey players training on an indoor ice rink"
+                fill
+                sizes="(max-width: 767px) 100vw, 33vw"
+                className="object-cover"
+              />
+              <span className="apex-program-number">0{index + 1}</span>
+              <span className="apex-program-age">{program.ageGroup}</span>
+            </Link>
+            <div className="apex-program-body">
+              <p className="apex-eyebrow">{program.category} DEVELOPMENT</p>
+              <h3>{program.title}</h3>
+              <p className="apex-program-description">{program.description}</p>
+              <div className="apex-program-meta">
+                <span>
+                  <Clock3 size={14} aria-hidden="true" /> {program.duration}
+                </span>
+                <span>
+                  {program.spotsLeft > 0
+                    ? `${program.spotsLeft} places available`
+                    : "Enquire for availability"}
+                </span>
+              </div>
+              <div className="apex-program-bottom">
+                <span>
+                  <strong>${program.price}</strong>
+                  <small> / program</small>
+                </span>
+                <RegisterButton
+                  program={{
+                    id: program.id,
+                    title: program.title,
+                    ageGroup: program.ageGroup,
+                    price: program.price,
+                    duration: program.duration,
+                  }}
+                />
               </div>
             </div>
-          );
-        })}
+          </article>
+        ))}
       </div>
-
-      {/* Registration Modal */}
-      {selectedProgram && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-surface-0 w-full max-w-lg rounded-3xl p-8 shadow-2xl space-y-6 relative animate-scale-in">
-            <button
-              onClick={() => setSelectedProgram(null)}
-              className="apex-btn apex-btn-icon apex-btn-ghost apex-btn-sm absolute top-4 right-4 text-ink-500 hover:text-ink-700"
-            >
-              <FaXmark className="text-lg" />
-            </button>
-
-            {errorMsg && (
-              <div role="alert" className="apex-alert apex-alert-error">
-                {errorMsg}
-              </div>
-            )}
-
-            {registeredSuccess ? (
-              <div role="status" className="text-center py-8 space-y-4">
-                <div className="w-16 h-16 rounded-full bg-success-50 text-success-700 flex items-center justify-center text-2xl mx-auto">
-                  <FaCheck />
-                </div>
-                <h3 className="text-2xl font-extrabold text-ink-900">Registration Confirmed!</h3>
-                <p className="text-ink-600 text-sm">
-                  Welcome to {selectedProgram.title}. We&apos;ve sent program details and schedule to your email.
-                </p>
-                <Link
-                  href="/account?tab=bookings"
-                  className="apex-btn bg-brand-500 hover:bg-brand-600 text-white border-none rounded-2xl px-6 font-bold"
-                >
-                  View in My Portal
-                </Link>
-              </div>
-            ) : (
-              <>
-                <div className="space-y-2">
-                  <span className="apex-badge bg-brand-100 text-brand-600 font-bold text-xs">
-                    {selectedProgram.category} Program
-                  </span>
-                  <h3 className="text-2xl font-extrabold text-ink-900">{selectedProgram.title}</h3>
-                  <p className="text-ink-600 text-xs">
-                    Coach: <span className="font-bold text-ink-700">{selectedProgram.coach}</span> | Fee:{" "}
-                    <span className="font-extrabold text-brand-600 text-sm">${selectedProgram.price}</span>
-                  </p>
-                </div>
-
-                <form onSubmit={handleRegister} className="space-y-4">
-                  <div className="apex-field">
-                    <label className="label text-xs font-bold text-ink-700">Athlete Name</label>
-                    <input
-                      type="text"
-                      value={athleteName}
-                      onChange={(e) => setAthleteName(e.target.value)}
-                      placeholder="Full Name"
-                      className="apex-input bg-surface-100 border-none rounded-xl focus:ring-2 focus:ring-brand-500"
-                      required
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="apex-field">
-                      <label className="label text-xs font-bold text-ink-700">Contact Email</label>
-                      <input
-                        type="email"
-                        value={athleteEmail}
-                        onChange={(e) => setAthleteEmail(e.target.value)}
-                        placeholder="athlete@example.com"
-                        className="apex-input bg-surface-100 border-none rounded-xl focus:ring-2 focus:ring-brand-500"
-                        required
-                      />
-                    </div>
-                    <div className="apex-field">
-                      <label className="label text-xs font-bold text-ink-700">Athlete Age</label>
-                      <input
-                        type="number"
-                        value={athleteAge}
-                        onChange={(e) => setAthleteAge(e.target.value)}
-                        placeholder="e.g. 14"
-                        className="apex-input bg-surface-100 border-none rounded-xl focus:ring-2 focus:ring-brand-500"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="bg-surface-50 p-4 rounded-2xl text-xs text-ink-600 space-y-1">
-                    <p className="font-bold text-ink-800">Included in registration:</p>
-                    {selectedProgram.features.slice(0, 3).map((f, i) => (
-                      <p key={i} className="flex items-center gap-1.5">
-                        <FaCheck className="text-brand-600 text-[10px]" /> {f}
-                      </p>
-                    ))}
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={registering}
-                    className="apex-btn apex-btn-block bg-brand-500 hover:bg-brand-600 text-white border-none rounded-2xl font-bold py-3"
-                  >
-                    {registering ? "Confirming..." : `Confirm Registration ($${selectedProgram.price})`}
-                  </button>
-                </form>
-              </>
-            )}
-          </div>
-        </div>
-      )}
     </section>
   );
 }
