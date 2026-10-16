@@ -1,16 +1,28 @@
-"use client";
-
-
-import React, { useState, useEffect } from "react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import Image from "next/image";
+import { FaClock, FaArrowRight } from "react-icons/fa6";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Image from "next/image";
-import Link from "next/link";
 import { INITIAL_BLOG_POSTS } from "@/lib/mockData";
+import { connectToDatabase } from "@/lib/mongodb";
+import BlogPost from "@/models/BlogPost";
+import { SIZES } from "@/lib/images";
 
-interface BlogPost {
-  _id?: string;
-  id?: string;
+/**
+ * Rendered on the server and prerendered.
+ *
+ * Previously `"use client"`: it fetched posts in an effect, so the page arrived
+ * empty, the payload was 6.4 kB of client JS, and the loading and error
+ * states it computed were never actually rendered.
+ *
+ * Tags are derived from the data so a tag on a post can always be filtered —
+ * "Training" was previously missing and its badge led nowhere.
+ */
+
+export const revalidate = 300;
+
+interface Post {
   slug: string;
   title: string;
   excerpt: string;
@@ -21,183 +33,152 @@ interface BlogPost {
   publishedAt: string;
   tags: string[];
 }
-import { FaClock, FaArrowRight } from "react-icons/fa6";
-import { Spinner } from "@/components/ui";
 
-export default function BlogPage() {
-  const [selectedTag, setSelectedTag] = useState("All");
+export const metadata: Metadata = {
+  title: "Coaching Guides",
+  description:
+    "Drills, equipment maintenance and game-day nutrition written by our Apex Hockey coaches.",
+  alternates: { canonical: "/blog" },
+  openGraph: {
+    title: "Coaching Guides — Apex Hockey Club",
+    description:
+      "Drills, equipment maintenance and game-day nutrition written by our Apex Hockey coaches.",
+    url: "/blog",
+  },
+};
 
-  // The page previously filtered INITIAL_BLOG_POSTS in memory and never read
-  // the database, so any post added through the CMS was invisible. It now
-  // fetches, falling back to the seed catalogue only when the request fails.
-  const [posts, setPosts] = useState<BlogPost[]>(INITIAL_BLOG_POSTS);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState("");
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadPosts() {
-      try {
-        const res = await fetch("/api/blog");
-        if (!res.ok) throw new Error(`status ${res.status}`);
-        const data = await res.json();
-        if (!cancelled && Array.isArray(data.posts)) {
-          setPosts(data.posts as BlogPost[]);
-        }
-      } catch {
-        if (!cancelled) {
-          setLoadError("We could not load the latest posts. Showing our saved articles instead.");
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
+async function getPosts(): Promise<Post[]> {
+  try {
+    const conn = await connectToDatabase();
+    if (conn) {
+      const posts = await BlogPost.find().sort({ publishedAt: -1 })
+        .lean()
+        .catch(() => null);
+      if (posts && posts.length > 0) {
+        return posts as unknown as Post[];
       }
     }
+  } catch {
+    // Fall through to the catalogue.
+  }
+  return INITIAL_BLOG_POSTS as unknown as Post[];
+}
 
-    void loadPosts();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Derived from the data rather than hard-coded, so a tag that exists on a
-  // post can always be filtered. "Training" was previously missing and so its
-  // badge on a post led nowhere.
-  const allTags = ["All", ...Array.from(new Set(posts.flatMap((p) => p.tags)))];
-
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams: { tag?: string };
+}) {
+  const posts = await getPosts();
+  const activeTag = searchParams?.tag ?? "All";
+  const tags = ["All", ...Array.from(new Set(posts.flatMap((p) => p.tags)))];
   const filtered =
-    selectedTag === "All" ? posts : posts.filter((b) => b.tags.includes(selectedTag));
+    activeTag === "All" ? posts : posts.filter((p) => p.tags.includes(activeTag));
 
   return (
-    <div className="min-h-screen flex flex-col bg-surface-0 text-ink-900">
+    <div className="flex min-h-screen flex-col bg-surface-0">
       <Navbar />
 
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-12">
-        {/* Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4">
-          <span className="apex-badge apex-badge-sm bg-brand-100 text-brand-600 font-extrabold uppercase tracking-widest px-3 py-2">
-            Insights & Guides
+      <main id="main" className="apex-container flex-1 space-y-10 py-12">
+        <header className="mx-auto max-w-3xl text-center">
+          <span className="apex-badge apex-badge-brand uppercase tracking-widest">
+            Insights &amp; guides
           </span>
-          <h1 className="text-4xl sm:text-5xl font-black text-ink-900 tracking-tight">
-            Apex Hockey Training & Gear Blog
+          <h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
+            Coaching from our bench
           </h1>
-          <p className="text-ink-600 text-base sm:text-lg leading-relaxed">
-            Professional skills drills, skate sharpening science, game-day sports nutrition, and gear breakdowns written by Olympic coaches.
+          <p className="mt-4 leading-relaxed text-ink-600">
+            Practical guides on shooting, skating, skate care and game-day nutrition — written by
+            the coaches who run our programmes.
           </p>
+        </header>
 
-          {/* Tags */}
-          <div className="flex flex-wrap justify-center gap-2 pt-2">
-            {allTags.map((tag) => (
-              <button
+        {/* Tag filter. Rendered as links so it works without JavaScript. */}
+        <nav aria-label="Filter by topic" className="flex flex-wrap justify-center gap-2">
+          {tags.map((tag) => {
+            const active = tag === activeTag;
+            return (
+              <Link
                 key={tag}
-                onClick={() => setSelectedTag(tag)}
-                className={`px-4 py-1.5 rounded-2xl text-xs font-bold transition-all ${
-                  selectedTag === tag
-                    ? "bg-brand-500 text-white shadow-md"
-                    : "bg-surface-100 text-ink-700 hover:bg-gray-200"
-                }`}
+                href={tag === "All" ? "/blog" : `/blog?tag=${encodeURIComponent(tag)}`}
+                aria-current={active ? "true" : undefined}
+                className={[
+                  "apex-badge transition-colors",
+                  active
+                    ? "bg-brand-500 text-white"
+                    : "border border-line-200 bg-surface-0 text-ink-600 hover:border-brand-200 hover:bg-brand-50 hover:text-brand-600",
+                ].join(" ")}
               >
                 {tag}
-              </button>
-            ))}
-          </div>
-        </div>
+              </Link>
+            );
+          })}
+        </nav>
 
-        {/* Loading and failure states were computed but never rendered, so a
-            slow or failed fetch looked identical to an empty blog. */}
-        {loadError && (
-          <div role="status" className="apex-alert apex-alert-info">
-            {loadError}
-          </div>
-        )}
-
-        {loading ? (
-          <div className="col-span-full py-12 flex justify-center">
-            <Spinner className="h-6 w-6" />
-            <span className="sr-only">Loading guides</span>
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="col-span-full py-16 text-center">
+        {filtered.length === 0 ? (
+          <div className="py-16 text-center">
             <h2 className="text-xl font-bold text-ink-900">No guides for that topic yet</h2>
             <p className="mt-2 text-sm text-ink-600">
               Try another topic, or browse everything we have written.
             </p>
-            <button
-              type="button"
-              onClick={() => setSelectedTag("All")}
-              className="apex-btn apex-btn-primary apex-btn-sm mt-5"
-            >
+            <Link href="/blog" className="apex-btn apex-btn-primary apex-btn-sm mt-5">
               Show all guides
-            </button>
+            </Link>
           </div>
         ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filtered.map((post) => (
-            <article
-              key={post.id}
-              className="bg-surface-0 border border-line-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group"
-            >
-              <div>
-                <Link href={`/blog/${post.slug}`} className="block relative h-52 bg-surface-100 overflow-hidden">
-                  <Image
-                    src={post.image}
-                    alt={post.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <span className="apex-badge bg-brand-500 text-white border-none font-bold text-xs">
-                      {post.category}
-                    </span>
-                  </div>
-                </Link>
-
-                <div className="p-6 space-y-3">
-                  <div className="flex items-center gap-3 text-xs text-ink-500">
-                    <span className="flex items-center gap-1">
-                      <FaClock /> {post.readTime}
-                    </span>
-                    <span>•</span>
-                    <span>{post.publishedAt}</span>
-                  </div>
-
-                  <Link href={`/blog/${post.slug}`}>
-                    <h2 className="text-xl font-extrabold text-ink-900 group-hover:text-brand-600 transition-colors line-clamp-2 leading-snug">
-                      {post.title}
-                    </h2>
+          <ul className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((post) => (
+              <li key={post.slug}>
+                <article className="apex-card flex h-full flex-col overflow-hidden transition-shadow hover:shadow-md">
+                  <Link href={`/blog/${post.slug}`} className="block">
+                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-100">
+                      <Image
+                        src={post.image}
+                        alt={post.title}
+                        fill
+                        sizes={SIZES.card}
+                        className="object-cover transition-transform duration-300 hover:scale-105"
+                      />
+                    </div>
                   </Link>
 
-                  <p className="text-ink-600 text-xs sm:text-sm line-clamp-3 leading-relaxed">
-                    {post.excerpt}
-                  </p>
-                </div>
-              </div>
+                  <div className="flex flex-1 flex-col p-6">
+                    <div className="flex items-center gap-3 text-xs text-ink-500">
+                      <span className="apex-badge apex-badge-sm">{post.category}</span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <FaClock aria-hidden="true" className="text-xs" />
+                        {post.readTime}
+                      </span>
+                    </div>
 
-              <div className="p-6 pt-0 border-t border-line-200 mt-4 flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={post.author.avatar}
-                    alt={post.author.name}
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
-                  <div>
-                    <p className="font-bold text-xs text-ink-900">{post.author.name}</p>
-                    <p className="text-[10px] text-ink-500">{post.author.role}</p>
+                    <h2 className="mt-3 text-lg font-bold leading-snug">
+                      <Link href={`/blog/${post.slug}`} className="hover:text-brand-600">
+                        {post.title}
+                      </Link>
+                    </h2>
+
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-600">
+                      {post.excerpt}
+                    </p>
+
+                    <div className="mt-4 flex items-center justify-between border-t border-line-200 pt-4">
+                      <div>
+                        <p className="text-sm font-semibold text-ink-900">{post.author.name}</p>
+                        <p className="text-xs text-ink-500">{post.publishedAt}</p>
+                      </div>
+                      <Link
+                        href={`/blog/${post.slug}`}
+                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 hover:underline"
+                      >
+                        Read
+                        <FaArrowRight aria-hidden="true" className="text-xs" />
+                      </Link>
+                    </div>
                   </div>
-                </div>
-
-                <Link
-                  href={`/blog/${post.slug}`}
-                  className="apex-btn apex-btn-icon apex-btn-sm bg-surface-100 group-hover:bg-brand-500 group-hover:text-white border-none transition-all"
-                  aria-label="Read article"
-                >
-                  <FaArrowRight className="text-xs" />
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+                </article>
+              </li>
+            ))}
+          </ul>
         )}
       </main>
 

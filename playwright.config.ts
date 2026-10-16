@@ -28,10 +28,13 @@ export default defineConfig({
   ],
 
   webServer: {
+    // `next dev` and `next start` share the .next directory, so running the dev
+    // server leaves no production build behind. `npm run test:e2e` builds first
+    // to guarantee one exists before this starts.
     command: "npm run start -- --port 3100",
     url: "http://localhost:3100",
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: 180_000,
     env: {
       RATE_LIMIT_DISABLED: "true",
       NODE_ENV: "production",
