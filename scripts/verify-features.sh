@@ -8,6 +8,7 @@ LOG="${AUTH_LOG:-/tmp/apex_dev.log}"
 JAR=$(mktemp)
 PASS=0
 FAIL=0
+SKIP=0
 EMAIL="p3.$$.${RANDOM}@example.com"
 
 GREEN=$'\033[32m'; RED=$'\033[31m'; RESET=$'\033[0m'
@@ -29,6 +30,10 @@ omits() {
   if printf '%s' "$3" | grep -q "$2"; then FAIL=$((FAIL+1)); printf '  %sFAIL%s %s (unexpectedly found %s)\n' "$RED" "$RESET" "$1" "$2"
   else PASS=$((PASS+1)); printf '  %sPASS%s %s\n' "$GREEN" "$RESET" "$1"; fi
 }
+
+# Provider success checks only run when the same environment as the server has
+# the required key. Validation and failure-path checks always run.
+skip() { SKIP=$((SKIP+1)); printf '  SKIP %s (%s is not configured)\n' "$1" "$2"; }
 
 code() { curl -s -o /dev/null -w "%{http_code}" "$@"; }
 body() { curl -s "$@"; }
@@ -52,14 +57,22 @@ contains "payment not assumed paid" '"paymentStatus":"pending"' "$OUT"
 
 echo "== Checkout: prices are server-side, failures are honest =="
 omits "client price rejected" 'checkout.stripe.com' "$(post /api/checkout '{"type":"membership","planName":"Teen Academy","price":1}' $AUTH)"
-contains "membership priced server-side" 'checkout.stripe.com' "$(post /api/checkout '{"type":"membership","planName":"Teen Academy"}' $AUTH)"
+if node scripts/provider-configured.mjs STRIPE_SECRET_KEY; then
+  contains "membership priced server-side" 'checkout.stripe.com' "$(post /api/checkout '{"type":"membership","planName":"Teen Academy"}' $AUTH)"
+else
+  skip "membership priced server-side" STRIPE_SECRET_KEY
+fi
 check "unknown plan rejected" 400 "$(pcode /api/checkout '{"type":"membership","planName":"Free Forever"}' $AUTH)"
 check "empty cart rejected" 400 "$(pcode /api/checkout '{"type":"cart","items":[]}' $AUTH)"
 check "unknown item rejected" 400 "$(pcode /api/checkout '{"type":"cart","items":[{"id":"nope","quantity":1}]}' $AUTH)"
 omits "over-capacity seats rejected" 'checkout.stripe.com' "$(post /api/checkout '{"type":"ticket","matchId":"match-1","tier":"VIP Glass & Lounge","seats":20}' $AUTH)"
 contains "over-capacity seats explained" 'remain' "$(post /api/checkout '{"type":"ticket","matchId":"match-1","tier":"VIP Glass & Lounge","seats":20}' $AUTH)"
 check "absurd seat count rejected by schema" 400 "$(pcode /api/checkout '{"type":"ticket","matchId":"match-1","tier":"VIP Glass & Lounge","seats":99}' $AUTH)"
-contains "valid ticket checkout works" 'checkout.stripe.com' "$(post /api/checkout '{"type":"ticket","matchId":"match-1","tier":"VIP Glass & Lounge","seats":2}' $AUTH)"
+if node scripts/provider-configured.mjs STRIPE_SECRET_KEY; then
+  contains "valid ticket checkout works" 'checkout.stripe.com' "$(post /api/checkout '{"type":"ticket","matchId":"match-1","tier":"VIP Glass & Lounge","seats":2}' $AUTH)"
+else
+  skip "valid ticket checkout works" STRIPE_SECRET_KEY
+fi
 omits "no simulated success URL" 'simulation=true' "$(post /api/checkout '{"type":"cart","items":[{"id":"nope","quantity":1}]}' $AUTH)"
 
 echo "== Seed endpoint is no longer public =="
@@ -95,7 +108,11 @@ contains "preferences readable" '"gearDrops":true' "$(body $AUTH "$BASE/api/auth
 
 echo "== AI coach =="
 COACH=$(post /api/ai-coach '{"messages":[{"role":"user","content":"What is a proper wrist shot?"}]}')
-contains "returns a real reply" '"success":true' "$COACH"
+if node scripts/provider-configured.mjs GROQ_API_KEY; then
+  contains "returns a real reply" '"success":true' "$COACH"
+else
+  skip "returns a real reply" GROQ_API_KEY
+fi
 omits "no leaked provider error" 'model_not_found' "$COACH"
 omits "no canned fallback masquerading as advice" 'knees bent' "$COACH"
 
@@ -111,5 +128,5 @@ else
 fi
 
 echo
-echo "  passed: $PASS   failed: $FAIL"
+echo "  passed: $PASS   skipped: $SKIP   failed: $FAIL"
 [ "$FAIL" -eq 0 ] || exit 1

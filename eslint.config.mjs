@@ -17,6 +17,10 @@ export default tseslint.config(
       ".next/**",
       "out/**",
       "build/**",
+      // Written by `netlify deploy --build`. Contains the framework's own
+      // bundled server, so linting it reports thousands of problems in code
+      // this project does not own.
+      ".netlify/**",
       "next-env.d.ts",
     ],
   },

@@ -15,7 +15,9 @@ const USER = {
 };
 
 test.describe("authentication journey", () => {
-  test("signs up, reaches the account portal, signs out and signs back in", async ({ page }) => {
+  test("signs up, reaches the account portal, signs out and signs back in", async ({
+    page,
+  }) => {
     // ---- Sign up ----
     await page.goto("/auth/signup");
 
@@ -39,7 +41,10 @@ test.describe("authentication journey", () => {
 
     // ---- Sign out (from the portal's settings tab) ----
     await page.goto("/account?tab=settings");
-    await page.getByRole("button", { name: /sign out/i }).first().click();
+    await page
+      .getByRole("button", { name: /sign out/i })
+      .first()
+      .click();
 
     // After sign-out the account page must not render protected content.
     await page.goto("/account");
@@ -60,7 +65,9 @@ test.describe("authentication journey", () => {
     await page.goto("/auth/signup");
 
     await page.getByLabel(/full name/i).fill("Mismatch Test");
-    await page.getByLabel(/email address/i).fill(`mismatch.${runId}@example.com`);
+    await page
+      .getByLabel(/email address/i)
+      .fill(`mismatch.${runId}@example.com`);
     await page.locator('input[type="password"]').nth(0).fill(USER.password);
     await page.locator('input[type="password"]').nth(1).fill("Different1234");
 
@@ -75,21 +82,30 @@ test.describe("authentication journey", () => {
     await page.goto("/auth/signin");
 
     await page.getByLabel(/email address/i).fill(USER.email);
-    await page.locator('input[type="password"]').nth(0).fill("DefinitelyNotIt1");
+    await page
+      .locator('input[type="password"]')
+      .nth(0)
+      .fill("DefinitelyNotIt1");
     await page.getByRole("button", { name: /^sign in$/i }).click();
 
-    await expect(page.getByRole("alert").first()).toContainText(/incorrect email or password/i);
+    await expect(page.getByRole("alert").first()).toContainText(
+      /incorrect email or password/i,
+    );
     await expect(page).toHaveURL(/\/auth\/signin/);
   });
 });
 
 test.describe("password reset", () => {
-  test("validates the email field and confirms submission", async ({ page }) => {
+  test("validates the email field and confirms submission", async ({
+    page,
+  }) => {
     await page.goto("/auth/forgot-password");
 
     await page.getByLabel(/email address/i).fill("definitely-not-an-email");
     await page.getByRole("button", { name: /send reset link/i }).click();
-    await expect(page.getByText(/valid email|email address/i).first()).toBeVisible();
+    await expect(
+      page.getByText(/valid email|email address/i).first(),
+    ).toBeVisible();
 
     await page.getByLabel(/email address/i).fill(`reset.${runId}@example.com`);
     await page.getByRole("button", { name: /send reset link/i }).click();
@@ -118,7 +134,7 @@ test.describe("store and cart", () => {
     await page.waitForTimeout(900);
 
     const cart = await page.evaluate(() =>
-      JSON.parse(window.localStorage.getItem("apex_hockey_cart") ?? "[]")
+      JSON.parse(window.localStorage.getItem("apex_hockey_cart") ?? "[]"),
     );
 
     // Regression guard: products had no `id`, so they merged into one line.
@@ -130,12 +146,15 @@ test.describe("store and cart", () => {
     await page.waitForTimeout(1200);
 
     const afterReload = await page.evaluate(() =>
-      JSON.parse(window.localStorage.getItem("apex_hockey_cart") ?? "[]")
+      JSON.parse(window.localStorage.getItem("apex_hockey_cart") ?? "[]"),
     );
     expect(afterReload.length).toBe(2);
   });
 
-  test("cart drawer checkout sends a payload the API accepts", async ({ page, request }) => {
+  test("cart drawer checkout sends a payload the API accepts", async ({
+    page,
+    request,
+  }) => {
     // Regression guard: the drawer used to send type "store_checkout" and the
     // whole product objects. /api/checkout accepts "cart" with
     // { id, quantity }, so the request was rejected and the error swallowed.
@@ -146,7 +165,7 @@ test.describe("store and cart", () => {
     await page.waitForTimeout(800);
 
     const cart = await page.evaluate(() =>
-      JSON.parse(window.localStorage.getItem("apex_hockey_cart") ?? "[]")
+      JSON.parse(window.localStorage.getItem("apex_hockey_cart") ?? "[]"),
     );
     expect(cart.length).toBe(1);
     expect(typeof cart[0].id).toBe("string");
@@ -162,13 +181,23 @@ test.describe("store and cart", () => {
     };
 
     const res = await request.post("/api/checkout", { data: payload });
-    expect(res.status()).toBe(200);
     const body = await res.json();
-    expect(body.success).toBe(true);
-    expect(typeof body.url).toBe("string");
+    if (process.env.STRIPE_SECRET_KEY?.trim()) {
+      expect(res.status()).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.url).toMatch(/^https:\/\/checkout\.stripe\.com\//);
+    } else {
+      // The valid cart reaches the configuration gate. A malformed drawer
+      // payload would return 400 instead, so this still guards the regression.
+      expect(res.status()).toBe(500);
+      expect(body.error).toMatch(/payments are not configured/i);
+      expect(body.url).toBeUndefined();
+    }
   });
 
-  test("global search reaches the products page with the term applied", async ({ page }) => {
+  test("global search reaches the products page with the term applied", async ({
+    page,
+  }) => {
     await page.goto("/");
 
     await page.getByRole("button", { name: /search the store/i }).click();
@@ -178,7 +207,9 @@ test.describe("store and cart", () => {
     await page.waitForURL(/\/products\?search=skate/, { timeout: 20_000 });
 
     // The input must be populated from the query string, not discarded.
-    await expect(page.locator('input[type="search"], input').first()).toHaveValue(/skate/i);
+    await expect(
+      page.locator('input[type="search"], input').first(),
+    ).toHaveValue(/skate/i);
   });
 });
 
@@ -196,14 +227,23 @@ test.describe("navigation and routing", () => {
       ["Contact", /\/contact/],
     ] as const) {
       await page.goto("/");
-      await page.getByRole("link", { name: label, exact: true }).first().click();
+      await page
+        .getByRole("link", { name: label, exact: true })
+        .first()
+        .click();
       await page.waitForURL(expected, { timeout: 20_000 });
       await expect(page.getByRole("heading").first()).toBeVisible();
     }
   });
 
-  test("unknown dynamic slugs return 404 rather than the wrong page", async ({ page }) => {
-    for (const path of ["/blog/does-not-exist", "/legal/nonsense", "/services/not-real"]) {
+  test("unknown dynamic slugs return 404 rather than the wrong page", async ({
+    page,
+  }) => {
+    for (const path of [
+      "/blog/does-not-exist",
+      "/legal/nonsense",
+      "/services/not-real",
+    ]) {
       const response = await page.goto(path);
       expect(response?.status(), `${path} should 404`).toBe(404);
     }
@@ -229,7 +269,9 @@ test.describe("navigation and routing", () => {
 });
 
 test.describe("contact form", () => {
-  test("reports inline validation errors and then succeeds", async ({ page }) => {
+  test("reports inline validation errors and then succeeds", async ({
+    page,
+  }) => {
     await page.goto("/");
     const contact = page.locator('section[aria-labelledby="contact-heading"]');
     await contact.scrollIntoViewIfNeeded();
@@ -242,10 +284,14 @@ test.describe("contact form", () => {
     await contact.locator("#c-email").fill(USER.email);
     await contact
       .locator("#c-message")
-      .fill("This is an automated end-to-end test enquiry that should be ignored.");
+      .fill(
+        "This is an automated end-to-end test enquiry that should be ignored.",
+      );
     await contact.getByRole("button", { name: /send message/i }).click();
 
-    await expect(contact.getByText(/message sent/i)).toBeVisible({ timeout: 20_000 });
+    await expect(contact.getByText(/message sent/i)).toBeVisible({
+      timeout: 20_000,
+    });
   });
 });
 
@@ -255,14 +301,20 @@ test.describe("accessibility basics", () => {
   }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("link", { name: /skip to main content/i })).toBeAttached();
+    await expect(
+      page.getByRole("link", { name: /skip to main content/i }),
+    ).toBeAttached();
     await expect(page.locator("main#main")).toHaveCount(1);
 
     // The menu trigger is lg:hidden by design, so it only exists in the
     // accessibility tree below the lg breakpoint.
-    await expect(page.getByRole("button", { name: /open menu/i })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /open menu/i })).toHaveCount(
+      0,
+    );
     await page.setViewportSize({ width: 375, height: 780 });
-    await expect(page.getByRole("button", { name: /open menu/i })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /open menu/i }),
+    ).toBeVisible();
   });
 
   test("no images are missing alt text", async ({ page }) => {
@@ -270,8 +322,60 @@ test.describe("accessibility basics", () => {
     const missing = await page.evaluate(() =>
       Array.from(document.images)
         .filter((img) => !img.hasAttribute("alt"))
-        .map((img) => img.currentSrc || img.src)
+        .map((img) => img.currentSrc || img.src),
     );
     expect(missing).toEqual([]);
+  });
+});
+
+test.describe("redesigned browsing experience", () => {
+  test("program filters follow the URL and return only the selected age group", async ({
+    page,
+  }) => {
+    await page.goto("/programs?group=Teen");
+    await expect(page.locator("#prog-teen")).toBeVisible();
+    await expect(page.locator("#prog-junior, #prog-pro")).toHaveCount(0);
+    await page
+      .getByRole("link", { name: "All programmes", exact: true })
+      .click();
+    await expect(page.locator("#prog-junior")).toBeVisible();
+  });
+
+  test("product details are keyboard accessible and close with Escape", async ({
+    page,
+  }) => {
+    await page.goto("/products");
+    await page
+      .getByRole("button", { name: /view .* details/i })
+      .first()
+      .click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(
+      page.getByRole("button", { name: /view .* details/i }).first(),
+    ).toBeFocused();
+  });
+
+  test("mobile layout fits the viewport and search recovers from an empty result", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto("/");
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+    ).toBe(true);
+    await page.goto("/products?search=not-a-real-product-9274");
+    await expect(
+      page.getByRole("heading", { name: "No equipment found" }),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: "Reset filters", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: /add .* to cart/i }).first(),
+    ).toBeVisible();
   });
 });

@@ -1,4 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
+import { existsSync } from "node:fs";
+
+// Match the server configuration without printing credentials. CI has no local env file.
+if (existsSync(".env.local")) process.loadEnvFile(".env.local");
 
 /**
  * End-to-end configuration.
