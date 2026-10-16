@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/app/layout-metadata";
 
-/**
- * Route metadata lives in a layout because contact/page.tsx is a Client
- * Component, and Next.js does not allow exporting `metadata` from one.
- */
+/** Shared contact-route metadata. */
 export const metadata: Metadata = pageMetadata(
   "Contact",
   "Ask about Apex Hockey programmes, private ice time, team bookings or equipment.",

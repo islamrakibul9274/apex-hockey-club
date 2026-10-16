@@ -21,6 +21,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useEscapeKey } from "@/lib/useDialog";
 import LogoMark from "@/components/Logo";
+import Modal from "@/components/Modal";
 import { NAV, POPULAR_SEARCHES } from "@/lib/navigation";
 
 /**
@@ -51,12 +52,15 @@ export default function Navbar() {
   const groupRef = useRef<HTMLUListElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  useEscapeKey(Boolean(mobileOpen || searchOpen || menuOpen || openGroup), () => {
-    setMobileOpen(false);
-    setSearchOpen(false);
-    setMenuOpen(false);
-    setOpenGroup(null);
-  });
+  useEscapeKey(
+    Boolean(mobileOpen || searchOpen || menuOpen || openGroup),
+    () => {
+      setMobileOpen(false);
+      setSearchOpen(false);
+      setMenuOpen(false);
+      setOpenGroup(null);
+    },
+  );
 
   // Close everything on navigation so nothing lingers over the new page.
   //
@@ -83,8 +87,10 @@ export default function Navbar() {
     if (!menuOpen && !openGroup) return;
     const handler = (event: MouseEvent) => {
       const target = event.target as Node;
-      if (menuRef.current && !menuRef.current.contains(target)) setMenuOpen(false);
-      if (groupRef.current && !groupRef.current.contains(target)) setOpenGroup(null);
+      if (menuRef.current && !menuRef.current.contains(target))
+        setMenuOpen(false);
+      if (groupRef.current && !groupRef.current.contains(target))
+        setOpenGroup(null);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -131,7 +137,11 @@ export default function Navbar() {
                 aria-label={mobileOpen ? "Close menu" : "Open menu"}
                 className="apex-btn apex-btn-icon -ml-2 text-ink-700 lg:hidden"
               >
-                {mobileOpen ? <FaXmark aria-hidden="true" /> : <FaBars aria-hidden="true" />}
+                {mobileOpen ? (
+                  <FaXmark aria-hidden="true" />
+                ) : (
+                  <FaBars aria-hidden="true" />
+                )}
               </button>
 
               <Link
@@ -291,15 +301,22 @@ export default function Navbar() {
                       className="absolute right-0 top-full z-50 mt-2 w-64 animate-scale-in rounded-2xl border border-line-200 bg-surface-0 p-1.5 shadow-lg"
                     >
                       <div className="border-b border-line-200 px-3 py-2.5">
-                        <p className="truncate text-sm font-bold text-ink-900">{user.name}</p>
-                        <p className="truncate text-xs text-ink-500">{user.email}</p>
+                        <p className="truncate text-sm font-bold text-ink-900">
+                          {user.name}
+                        </p>
+                        <p className="truncate text-xs text-ink-500">
+                          {user.email}
+                        </p>
                         <span className="apex-badge apex-badge-sm apex-badge-brand mt-1.5">
                           {user.membershipPlan || "Member"}
                         </span>
                       </div>
                       {[
                         { href: "/account", label: "Profile & portal" },
-                        { href: "/account?tab=bookings", label: "Tickets & camps" },
+                        {
+                          href: "/account?tab=bookings",
+                          label: "Tickets & camps",
+                        },
                         { href: "/account?tab=settings", label: "Settings" },
                       ].map((item) => (
                         <Link
@@ -332,7 +349,10 @@ export default function Navbar() {
                 </Link>
               )}
 
-              <Link href="/get-ticket" className="apex-btn apex-btn-primary apex-btn-sm ml-1">
+              <Link
+                href="/get-ticket"
+                className="apex-btn apex-btn-primary apex-btn-sm ml-1 hidden sm:inline-flex"
+              >
                 <FaTicket aria-hidden="true" />
                 <span className="hidden sm:inline">Get tickets</span>
                 <span className="sm:hidden">Tickets</span>
@@ -354,14 +374,19 @@ export default function Navbar() {
                   const expanded = openGroup === item.label;
 
                   return (
-                    <li key={item.label} className="border-b border-line-200 last:border-0">
+                    <li
+                      key={item.label}
+                      className="border-b border-line-200 last:border-0"
+                    >
                       <div className="flex items-center">
                         <Link
                           href={item.href}
                           aria-current={active ? "page" : undefined}
                           className={[
                             "flex-1 rounded-lg px-3 py-3 text-base font-semibold transition-colors",
-                            active ? "text-brand-600" : "text-ink-800 hover:bg-surface-50",
+                            active
+                              ? "text-brand-600"
+                              : "text-ink-800 hover:bg-surface-50",
                           ].join(" ")}
                         >
                           {item.label}
@@ -369,7 +394,9 @@ export default function Navbar() {
                         {item.children && (
                           <button
                             type="button"
-                            onClick={() => setOpenGroup(expanded ? null : item.label)}
+                            onClick={() =>
+                              setOpenGroup(expanded ? null : item.label)
+                            }
                             aria-expanded={expanded}
                             aria-label={`${item.label} submenu`}
                             className="apex-btn apex-btn-icon text-ink-600"
@@ -422,62 +449,55 @@ export default function Navbar() {
         )}
       </header>
 
-      {/* Search overlay */}
-      {searchOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Search the store"
-          className="fixed inset-0 z-50 flex items-start justify-center bg-ink-900/50 p-4 pt-20 backdrop-blur-sm"
+      <Modal
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        title="Search the store"
+        hideTitle
+      >
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            submitSearch(searchQuery);
+          }}
+          role="search"
         >
-          <button
-            type="button"
-            aria-label="Close search"
-            tabIndex={-1}
-            onClick={() => setSearchOpen(false)}
-            className="absolute inset-0 h-full w-full cursor-default"
-          />
-          <div className="relative z-10 w-full max-w-lg animate-scale-in rounded-2xl bg-surface-0 p-5 shadow-lg">
-            <form onSubmit={(e) => { e.preventDefault(); submitSearch(searchQuery); }} role="search">
-              <label htmlFor="global-search" className="apex-label">
-                Search products
-              </label>
-              <div className="flex gap-2">
-                <input
-                  id="global-search"
-                  ref={searchInputRef}
-                  type="search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Sticks, skates, helmets, gloves…"
-                  className="apex-input"
-                />
-                <button type="submit" className="apex-btn apex-btn-primary">
-                  Search
-                </button>
-              </div>
-            </form>
-
-            <div className="mt-4">
-              <p className="mb-2 text-xs font-bold uppercase tracking-wider text-ink-500">
-                Popular searches
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {POPULAR_SEARCHES.map((term) => (
-                  <button
-                    key={term}
-                    type="button"
-                    onClick={() => submitSearch(term)}
-                    className="apex-badge transition-colors hover:border-brand-200 hover:bg-brand-50 hover:text-brand-600"
-                  >
-                    {term}
-                  </button>
-                ))}
-              </div>
-            </div>
+          <label htmlFor="global-search" className="apex-label">
+            Search products
+          </label>
+          <div className="flex gap-2">
+            <input
+              id="global-search"
+              ref={searchInputRef}
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Sticks, skates, helmets, gloves…"
+              className="apex-input"
+            />
+            <button type="submit" className="apex-btn apex-btn-primary">
+              Search
+            </button>
+          </div>
+        </form>
+        <div className="mt-5">
+          <p className="mb-3 text-xs font-bold uppercase tracking-wider text-ink-500">
+            Popular searches
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {POPULAR_SEARCHES.map((term) => (
+              <button
+                key={term}
+                type="button"
+                onClick={() => submitSearch(term)}
+                className="apex-badge cursor-pointer transition-colors hover:bg-brand-50 hover:text-brand-600"
+              >
+                {term}
+              </button>
+            ))}
           </div>
         </div>
-      )}
+      </Modal>
     </>
   );
 }

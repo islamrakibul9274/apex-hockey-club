@@ -95,7 +95,7 @@ export default async function PricingPage({
           <span className="apex-badge apex-badge-brand uppercase tracking-widest">
             Membership
           </span>
-          <h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
+          <h1 className="mt-3">
             Transparent pricing for every hockey goal
           </h1>
           <p className="mt-4 leading-relaxed text-ink-600">

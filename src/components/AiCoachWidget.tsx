@@ -1,7 +1,13 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { FaRobot, FaXmark, FaPaperPlane, FaWandMagicSparkles } from "react-icons/fa6";
+import { useEscapeKey } from "@/lib/useDialog";
+import {
+  FaRobot,
+  FaXmark,
+  FaPaperPlane,
+  FaWandMagicSparkles,
+} from "react-icons/fa6";
 
 interface Message {
   role: "user" | "assistant";
@@ -21,12 +27,22 @@ export default function AiCoachWidget() {
     {
       role: "assistant",
       content:
-        "🏒 **Welcome to Apex Hockey!** I'm Coach Wayne, your AI Hockey Specialist. Ask me anything about hockey drills, stick curves, skate maintenance, training programs, or match tactics!",
+        "Welcome to Apex Hockey! I'm Coach Wayne, your AI Hockey Specialist. Ask me anything about hockey drills, stick curves, skate maintenance, training programs, or match tactics!",
     },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const closeCoach = () => {
+    setIsOpen(false);
+    triggerRef.current?.focus();
+  };
+  useEscapeKey(isOpen, closeCoach);
+  useEffect(() => {
+    if (isOpen) inputRef.current?.focus();
+  }, [isOpen]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -38,7 +54,10 @@ export default function AiCoachWidget() {
     const textToSend = userText || input;
     if (!textToSend.trim() || loading) return;
 
-    const newMessages: Message[] = [...messages, { role: "user", content: textToSend }];
+    const newMessages: Message[] = [
+      ...messages,
+      { role: "user", content: textToSend },
+    ];
     setMessages(newMessages);
     setInput("");
     setLoading(true);
@@ -64,7 +83,8 @@ export default function AiCoachWidget() {
         ...prev,
         {
           role: "assistant",
-          content: "Let's focus on fundamental edge control and puck security. Try asking another question!",
+          content:
+            "Let's focus on fundamental edge control and puck security. Try asking another question!",
         },
       ]);
     } finally {
@@ -77,46 +97,63 @@ export default function AiCoachWidget() {
       {/* Floating Trigger Button */}
       <div className="fixed bottom-6 right-6 z-40">
         <button
+          ref={triggerRef}
           onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
+          aria-controls="hockey-coach-panel"
           className="apex-btn apex-btn-icon apex-btn-lg bg-brand-500 hover:bg-brand-600 text-white shadow-2xl border-none relative group transition-all duration-300 hover:scale-105"
-          aria-label="Open AI Hockey Coach"
+          aria-label={isOpen ? "Close AI Hockey Coach" : "Open AI Hockey Coach"}
         >
-          {isOpen ? <FaXmark className="text-2xl" /> : <FaRobot className="text-2xl" />}
-          {!isOpen && (
-            <span className="absolute -top-1 -right-1 flex h-4 w-4">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500"></span>
-            </span>
+          {isOpen ? (
+            <FaXmark className="text-2xl" />
+          ) : (
+            <FaRobot className="text-2xl" />
           )}
         </button>
       </div>
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-4 sm:right-6 z-50 w-[92vw] sm:w-[420px] max-h-[600px] h-[75vh] bg-surface-0 rounded-3xl shadow-2xl border border-line-200 flex flex-col overflow-hidden animate-scale-in duration-200">
+        <aside
+          id="hockey-coach-panel"
+          aria-label="AI hockey coach"
+          className="fixed bottom-24 right-4 sm:right-6 z-50 w-[92vw] sm:w-[420px] max-h-[600px] h-[75vh] bg-surface-0 rounded-3xl shadow-2xl border border-line-200 flex flex-col overflow-hidden animate-scale-in duration-200"
+        >
           {/* Header */}
-          <div className="bg-linear-to-r from-gray-900 to-gray-800 text-white p-4 flex items-center justify-between">
+          <div className="bg-surface-50 border-b border-line-200 text-ink-900 p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-brand-500 flex items-center justify-center text-white shadow-md">
                 <FaWandMagicSparkles />
               </div>
               <div>
                 <h3 className="font-extrabold text-sm flex items-center gap-1.5">
-                  Coach Wayne <span className="apex-badge apex-badge-sm bg-emerald-500 border-none text-[9px] text-white">AI ONLINE</span>
+                  Coach Wayne{" "}
+                  <span className="apex-badge apex-badge-sm bg-brand-50 border-none text-[9px] text-brand-600">
+                    AI ASSISTANT
+                  </span>
                 </h3>
-                <p className="text-[11px] text-gray-300">Apex Hockey Gear & Skills Advisor</p>
+                <p className="text-[11px] text-ink-600">
+                  Apex Hockey Gear & Skills Advisor
+                </p>
               </div>
             </div>
             <button
-              onClick={() => setIsOpen(false)}
-              className="apex-btn apex-btn-ghost apex-btn-sm apex-btn-icon text-gray-300 hover:text-white"
+              onClick={closeCoach}
+              aria-label="Close coach"
+              className="apex-btn apex-btn-ghost apex-btn-sm apex-btn-icon text-ink-600 hover:text-brand-600"
             >
               <FaXmark className="text-base" />
             </button>
           </div>
 
           {/* Messages Body */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-surface-50">
+          <div
+            ref={scrollRef}
+            role="log"
+            aria-label="Coach conversation"
+            aria-live="polite"
+            className="flex-1 overflow-y-auto p-4 space-y-3 bg-surface-50"
+          >
             {messages.map((m, i) => (
               <div
                 key={i}
@@ -170,7 +207,12 @@ export default function AiCoachWidget() {
             }}
             className="p-3 bg-surface-0 border-t border-line-200 flex gap-2"
           >
+            <label htmlFor="coach-message" className="sr-only">
+              Your hockey question
+            </label>
             <input
+              id="coach-message"
+              ref={inputRef}
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -179,13 +221,14 @@ export default function AiCoachWidget() {
             />
             <button
               type="submit"
+              aria-label="Send question"
               disabled={!input.trim() || loading}
               className="apex-btn apex-btn-sm bg-brand-500 hover:bg-brand-600 text-white border-none rounded-xl px-3"
             >
               <FaPaperPlane className="text-xs" />
             </button>
           </form>
-        </div>
+        </aside>
       )}
     </>
   );

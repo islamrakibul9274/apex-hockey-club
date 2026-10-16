@@ -4,6 +4,7 @@
 
 - Bright editorial visual system with condensed display typography, working Tailwind 4 color tokens, consistent spacing, responsive layouts, and a simpler footer.
 - Static split hero, clear academy/ticket/club entry points, readable program cards, club story, and coaching journal.
+- Global search uses the shared focus-trapped dialog, and the AI coach has a light panel, labelled controls, focus handling, and Escape dismissal. The compact mobile header leaves more room for navigation.
 - Shared equipment cards and accessible product dialogs; immediate category/search filtering, price sorting, result counts, reset controls, and retryable error states.
 - New Pexels photography throughout, stored locally as 37 optimized WebP assets. All source links and license details are in `public/images/ATTRIBUTION.md`; versioned requests bypass previously cached images.
 - Contact page now shares the validated working form and preserves enquiry subjects. Placeholder contact details, fictional staff biographies, unsupported facility claims, and simulated newsletter subscriptions were removed.

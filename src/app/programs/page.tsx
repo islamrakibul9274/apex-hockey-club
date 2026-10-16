@@ -82,7 +82,7 @@ export default async function ProgramsPage({
           <span className="apex-badge apex-badge-brand uppercase tracking-widest">
             Academy pathways
           </span>
-          <h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
+          <h1 className="mt-3">
             Development programmes &amp; masterclasses
           </h1>
           <p className="mt-4 leading-relaxed text-ink-600">

@@ -144,7 +144,7 @@ export default function GetTicketPage() {
           <span className="apex-badge apex-badge-sm bg-brand-100 text-brand-600 font-extrabold uppercase tracking-widest px-3 py-2">
             Match Passes & Seating
           </span>
-          <h1 className="text-4xl sm:text-5xl font-black text-ink-900 tracking-tight">
+          <h1 className="mt-3">
             YOUR SEAT. YOUR GAME.
           </h1>
           <p className="text-ink-600 text-base sm:text-lg leading-relaxed">

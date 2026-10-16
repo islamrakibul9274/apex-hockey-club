@@ -63,11 +63,10 @@ npm run verify      # shell suites
    security headers (`X-Content-Type-Options`, `Referrer-Policy`,
    `X-Frame-Options`, `Permissions-Policy`) are set.
 
-4. **Bookings stay `pending` until a Stripe webhook confirms payment.** No
-   webhook handler is implemented, so nothing currently marks them paid. This
-   is deliberate — the previous code marked bookings `paid` on creation, before
-   any money moved. **A webhook endpoint is the next piece of work** for real
-   payment reconciliation.
+4. **Bookings stay `pending` until a Stripe webhook confirms payment.** The
+   signature-checked handler is implemented at `/api/stripe/webhook`. An actual
+   signed Stripe event and dashboard endpoint registration still need to be
+   verified before payment reconciliation can be considered proven.
 
 5. **`AUTH_SECRET` should be rotated** if the old deployment ever exposed it.
 
@@ -90,11 +89,10 @@ npm run verify      # shell suites
 
 ### Architecture
 
-8. **Nine pages are still client components**, and most genuinely need to be:
+8. **Eight pages are still client components**, and most genuinely need to be:
    the four auth pages, `/cart`, `/account`, `/get-ticket` and `/products` all
-   carry forms, filters or dashboard state. `/contact` is the one worth
-   revisiting — its static shell could be server-rendered with the form
-   extracted. Eight routes are now Server Components or prerendered:
+   carry forms, filters or dashboard state. The October redesign converted
+   `/contact` to a server-rendered shell with the shared client form.
 
    | Route | Before | After |
    |---|---|---|
@@ -119,9 +117,10 @@ npm run verify      # shell suites
     has very little isolated hockey gear. They are consistent and on-topic, but
     a real store would use product photography per item.
 
-12. **Coach portraits are action photographs.** The coaches are fictional and no
-    headshots exist. The alt text describes what the image shows rather than
-    claiming to be a portrait of a named person.
+12. **Stock photography is illustrative.** The October redesign removed
+    fictional coach biographies, facility claims, and staff portrait cards from
+    About. Photo subjects are not presented as Apex staff or premises. All
+    photography was replaced with a newly attributed Pexels collection.
 
 13. **Some copy is still invented.** Programme prices, membership tiers, match
     fixtures and ticket prices are plausible placeholders for a real club to
