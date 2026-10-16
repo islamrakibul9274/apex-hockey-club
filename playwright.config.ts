@@ -23,6 +23,10 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
 
+  // The e2e suite creates real users, bookings and inquiries. Tear them down
+  // afterwards so a test run does not accumulate rows in the database.
+  globalTeardown: "./tests/e2e/global-teardown.ts",
+
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
   ],

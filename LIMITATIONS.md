@@ -9,7 +9,7 @@ Recorded on a full run of every suite.
 | Suite | Command | Result |
 |---|---|---|
 | Unit + integration | `npm test` | **101 / 101 passing** (3 files) |
-| End-to-end | `npm run test:e2e` | **12 / 12 passing** |
+| End-to-end | `npm run test:e2e` | **13 / 13 passing** |
 | Auth over HTTP | `npm run verify:auth` | **34 / 34 passing** |
 | Repaired features | `npm run verify:features` | **38 / 38 passing** |
 | Cart persistence (browser) | `node scripts/verify-cart.mjs` | **6 / 6 passing** |
@@ -24,10 +24,10 @@ Recorded on a full run of every suite.
   server-side pricing, catalogue id normalisation, rate limiter.
 - **36 integration tests** — real route handlers against MongoDB: registration,
   login, sessions, profile, bookings, checkout, catalogue, seeding, contact.
-- **12 e2e tests** — sign up → sign out → sign in, session persistence across
+- **13 e2e tests** — sign up → sign out → sign in, session persistence across
   reload, mismatched passwords, wrong password, reset validation, cart
-  persistence, global search, every primary nav link, 404s, mobile menu,
-  contact form, accessibility spot checks.
+  persistence, cart-drawer checkout payload, global search, every primary nav
+  link, 404s, mobile menu, contact form, accessibility spot checks.
 
 Several tests exist specifically as regression guards for the bugs found in the
 audit: the demo bypass, regex injection in product search, missing catalogue
@@ -73,30 +73,41 @@ npm run verify      # shell suites
 
 ### Dependencies
 
-6. **11 known npm vulnerabilities, 1 critical.** `next@14.2.35` has a DoS issue
-   in the Image Optimizer, plus high-severity issues in `postcss`, `tailwindcss`,
-   `chokidar`, `braces`, `micromatch` and `source-map-js`. Every fix requires a
-   semver-major upgrade (Next 16, Tailwind 4). **Not done** — it is a migration
-   in its own right and carries real regression risk.
+6. **13 known npm vulnerabilities, 0 critical.** The critical `next@14`
+   Image Optimizer advisory is resolved — the project is on Next 16.4 and
+   Tailwind 4.3. Everything left is high-severity and confined to the
+   dev-only ESLint toolchain (`@typescript-eslint/*`, `braces`, `glob`,
+   `micromatch`, `eslint-config-next`). None of it ships to a browser or
+   reaches production runtime. Clearing them means bumping ESLint and
+   `eslint-config-next` to majors that track Next 16.
 
 7. **`groq-sdk` is pinned at 0.8.0**, an old major. The AI coach works, but the
    SDK should be upgraded.
 
 ### Architecture
 
-8. **Nine pages are still client components.** `/about`, `/blog`, `/pricing`,
-   `/programs`, `/products`, `/get-ticket`, `/cart`, `/account` and
-   `/contact`. Their content only paints after hydration. Three routes
-   (`/legal/[slug]`, `/services/[service]`, `/blog/[slug]`) were converted to
-   prerendered Server Components, cutting their payloads from 2.02 kB → 296 B,
-   3.48 kB → 295 B and 5.93 kB → 205 B respectively. The rest still carry
-   113–151 kB of First Load JS.
+8. **Nine pages are still client components**, and most genuinely need to be:
+   the four auth pages, `/cart`, `/account`, `/get-ticket` and `/products` all
+   carry forms, filters or dashboard state. `/contact` is the one worth
+   revisiting — its static shell could be server-rendered with the form
+   extracted. Eight routes are now Server Components or prerendered:
 
-9. **`mockData.ts` is still bundled client-side** by several pages, shipping the
-   full 385-line catalogue in the JS payload.
+   | Route | Before | After |
+   |---|---|---|
+   | `/about` | 213-line client component | 211 B, static |
+   | `/blog` | 6.35 kB, fetched in an effect | 209 B, server-rendered |
+   | `/blog/[slug]` | 5.93 kB | 211 B, prerendered |
+   | `/legal/[slug]` | 2.02 kB | 296 B, prerendered |
+   | `/services/[service]` | 3.48 kB | 295 B, prerendered |
+   | `/programs` | 8.07 kB | 4.62 kB, server list + URL filter |
+   | `/pricing` | 2.65 kB | 1.81 kB, server shell |
 
-10. **`Images/` was removed** but nothing enforces that no image path in `src/`
-    resolves. A check exists in the test workflow, not in CI.
+9. **`mockData.ts` is still bundled client-side** by the remaining client pages,
+   shipping the full 385-line catalogue in the JS payload.
+
+10. **(resolved) Image paths are now asserted.** A unit test walks `src/` and fails
+    if any `/images/...` reference does not resolve on disk. Nine such bugs
+    had survived a commit and silently 404d.
 
 ### Content and design
 

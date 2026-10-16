@@ -93,24 +93,10 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  // Remove the fixtures this file created.
-  try {
-    const mongoose = (await import("mongoose")).default;
-    const { connectToDatabase } = await import("@/lib/mongodb");
-    const conn = await connectToDatabase();
-    if (conn) {
-      const db = mongoose.connection.db;
-      if (db) {
-        await db
-          .collection("users")
-          .deleteMany({ email: { $in: [email, `${email}.2`] } });
-        await db.collection("bookings").deleteMany({ customerEmail: { $regex: "^itest\\." } });
-      }
-    }
-    await mongoose.disconnect();
-  } catch {
-    // Cleanup is best-effort; a failure here must not fail the suite.
-  }
+  // Prefix-matched, so it also clears fixtures left behind by an interrupted
+  // earlier run. See tests/helpers/fixtures.ts.
+  const { cleanupFixtures } = await import("../helpers/fixtures");
+  await cleanupFixtures();
 });
 
 suite("POST /api/auth/register", () => {

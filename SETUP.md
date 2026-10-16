@@ -1,6 +1,6 @@
 # Apex Hockey Club — Setup Guide
 
-Next.js 14 (App Router) · MongoDB Atlas · Tailwind CSS 3 · Netlify
+Next.js 16 (App Router) · React 19 · MongoDB Atlas · Tailwind CSS 4 · Netlify
 
 ---
 
@@ -47,7 +47,7 @@ matching feature degrades gracefully when unset.
 | `STRIPE_SECRET_KEY` | Checkout | Returns "payments are not configured" |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe.js | — |
 | `STRIPE_WEBHOOK_SECRET` | Payment confirmation | Bookings stay `pending` |
-| `GROQ_API_KEY` | AI coach | Returns "coach is not configured" |
+| `GROQ_MODEL` | AI coach model override | Uses `qwen/qwen3.8-27b` |
 | `RESEND_API_KEY` | Contact + reset email | Reset links are written to the server log |
 | `CLOUDINARY_*` | Uploads | Not wired up |
 | `PUSHER_*` | Realtime updates | Not wired up |
@@ -108,11 +108,23 @@ npm run verify        # shell suites: auth + repaired features
 
 | Suite | Count | Covers |
 |---|---|---|
-| `tests/unit` | 65 | Validation schemas, password policy, regex escaping, server-side pricing, id normalisation, rate limiter |
+| `tests/unit` | 98 | Validation schemas, password policy, regex escaping, server-side pricing, id normalisation, rate limiter |
 | `tests/integration` | 36 | Real route handlers against MongoDB: auth, sessions, bookings, checkout, catalogue, seeding, contact |
-| `tests/e2e` | 12 | Sign up → sign out → sign in, cart persistence, global search, navigation, 404s, mobile menu, contact form, a11y checks |
+| `tests/e2e` | 13 | Sign up → sign out → sign in, cart persistence, drawer checkout payload, global search, navigation, 404s, mobile menu, contact form, a11y checks |
 | `scripts/verify-auth.sh` | 34 | Auth over HTTP, including brute-force protection |
 | `scripts/verify-features.sh` | 38 | The repaired features from the audit |
+| `scripts/verify-cart.mjs` | 6 | Cart persistence in a real browser |
+
+**224 checks in total, all passing.**
+
+Both shell suites take an optional base URL — they default to port 3001:
+
+```bash
+bash scripts/verify-auth.sh http://localhost:3000
+```
+
+They also share a rate-limit budget, so run each against a freshly started
+server rather than back to back.
 
 The integration and e2e suites set `RATE_LIMIT_DISABLED=true` so they can
 create fixtures on repeat runs. **The rate limiter's own behaviour is asserted
