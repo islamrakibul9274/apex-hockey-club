@@ -135,6 +135,39 @@ test.describe("store and cart", () => {
     expect(afterReload.length).toBe(2);
   });
 
+  test("cart drawer checkout sends a payload the API accepts", async ({ page, request }) => {
+    // Regression guard: the drawer used to send type "store_checkout" and the
+    // whole product objects. /api/checkout accepts "cart" with
+    // { id, quantity }, so the request was rejected and the error swallowed.
+    await page.goto("/products");
+    const addButtons = page.getByRole("button", { name: /add .* to cart/i });
+    await expect(addButtons.first()).toBeVisible({ timeout: 30_000 });
+    await addButtons.first().click();
+    await page.waitForTimeout(800);
+
+    const cart = await page.evaluate(() =>
+      JSON.parse(window.localStorage.getItem("apex_hockey_cart") ?? "[]")
+    );
+    expect(cart.length).toBe(1);
+    expect(typeof cart[0].id).toBe("string");
+    expect(cart[0].id.length).toBeGreaterThan(0);
+
+    // The shape the drawer must send.
+    const payload = {
+      type: "cart",
+      items: cart.map((i: { id: string; quantity: number }) => ({
+        id: i.id,
+        quantity: i.quantity,
+      })),
+    };
+
+    const res = await request.post("/api/checkout", { data: payload });
+    expect(res.status()).toBe(200);
+    const body = await res.json();
+    expect(body.success).toBe(true);
+    expect(typeof body.url).toBe("string");
+  });
+
   test("global search reaches the products page with the term applied", async ({ page }) => {
     await page.goto("/");
 

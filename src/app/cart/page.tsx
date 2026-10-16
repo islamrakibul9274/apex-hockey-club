@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import { useToast } from "@/components/Toast";
 import { useAuth } from "@/context/AuthContext";
 import {
   FaTrash,
@@ -21,6 +22,8 @@ import {
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, clearCart, totalPrice } = useCart();
+  const [confirmClear, setConfirmClear] = useState(false);
+  const { toast } = useToast();
   const { user } = useAuth();
 
   const [coupon, setCoupon] = useState("");
@@ -174,10 +177,11 @@ export default function CartPage() {
 
               <div className="flex justify-between items-center px-2">
                 <button
-                  onClick={clearCart}
-                  className="text-xs font-bold text-ink-600 hover:text-danger-600"
+                  type="button"
+                  onClick={() => setConfirmClear(true)}
+                  className="text-xs font-bold text-ink-600 transition-colors hover:text-danger-600"
                 >
-                  Clear Entire Bag
+                  Clear entire bag
                 </button>
                 <div className="flex items-center gap-2 text-xs font-semibold text-ink-600">
                   <FaTruckFast className="text-emerald-500" /> Fast Insured Shipping
@@ -257,6 +261,51 @@ export default function CartPage() {
                 <div className="flex items-center justify-center gap-2 text-xs text-ink-500">
                   <FaShieldHalved /> 256-Bit SSL Encrypted & Protected
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {confirmClear && (
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="clear-cart-title"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          >
+            <button
+              type="button"
+              tabIndex={-1}
+              aria-label="Cancel"
+              onClick={() => setConfirmClear(false)}
+              className="absolute inset-0 h-full w-full cursor-default bg-ink-900/50 backdrop-blur-sm"
+            />
+            <div className="relative z-10 w-full max-w-sm animate-scale-in rounded-2xl bg-surface-0 p-6 shadow-lg">
+              <h2 id="clear-cart-title" className="text-lg font-extrabold text-ink-900">
+                Empty your bag?
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-ink-600">
+                This removes all {items.length} item{items.length === 1 ? "" : "s"} from your
+                bag. It cannot be undone.
+              </p>
+              <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  onClick={() => setConfirmClear(false)}
+                  className="apex-btn apex-btn-secondary"
+                >
+                  Keep bag
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearCart();
+                    setConfirmClear(false);
+                    toast("Your bag has been emptied");
+                  }}
+                  className="apex-btn apex-btn-primary"
+                >
+                  Empty bag
+                </button>
               </div>
             </div>
           </div>

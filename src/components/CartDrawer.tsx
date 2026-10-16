@@ -9,25 +9,42 @@ import { FaTrash, FaPlus, FaMinus, FaXmark, FaBagShopping } from "react-icons/fa
 export default function CartDrawer() {
   const { items, isOpen, closeCart, updateQuantity, removeItem, totalPrice, totalCount } = useCart();
   const [checkingOut, setCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
 
+  /**
+   * Checkout from the drawer.
+   *
+   * This previously sent `type: "store_checkout"` and the whole product
+   * objects. /api/checkout accepts `type: "cart"` with items shaped
+   * `{ id, quantity }`, so the request was rejected and the failure was
+   * swallowed — the spinner just stopped with nothing on screen.
+   */
   const handleCheckout = async () => {
     if (items.length === 0) return;
+
     setCheckingOut(true);
+    setCheckoutError("");
+
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items,
-          type: "store_checkout",
+          type: "cart",
+          items: items.map((item) => ({ id: item.id, quantity: item.quantity })),
         }),
       });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data?.url) {
+        setCheckoutError(data?.error ?? "We could not start checkout. Please try again.");
+        return;
       }
-    } catch (err) {
-      console.error("Checkout error:", err);
+
+      window.location.href = data.url;
+    } catch {
+      setCheckoutError("We could not reach the payment service. Please try again.");
     } finally {
       setCheckingOut(false);
     }
@@ -172,7 +189,7 @@ export default function CartDrawer() {
                 <button
                   onClick={handleCheckout}
                   disabled={checkingOut}
-                  className="apex-btn apex-btn-block bg-brand-500 hover:bg-brand-600 border-none text-white font-bold"
+                  className="apex-btn apex-btn-primary apex-btn-block"
                 >
                   {checkingOut ? (
                     <span className="apex-spinner apex-spinner-sm"></span>
@@ -180,6 +197,11 @@ export default function CartDrawer() {
                     `Proceed to Stripe Checkout ($${totalPrice.toFixed(2)})`
                   )}
                 </button>
+                {checkoutError && (
+                  <div role="alert" className="apex-alert apex-alert-error">
+                    {checkoutError}
+                  </div>
+                )}
                 <Link
                   href="/cart"
                   onClick={closeCart}
