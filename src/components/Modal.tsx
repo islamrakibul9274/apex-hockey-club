@@ -1,9 +1,16 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { FaXmark } from "react-icons/fa6";
 import { useEscapeKey, useFocusTrap } from "@/lib/useDialog";
+
+/** Nothing ever changes, so the subscription never fires. */
+function subscribeToNothing(onChange: () => void): () => void {
+  return () => {
+    void onChange;
+  };
+}
 
 interface ModalProps {
   open: boolean;
@@ -43,16 +50,22 @@ export function Modal({
 }: ModalProps) {
   const ref = useFocusTrap<HTMLDivElement>(open);
   const titleId = React.useId();
-  const mounted = useRef(false);
+  // Portals cannot render on the server. useSyncExternalStore reports false
+  // during SSR and hydration and true afterwards, so the portal only appears
+  // once the DOM exists.
+  //
+  // The previous version used a ref flipped in an effect and then read during
+  // render, which is not safe: renders can be discarded, and reading a ref
+  // during render is not allowed.
+  const mounted = useSyncExternalStore(
+    subscribeToNothing,
+    () => true,
+    () => false
+  );
 
   useEscapeKey(open, onClose);
 
-  // Avoid a hydration mismatch: portals need the client.
-  useEffect(() => {
-    mounted.current = true;
-  }, []);
-
-  if (!open || !mounted.current) return null;
+  if (!open || !mounted) return null;
 
   const panelMotion =
     variant === "right"

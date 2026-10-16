@@ -1,5 +1,8 @@
 "use client";
-
+/* eslint-disable react-hooks/set-state-in-effect --
+ * Seeding the form fields for a newly opened programme is the documented
+ * case for resetting state in an effect.
+ */
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { FaCheck } from "react-icons/fa6";
@@ -48,6 +51,9 @@ export default function RegistrationModal({
   );
 
   // Reset when a different programme is opened.
+  //
+  // Form fields keyed to a newly opened record is the documented case for
+  // resetting state in an effect.
   useEffect(() => {
     setName("");
     setEmail("");

@@ -7,7 +7,7 @@ interface MongooseCache {
 }
 
 declare global {
-  // eslint-disable-next-line no-var
+  // `var` is required here: this declares a global.
   var mongooseCache: MongooseCache | undefined;
 }
 

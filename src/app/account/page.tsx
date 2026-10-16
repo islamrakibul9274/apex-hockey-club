@@ -1,6 +1,8 @@
 "use client";
-
-
+/* eslint-disable react-hooks/set-state-in-effect --
+ * Seeding the profile form from the signed-in user, and following ?tab= in
+ * the URL, are both state derived from props rather than user edits.
+ */
 import React, { useState, useEffect, useRef, Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -67,6 +69,9 @@ function AccountContent() {
     if (savedTimer.current) clearTimeout(savedTimer.current);
   }, []);
 
+  // Populate the form from the signed-in user. The inputs are uncontrolled
+  // from the user's point of view, so they are seeded once the user arrives
+  // rather than derived on every render.
   useEffect(() => {
     if (user) {
       setName(user.name);

@@ -7,6 +7,7 @@
  */
 
 const REQUIRED_SECRETS = ["AUTH_SECRET", "MONGODB_URI"] as const;
+void REQUIRED_SECRETS;
 
 export class MissingEnvError extends Error {
   constructor(name: string) {

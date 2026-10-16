@@ -94,6 +94,15 @@ Open <http://localhost:3000>. If port 3000 is taken, Next.js uses 3001.
 
 ---
 
+## Lint
+
+```bash
+npm run lint
+```
+
+ESLint 9 with a flat config in `eslint.config.mjs`. Note that `next lint` was
+removed in Next 16, so the script calls `eslint` directly.
+
 ## Tests
 
 ```bash

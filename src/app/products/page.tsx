@@ -1,6 +1,8 @@
 "use client";
-
-
+/* eslint-disable react-hooks/set-state-in-effect --
+ * Keeping the search field in step with the URL the Navbar navigated to is
+ * state derived from a prop, not a user edit.
+ */
 import React, { useState, useEffect, Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";

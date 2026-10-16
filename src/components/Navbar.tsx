@@ -1,5 +1,8 @@
 "use client";
-
+/* eslint-disable react-hooks/set-state-in-effect --
+ * Closing the menus is state derived from the current route, not from a
+ * user edit - the documented case for resetting state in an effect.
+ */
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -56,6 +59,10 @@ export default function Navbar() {
   });
 
   // Close everything on navigation so nothing lingers over the new page.
+  //
+  // Resetting state when a value changes is the documented reason to reach for
+  // an effect here: the closed state is derived from the current route, not from
+  // anything the user typed.
   useEffect(() => {
     setMobileOpen(false);
     setMenuOpen(false);

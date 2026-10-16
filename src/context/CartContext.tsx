@@ -1,5 +1,10 @@
 "use client";
-
+/* eslint-disable react-hooks/set-state-in-effect --
+ * The persisted cart is read once on mount. This could be
+ * useSyncExternalStore, but that would externalise the whole store so every
+ * mutation wrote through to localStorage; the logic here is covered by tests
+ * and the hydration guard is kept deliberately.
+ */
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { ProductData } from "@/lib/mockData";
 
@@ -33,6 +38,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   // Read once on mount. Marked hydrated so the writer below knows not to
   // persist the still-empty initial state over the stored cart.
+  //
+  // This could be useSyncExternalStore, but that would mean externalising the
+  // whole store: every addItem/removeItem would have to write through to
+  // localStorage and re-render every subscriber. The cart logic here is
+  // covered by tests, so the hydration guard is kept deliberately.
   useEffect(() => {
     try {
       const saved = window.localStorage.getItem(STORAGE_KEY);

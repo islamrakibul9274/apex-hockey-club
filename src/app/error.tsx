@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { FaTriangleExclamation, FaRotateRight } from "react-icons/fa6";
 
 /**
@@ -49,9 +50,9 @@ export default function ErrorBoundary({
             <FaRotateRight aria-hidden="true" />
             Try again
           </button>
-          <a href="/" className="apex-btn apex-btn-secondary">
+          <Link href="/" className="apex-btn apex-btn-secondary">
             Back to home
-          </a>
+          </Link>
         </div>
       </main>
     </div>

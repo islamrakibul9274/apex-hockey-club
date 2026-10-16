@@ -73,13 +73,17 @@ npm run verify      # shell suites
 
 ### Dependencies
 
-6. **13 known npm vulnerabilities, 0 critical.** The critical `next@14`
-   Image Optimizer advisory is resolved — the project is on Next 16.4 and
-   Tailwind 4.3. Everything left is high-severity and confined to the
-   dev-only ESLint toolchain (`@typescript-eslint/*`, `braces`, `glob`,
-   `micromatch`, `eslint-config-next`). None of it ships to a browser or
-   reaches production runtime. Clearing them means bumping ESLint and
-   `eslint-config-next` to majors that track Next 16.
+6. **5 known npm vulnerabilities, 0 critical, none in production.** The
+   critical `next@14` Image Optimizer advisory is resolved, and the ESLint 9
+   migration cleared most of the rest: 17 → 13 → 5.
+
+   All five remaining are the same chain —
+   `eslint-config-next` → `@next/eslint-plugin-next` → `fast-glob` →
+   `micromatch` → `braces` — and `braces` is a stack-exhaustion DoS in a
+   build-time glob parser. `npm ls --omit=dev` confirms none of it ships:
+   it is dev-only, cannot be reached from a running server, and the versions
+   are pinned by `eslint-config-next@16.4.2` itself, so clearing it means
+   waiting for an upstream release rather than changing anything here.
 
 7. **`groq-sdk` is pinned at 0.8.0**, an old major. The AI coach works, but the
    SDK should be upgraded.

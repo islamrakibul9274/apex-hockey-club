@@ -1,6 +1,13 @@
 "use client";
 
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { createPortal } from "react-dom";
 import { FaCircleCheck, FaCircleExclamation, FaCircleInfo, FaXmark } from "react-icons/fa6";
 
@@ -36,11 +43,25 @@ const TONE_ICONS = {
  * Ad-hoc toasts in the product grid had no ARIA role, so screen readers never
  * announced them. These render in a polite live region.
  */
+/** Nothing ever changes, so the subscription never fires. */
+function subscribeToNothing(onChange: () => void): () => void {
+  return () => {
+    void onChange;
+  };
+}
+
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
+  // The live region is rendered through a portal, so it needs the DOM to
+  // exist. useSyncExternalStore reports false on the server and during
+  // hydration and true afterwards, which is the same approach Modal uses —
+  // an effect that flips a boolean would cause a second render pass on every
+  // page that mounts a ToastProvider.
+  const mounted = useSyncExternalStore(
+    subscribeToNothing,
+    () => true,
+    () => false
+  );
 
   const dismiss = useCallback((id: number) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));

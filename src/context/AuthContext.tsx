@@ -1,5 +1,8 @@
 "use client";
-
+/* eslint-disable react-hooks/set-state-in-effect --
+ * Reading the session from the server once on mount is reading an external
+ * system, which is what effects are for.
+ */
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
@@ -69,6 +72,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Fetch the session once on mount. This is reading from the server, which is
+  // an external system, not synchronising derived state.
   useEffect(() => {
     void refresh();
   }, [refresh]);
