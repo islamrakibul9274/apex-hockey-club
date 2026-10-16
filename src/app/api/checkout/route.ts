@@ -89,12 +89,6 @@ export async function POST(req: NextRequest) {
     // completed payment at itself.
     const origin = optionalEnv("AUTH_URL") ?? new URL(req.url).origin;
 
-    if (!stripe) {
-      return serverError(
-        "Payments are not configured on this environment. Please contact us to complete your order."
-      );
-    }
-
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
     if (type === "membership") {
@@ -163,6 +157,16 @@ export async function POST(req: NextRequest) {
     );
     if (total < 50) {
       return badRequest("Order total must be at least $0.50");
+    }
+
+    // Checked here rather than at the top of the handler: whether the request
+    // is valid does not depend on whether payments are configured, and
+    // returning 500 for an empty cart or an over-capacity ticket tier hid the
+    // real reason from the customer.
+    if (!stripe) {
+      return serverError(
+        "Payments are not configured on this environment. Please contact us to complete your order."
+      );
     }
 
     try {
